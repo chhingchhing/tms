@@ -1,0 +1,649 @@
+/*style summary report ticket*/
+.re_ticket{
+    overflow: scroll;   
+}
+.full{
+    /*margin-left: -83px;*/
+}
+.full ul li a:hover{
+    text-decoration: none;
+    color: #296396;
+}
+
+#report{
+    background: #CFE8F5;
+}
+
+.block_report{
+    border: 1px solid #CFE8F5;
+    border-radius: 5px;
+}
+
+.block_report ul li {
+    list-style: none;
+    padding: 20px;
+}
+
+.full, a{
+    list-style:none;
+}
+
+.full h5{
+    background: #ccc;
+    border:1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.for_sty{
+    padding: 10px 0 10px 0;
+}
+
+/*end style summary report ticket*/
+
+/*style receipt*/
+#receipt_wrapper{
+    border: 1px solid #BCEBED;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;  
+}
+
+#company_name p{
+    font-weight: bold;
+    margin-top: 10px;
+}
+#receipt_general_info,#sale_time{
+    margin-bottom: 5px;
+}
+
+/*end style receipt*/
+
+/*style overal_sale*/
+
+#finish_sale{
+    margin: 5px 0 0 3px;
+}
+
+#customer_remove a:hover,#customer_edit a:hover,#commissioner_edit a:hover,#commissioner_remove a:hover,#pt_delete a:hover{
+    text-decoration: none;
+    font-weight: bold;   
+}
+
+#over_all_sale_container{
+    background: #F8F8F8;
+    border: 1px solid #F8F8F8;
+    border-radius: 5px;
+    margin-top: -15px;
+    padding: 10px;
+    margin-right: 0px; 
+}
+
+#commissioner_info_empty,#time_departure_shell,#sale_details,#comments{
+    margin-top: 15px;
+}
+
+#customer_txt,#sale_com{
+    font-weight: bold;
+    margin-left: -15px;
+}
+
+#customer_name,#commissioner_name{
+    margin-left: -15px;
+}
+
+/*
+#customer_label,#customer_txt,#commissioner_label{
+    background:#EAF4FB;
+    border: 1px solid #EAF4FB;
+    border-radius: 5px;
+    padding: 10px;
+    width: 260px;
+}*/
+
+#payment_types{
+    padding: 4px;
+}
+#Payment_Types table tr td {
+    padding: 4px;
+}
+#add_payment_button{
+    margin: 2px 0 0 3px;
+}   
+#payment_contents tr td{
+    text-align: center;
+}
+#amount_tendered{
+    text-align: right;
+    font-weight: bold;
+}
+
+/*end style overal_sale*/
+
+#customer_info_shell{
+    width: 100%;
+    height: auto;
+}
+
+#customer{
+    margin-top: 5px;
+}
+
+/*style time_sale*/
+.bfh-timepicker{
+    margin-bottom: 5px; 
+}
+/*end style time_sale*/
+
+/*style manage employee*/
+#required_fields_message b{
+    color: #EC0000;
+    margin-right: 2px;
+}
+/*end style manage employee*/
+
+/*style config*/
+div#dbBackup {
+    margin-top: 15px;
+    margin-right: 0;
+}
+
+div#dbBackup a:hover{
+    text-decoration: none;
+    color:#255683;
+}
+/*end style config*/
+
+/*style header*/
+.p_office{
+    padding-left: 7px;
+}
+#home_module_list{
+    margin: 0 auto;
+}
+#wel_home p{
+    padding: 15px 0 6px;
+}
+
+/*end style header*/
+
+/*style search*/
+.form-control + .glyphicon {
+    position: absolute;
+    right: 0;
+    padding: 16px 35px;
+}
+
+#search{
+    margin-top: 10px;
+}
+/*end style search*/
+
+/*style dashboard*/
+#dash_img{
+    margin-left: 18px;
+}
+
+#dashboard{
+    margin-top: 30px;
+}
+#office p{
+    padding-left: 42px; 
+    font-weight: bold;
+}
+
+#dash_text{
+    padding: 15px;
+}
+
+/*end style dashboard*/
+
+/*style login*/
+
+.wrapper_login{
+    margin: 0 auto;
+    /*width: 30%;*/
+    height: auto;
+    border: 1px solid #ccc;
+    box-shadow: 5px 5px 5px #ccc;
+    border-radius: 5px;
+    padding: 10px;    
+    min-width: 200px;
+    max-width: 450px;
+}
+.wrapper_login{
+
+    background: #e4f5fc; /* Old browsers */
+    background: -moz-linear-gradient(top,  #e4f5fc 0%, #9fd8ef 51%, #bfe8f9 100%, #2ab0ed 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e4f5fc), color-stop(51%,#9fd8ef), color-stop(100%,#bfe8f9), color-stop(100%,#2ab0ed)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #e4f5fc 0%,#9fd8ef 51%,#bfe8f9 100%,#2ab0ed 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #e4f5fc 0%,#9fd8ef 51%,#bfe8f9 100%,#2ab0ed 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #e4f5fc 0%,#9fd8ef 51%,#bfe8f9 100%,#2ab0ed 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #e4f5fc 0%,#9fd8ef 51%,#bfe8f9 100%,#2ab0ed 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e4f5fc', endColorstr='#2ab0ed',GradientType=0 ); /* IE6-9 */
+
+}
+#top{
+    border-radius: 5px;
+    height: auto;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.reset_pwd input{
+    margin-left: 129px;
+    margin-top: 10px;
+    padding: 5px;
+}
+
+.login_botton input{
+    margin-left: 80px;
+    margin-top: 5px;
+}
+
+.login_field input{
+    width: 100%; 
+    padding: 5px;
+}
+
+/*end login*/
+
+/*header*/
+
+#moudle_icon a:hover{
+    text-decoration: none;
+    color:#275987;
+}
+
+#moudle_icon a{
+    text-decoration: none;
+}
+
+#moudle_icon_home{
+    padding-left: 40px;
+
+}
+
+#moudle_icon_home a{
+    text-align: center;
+    text-decoration: none;
+}
+
+#moudle_icon_home a:hover{
+    text-decoration: none;
+    color:#275987;
+    font-weight: bold;      
+}
+
+/*header*/
+
+.office-img {
+    margin: 0 19px;
+}
+
+.head{
+    background: #DAEEF8;
+}
+
+#welcome_message{
+    text-align: center;
+}
+
+.wrap_login_feild{
+    width: 60%;
+    margin: 0 auto;
+}
+
+#top img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto 
+}
+.login_field input{
+    margin: 5px;
+    padding: 2px;
+}
+
+#login_form{
+    margin: 5px;
+}
+
+span.error_sms{
+    color: red;
+}
+
+.menu_item a img{
+    margin-left: 15px;
+}
+
+.menu_item_home a img{
+    margin-left: -5px;
+}
+.menu_item_home a{
+    padding-right: 15px;
+}
+
+#content_area_wrapper{
+    margin-top: -22px;
+}
+.wrap_module_home h3{
+    text-align: center;
+}
+
+.content_home{
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    border-top: 2px solid #8DDCE0;
+    border-bottom: 0;
+    border-radius: 10px;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8DDCE0), to(#FFFFFF));
+    background-image: -webkit-linear-gradient(#8DDCE0, #FFFFFF);
+    background-image: -moz-linear-gradient(#8DDCE0, #FFFFFF),
+        -moz-linear-gradient(#8DDCE0, #FFFFFF);
+    background-image: -o-linear-gradient(#8DDCE0, #FFFFFF),
+        -o-linear-gradient(#8DDCE0, #FFFFFF);
+    background-image: linear-gradient(#8DDCE0, #FFFFFF),
+        linear-gradient(#8DDCE0, #FFFFFF);
+    -moz-background-size:2px 92%;
+    background-size:2px 92%;
+    background-position:0 0, 100% 0;
+    background-repeat:no-repeat; 
+    margin-top: 25px;
+}
+
+/* Required field */
+label.required {
+    color: #FF0000;
+}
+
+/*Success message*/
+div#success {
+    background: none repeat scroll 0 0 #E3FFE3;
+    border: 1px solid #5FDF5F;
+    border-radius: 4px;
+    color: #008000;
+    margin-bottom: 10px;
+    padding: 15px 10px;
+}
+
+/*Error message*/
+div#error {
+    background: none repeat scroll 0 0 #FFD7D7;
+    border: 1px solid #FF9A9A;
+    border-radius: 4px;
+    color: #FF0000;
+    margin-bottom: 10px;
+    padding: 15px 10px;
+}
+
+/* Close message success and error */
+span.cross, span.crossing {
+    color: #000000;
+    cursor: pointer;
+    float: right;
+    padding: 0 5px;
+}
+
+span.crossing {
+    margin-top: -15px;
+}
+
+span.cross {
+    margin-top: -35px;
+}
+
+/*Success message*/
+/*div#feedback_bar {*/
+div.success_message {
+    background: none repeat scroll 0 0 #E3FFE3;
+    border: 1px solid #5FDF5F;
+    border-radius: 4px;
+    color: #008000;
+    padding: 15px 10px;
+    position: absolute;
+}
+
+/*Error message*/
+/*div#feedback_bar_error {*/
+div.error_message {
+    background: none repeat scroll 0 0 #FFD7D7;
+    border: 1px solid #FF9A9A;
+    border-radius: 4px;
+    color: #FF0000;
+    padding: 15px 10px;
+    position: absolute;
+    top: 30%;
+}
+
+div#feedback_bar_error {
+    margin-top: 10%;
+}
+
+#feedback_bar{
+    top: 60%;
+    left: 50%;
+    margin: auto;
+}
+
+#feedback_bar > div#feedback_bar_close {
+    float: right;
+    margin-top: -15px;
+}
+
+.paggination{
+    width:47%;
+    margin: 0 auto;
+}
+
+.span2.nav-left {
+    border: 1px solid #DBDBDB;;
+}
+
+/* ============================================================================== */
+/* Start System Messages */
+
+#system-message {
+    margin: 0 0 0 -25px;
+    padding: 0;
+}
+#system-message dt { font-weight: bold;  display: none; }
+#system-message dd { margin: 0; font-weight: bold; text-indent: 30px; }
+#system-message dd ul { 
+    color: #0055BB; 
+    background-position: 4px top; 
+    background-repeat: no-repeat; 
+    margin-bottom: 10px; 
+    list-style: none; 
+    padding: 5px; 
+    border-top: 1px solid #84A7DB; 
+    border-bottom: 1px solid #84A7DB;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+}
+#system-message dd ul li{ line-height:1.5em }
+
+/* System Standard Messages */
+#system-message dd.message ul {
+    background-color: #C3D2E5;
+    background-image: url(../images/notice-info.png);
+}
+
+/* System Error Messages */
+#system-message dd.error ul,
+#system-message dd.warning ul,
+#system-message dd.notice ul
+{
+    color: #c00;
+}
+
+#system-message dd.error ul {
+    background-color: #E6C0C0;
+    background-image: url(../images/notice-alert.png);
+    border-top-color: #DE7A7B;
+    border-bottom-color: #DE7A7B;
+}
+
+/* System Warning Messages */
+#system-message dd.warning ul {
+    color: #c00;
+    background-color: #E6C8A6;
+    background-image: url(../images/notice-note.png);
+    border-top-color: #FFBB00;
+    border-bottom-color: #FFBB00;
+}
+
+/* System Notice Messages */
+#system-message dd.notice ul {
+    color: #c00;
+    background-color: #EFE7B8;
+    background-image: url(../images/notice-note.png);
+    border-top-color: #F0DC7E;
+    border-bottom-color: #F0DC7E;
+}
+/* End System Messages */
+/* ===================================================================================== */
+
+/*style for tickets*/
+
+.clearboth{
+    clear: both;
+}
+
+.title{
+    width: 95%;
+    margin: 0 auto;
+}
+
+/*style for tickets*/
+
+
+/* Cancel sale */
+#cancel_sale_button > a:hover {
+    text-decoration: none;
+}
+/* End of Cancel sale */
+
+/* Sale Messages */
+div#feedback_bar_sale {
+    margin: 65px;
+}
+#getSmsError > p {
+    color: red;
+}
+
+table#receipt_items {
+    width: 100%;
+}
+/* End Sale Messages */
+
+/* ============================================================= */
+/* Add Time Departure */
+.bfh-timepicker-popover {
+    left: -30%;
+}
+
+/* Style of Receipt */
+#receipt_header, #sale_return_policy, #barcode {
+    text-align: center; 
+}
+
+/* End style of Receipt */
+
+a.dp-choose-date {
+    background: url("../images/calendar.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    float: right;
+    height: 17px;
+    margin: 0 3px;
+    overflow: hidden;
+    padding: 0;
+    text-indent: -2000px;
+    width: 105px;
+}
+
+/* Style of Chart */
+#chart {
+    width: 600px;
+    height: 400px;
+    text-align: left;
+}
+/* End style of Chart */
+
+/* Style register sale */
+.table.table-register > thead > tr > th, 
+.table.table-register > tbody > tr > th, 
+.table.table-register > tfoot > tr > th, 
+.table.table-register > thead > tr > td, 
+.table.table-register > tbody > tr > td, 
+.table.table-register > tfoot > tr > td {
+    border-top: none;
+}
+
+/* Style for edit sale after detail report */
+form#sales_change_form {
+    padding: 5px 0;
+}
+
+form#sales_undelete_form {
+    padding: 5px 0;
+}
+
+.delete-message > h1.success {
+    color: rgb(60, 118, 61);
+}
+
+.delete-message > h1.fail {
+    color: rgb(217, 83, 79);
+}
+
+#moudle_icon_home p{
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    padding: 40px;
+}
+
+.date_input input, .btn  {
+    margin-top: 10px;
+}
+
+/* Table of detail of report */
+#input_sale{
+    margin-top: 11px;
+}
+
+#reg_mode{
+   padding-left: 25px;
+   margin-top: 15px;
+}
+
+table.innertable {
+    width: 100%; 
+    font-size: 12px;
+}
+
+#receipt_general_info {
+    padding: 10px;
+    text-align: left;
+}
+
+#sales_change_form, 
+div#btn_print > a.btn, 
+button#print,
+#sales_change_form,
+#sales_delete_form {
+    display: inline-block;
+}
+
+#company_name.panel-heading {
+    text-align: center;
+}
+
+div#dp-popup {
+    z-index: 10000;
+}
