@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 12, 2014 at 01:41 PM
+-- Generation Time: Mar 17, 2014 at 09:18 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -19,8 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `cgate_tms`
 --
--- CREATE DATABASE IF NOT EXISTS `cgate_tms` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
--- USE `cgate_tms`;
+CREATE DATABASE IF NOT EXISTS `cgate_tms` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `cgate_tms`;
 
 -- --------------------------------------------------------
 
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `cgate_commissioners` (
   PRIMARY KEY (`commisioner_id`),
   KEY `first_name` (`first_name`),
   KEY `last_name` (`last_name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
 
 --
 -- Dumping data for table `cgate_commissioners`
@@ -124,14 +124,15 @@ INSERT INTO `cgate_commissioners` (`commisioner_id`, `first_name`, `last_name`, 
 (2, 'siyna', 'ea', '0972792319', 0),
 (3, 'Dara', 'chean', '0972792220', 1),
 (5, 'long', 'term', '090461709', 0),
-(6, 'welcome', 'hello', '012345678', 0),
+(6, 'welcome', 'hello', '012345678', 1),
 (7, 'chanda', 'lann', '0972792213', 0),
-(8, 'new', 'commissioner', '0972792223', 0),
+(8, 'new', 'commissioner', '0972792223', 1),
 (9, 'Sreylin', 'long', '0972792215', 0),
-(11, 'phalla', 'chreu', '098989877', 0),
+(11, 'phalla', 'chreu', '098989878', 0),
 (14, 'Darak', 'hol', '9727922194', 0),
-(15, 'Darak', 'holla', '09727922134', 0),
-(16, 'phalla', 'chheoun', '092121234', 0);
+(15, 'Darak', 'hollak', '09727922134', 0),
+(16, 'phalla', 'chheoun', '092121235', 0),
+(17, 'zinan', 'hero', '092123434', 0);
 
 -- --------------------------------------------------------
 
@@ -198,9 +199,9 @@ INSERT INTO `cgate_customers` (`customer_id`, `account_number`, `company_name`, 
 (169, '9000', 'Codingate company', '', '', 1, NULL, NULL, 0),
 (170, NULL, 'chen coltd', '', '', 1, NULL, NULL, 0),
 (171, NULL, '', '', '', 1, NULL, NULL, 0),
-(172, NULL, '', '', '', 1, NULL, NULL, 0),
-(173, NULL, '', '', '', 1, NULL, NULL, 0),
-(174, NULL, '', '', '', 1, NULL, NULL, 0),
+(172, NULL, '', '', '', 1, NULL, NULL, 1),
+(173, NULL, '', '', '', 1, NULL, NULL, 1),
+(174, NULL, '', 'Mekong hotel', '12', 1, NULL, NULL, 0),
 (175, NULL, '', '', '', 1, NULL, NULL, 0),
 (176, NULL, '', '', '', 1, NULL, NULL, 0),
 (177, NULL, '', '', '', 1, NULL, NULL, 0),
@@ -219,14 +220,22 @@ INSERT INTO `cgate_customers` (`customer_id`, `account_number`, `company_name`, 
 (190, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (191, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (192, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
-(193, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(193, NULL, '', '', '', 1, NULL, NULL, 0),
 (194, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (195, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (196, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (197, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (198, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
 (206, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
-(207, NULL, 'assets', NULL, NULL, 1, NULL, NULL, 0);
+(207, NULL, 'assets', NULL, NULL, 1, NULL, NULL, 0),
+(226, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(227, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(228, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(229, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(230, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(231, NULL, '', NULL, NULL, 1, NULL, NULL, 0),
+(232, NULL, '', 'Mekong hotel', '12', 1, NULL, NULL, 0),
+(241, NULL, '', 'Mekong hotel', '12', 1, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -377,12 +386,20 @@ INSERT INTO `cgate_detail_orders_tickets` (`orderID`, `ticketID`, `line`, `issue
 (356, 47, 2, '2014-03-07 10:14:45', '2', '12', '1', '09:00:00', '2014-03-08', 'AA Hotel', '012A', 0, '1', '10', '10', '0', ''),
 (357, 51, 1, '2014-03-07 10:20:58', '1', '123', '1', '09:00:00', '2014-03-07', 'AA Hotel', '012A', 0, '1', '135', '126', '0', NULL),
 (357, 47, 2, '2014-03-07 10:20:58', '2', '12', '1', '09:00:00', '2014-03-08', 'AA Hotel', '012A', 0, '1', '10', '10', '0', NULL),
-(358, 51, 1, '2014-03-07 14:08:55', '1', '123', '1', '09:00:00', '2014-03-07', 'AA Hotel', '012A', 0, '1', '135', '126', '0', NULL),
-(358, 47, 2, '2014-03-07 14:08:56', '2', '12', '1', '09:00:00', '2014-03-08', 'AA Hotel', '012A', 0, '1', '10', '10', '0', NULL),
+(358, 51, 1, '2014-03-15 19:00:41', '1', '123', '1', '09:00:00', '2014-03-07', 'AA Hotel', '012A', 0, '1', '135', '126', '0', NULL),
+(358, 47, 2, '2014-03-15 19:00:42', '2', '12', '1', '09:00:00', '2014-03-08', 'AA Hotel', '012A', 0, '1', '10', '10', '0', NULL),
 (359, 51, 1, '2014-03-13 03:39:41', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '135', '126', '0', NULL),
 (360, 47, 1, '2014-03-11 08:47:27', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '10', '10', '0', NULL),
 (361, 54, 1, '2014-03-13 03:36:13', '11', NULL, '', '13:36:00', '2014-03-13', '', '', 0, '1', '12', '14', '0', ''),
-(361, 50, 2, '2014-03-13 03:36:13', '12', '009977', '', '09:35:00', '2014-03-03', '', '', 0, '1', '14', '11', '0', '');
+(361, 50, 2, '2014-03-13 03:36:13', '12', '009977', '', '09:35:00', '2014-03-03', '', '', 0, '1', '14', '11', '0', ''),
+(364, 48, 1, '2014-03-15 16:55:15', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '14', '11', '0', NULL),
+(365, 48, 1, '2014-03-15 16:56:11', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '14', '11', '0', NULL),
+(366, 49, 1, '2014-03-15 16:59:20', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '14', '12', '0', NULL),
+(367, 48, 1, '2014-03-15 17:50:10', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '14', '11', '0', NULL),
+(368, 48, 1, '2014-03-15 18:14:29', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '14', '11', '0', NULL),
+(369, 51, 1, '2014-03-15 21:03:42', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '135', '126', '0', NULL),
+(370, 51, 1, '2014-03-15 21:06:17', NULL, NULL, NULL, '00:00:00', '0000-00-00', '', '', 0, '1', '135', '126', '0', NULL),
+(371, 46, 1, '2014-03-16 07:04:10', '', NULL, '', '00:00:00', '0000-00-00', '', '', 0, '2', '12', '15', '0', '');
 
 -- --------------------------------------------------------
 
@@ -427,6 +444,7 @@ INSERT INTO `cgate_detail_orders_tours` (`tour_id`, `orderID`, `issue_date`, `de
 (6, 251, '2014-02-01 03:03:34', '0000-00-00', '00:00:00', 1, '010A', 'BB Hotel', 0, NULL, NULL, '', 'PP - Takeo', '1', '20', '25', '0', 'Hello everybody'),
 (7, 256, '2014-02-03 03:16:22', '0000-00-00', '00:00:00', 1, '', '', 0, NULL, NULL, '', 'PP - BB', '1', '35', '40', '0', 'This is the way in business'),
 (8, 343, '2014-02-12 03:12:45', '0000-00-00', '00:00:00', 2, '', '', 0, NULL, NULL, '', 'PP - BB', '1', '35', '35', '0', 'Hello world'),
+(8, 362, '2014-03-14 18:36:19', '0000-00-00', '00:00:00', 1, '', '', 0, NULL, NULL, '', 'PP - BB', '1', '35', '35', '0', 'Hello world'),
 (9, 254, '2014-02-03 01:59:13', '0000-00-00', '00:00:00', 1, '', '', 0, NULL, NULL, '', 'PP - Takeo', '1', '20', '26', '0', 'Hello Hinghorng company'),
 (9, 255, '2014-02-03 03:04:04', '0000-00-00', '00:00:00', 1, '', '', 0, NULL, NULL, '', 'PP - Takeo', '1', '20', '26', '0', 'Hello Hinghorng company'),
 (9, 331, '2014-02-07 18:20:51', '0000-00-00', '00:00:00', 1, '', '', 0, NULL, NULL, '', 'PP - Takeo', '1', '20', '26', '0', 'Hello Hinghorng company'),
@@ -504,7 +522,9 @@ CREATE TABLE IF NOT EXISTS `cgate_detial_orders_massages` (
 INSERT INTO `cgate_detial_orders_massages` (`id_order_massage`, `item_massage_id`, `line`, `issue_date`, `time_in`, `time_out`, `massage_name`, `unit_price`, `sale_price`, `quantity_purchased`, `item_cost_price`, `discount_percent`, `deposite`) VALUES
 (338, 3, 1, '2014-02-08 20:43:04', '09:00:00', '12:00:00', 'massage1', '43', NULL, NULL, NULL, NULL, NULL),
 (339, 3, 1, '2014-02-09 00:00:19', '09:00:00', '12:00:00', 'massage1', '43', NULL, NULL, NULL, NULL, NULL),
-(354, 7, 1, '2014-03-06 11:19:37', '11:19:00', '00:00:00', 'Massage body with oil', NULL, '12', '1', NULL, '0', NULL);
+(354, 7, 1, '2014-03-06 11:19:37', '11:19:00', '00:00:00', 'Massage body with oil', NULL, '12', '1', NULL, '0', NULL),
+(372, 7, 1, '2014-03-17 08:20:07', '08:19:00', '00:00:00', 'Massage body with oil', '0', '15', '1', NULL, '0', NULL),
+(373, 7, 1, '2014-03-17 08:23:19', '08:19:00', '00:00:00', 'Massage body with oil', '0', '15', '1', NULL, '0', NULL);
 
 -- --------------------------------------------------------
 
@@ -513,37 +533,39 @@ INSERT INTO `cgate_detial_orders_massages` (`id_order_massage`, `item_massage_id
 --
 
 CREATE TABLE IF NOT EXISTS `cgate_employees` (
-  `employee_id` int(10) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `deleted` int(1) NOT NULL DEFAULT '0',
   `position_id` int(10) DEFAULT NULL,
-  `person_id` int(10) DEFAULT NULL,
-  PRIMARY KEY (`employee_id`),
+  `employee_id` int(10) DEFAULT NULL,
   UNIQUE KEY `username` (`username`),
   KEY `deleted` (`deleted`),
-  KEY `phppos_employees_ibfk_1_idx` (`person_id`),
+  KEY `phppos_employees_ibfk_1_idx` (`employee_id`),
   KEY `fk_cgate_employees_cgate_positions1_idx` (`position_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=22 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `cgate_employees`
 --
 
-INSERT INTO `cgate_employees` (`employee_id`, `username`, `password`, `deleted`, `position_id`, `person_id`) VALUES
-(1, 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', 0, 1, 1),
-(2, 'sreychen', '25f9e794323b453885f5181f1b624d0b', 0, 2, 2),
-(3, 'yulyhong', '25f9e794323b453885f5181f1b624d0b', 0, 2, 3),
-(10, 'lovely.lucky', '343d9040a671c45832ee5381860e2996', 0, 2, 214),
-(13, 'soun.bopha', '202cb962ac59075b964b07152d234b70', 1, NULL, 217),
-(14, 'channa', '202cb962ac59075b964b07152d234b70', 0, NULL, 218),
-(15, 'jajan', '202cb962ac59075b964b07152d234b70', 1, 2, 219),
-(16, 'lenglong', '202cb962ac59075b964b07152d234b70', 1, NULL, 220),
-(17, 'lounglin', '202cb962ac59075b964b07152d234b70', 1, NULL, 221),
-(18, 'lylyloing', '202cb962ac59075b964b07152d234b70', 0, NULL, 222),
-(19, 'hunnang', '202cb962ac59075b964b07152d234b70', 0, 2, 223),
-(20, 't', 'c4ca4238a0b923820dcc509a6f75849b', 1, 2, 224),
-(21, 'zcenh', '202cb962ac59075b964b07152d234b70', 0, 2, 225);
+INSERT INTO `cgate_employees` (`username`, `password`, `deleted`, `position_id`, `employee_id`) VALUES
+('admin', '5f4dcc3b5aa765d61d8327deb882cf99', 0, 1, 1),
+('sreychen', '25f9e794323b453885f5181f1b624d0b', 0, 2, 2),
+('yulyhong', '25f9e794323b453885f5181f1b624d0b', 0, 2, 3),
+('lovely.lucky', '343d9040a671c45832ee5381860e2996', 0, 2, 214),
+(NULL, '202cb962ac59075b964b07152d234b70', 1, 2, 217),
+('channa', '202cb962ac59075b964b07152d234b70', 0, NULL, 218),
+('', '202cb962ac59075b964b07152d234b70', 0, 2, 219),
+(NULL, '202cb962ac59075b964b07152d234b70', 1, NULL, 220),
+(NULL, '202cb962ac59075b964b07152d234b70', 1, NULL, 221),
+('lylylong', '202cb962ac59075b964b07152d234b70', 0, 1, 222),
+('hunnang', '202cb962ac59075b964b07152d234b70', 0, 2, 223),
+(NULL, 'c4ca4238a0b923820dcc509a6f75849b', 1, 2, 224),
+('zcenh', '202cb962ac59075b964b07152d234b70', 0, 2, 225),
+('hello', '202cb962ac59075b964b07152d234b70', 0, 2, 233),
+('tt', '25d55ad283aa400af464c76d713c07ad', 0, 1, 235),
+('channa.hung', '25d55ad283aa400af464c76d713c07ad', 0, 2, 236),
+('saorin', '25d55ad283aa400af464c76d713c07ad', 0, 2, 240);
 
 -- --------------------------------------------------------
 
@@ -604,7 +626,7 @@ CREATE TABLE IF NOT EXISTS `cgate_guides` (
   PRIMARY KEY (`guide_id`),
   KEY `person_id` (`guide_id`),
   KEY `deleted` (`deleted`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
 
 --
 -- Dumping data for table `cgate_guides`
@@ -615,7 +637,9 @@ INSERT INTO `cgate_guides` (`guide_id`, `guide_fname`, `guide_lname`, `deleted`,
 (2, 'Fguide', 'Lguide', 0, 'Male', '090461710', 'Lguide@gmail.com', 'Tour'),
 (3, 'hi guide', 'gude', 0, 'Female', '0972792214', 'higuide@gmail.com', 'Tour'),
 (4, 'Ly Iguide', 'Uguide', 0, 'Female', '012343434', 'iguide@gmail.com', 'Tour'),
-(5, 'zcehna', 'zhen', 0, 'Female', '092123437', 'zcehna@gmail.com', 'Chinese');
+(5, 'zcehna', 'zhen', 0, 'Female', '092123437', 'zcehna@gmail.com', 'Chinese'),
+(6, 'new', 'guide', 0, 'Female', '098989887', 'new@gmail.com', 'Vitnames'),
+(7, 'new1', 'guide1', 0, 'Female', '092123432', '', 'Brazil');
 
 -- --------------------------------------------------------
 
@@ -634,7 +658,7 @@ CREATE TABLE IF NOT EXISTS `cgate_inventory` (
   PRIMARY KEY (`trans_id`),
   KEY `phppos_inventory_ibfk_2` (`trans_user`),
   KEY `fk_phppos_inventory_currency_types1_idx` (`trans_items`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=778 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=826 ;
 
 --
 -- Dumping data for table `cgate_inventory`
@@ -1183,7 +1207,55 @@ INSERT INTO `cgate_inventory` (`trans_id`, `trans_items`, `trans_user`, `trans_d
 (774, 54, 1, '2014-03-13 03:36:13', 'CGATE 361', '-1.00', 'tickets'),
 (775, 50, 1, '2014-03-13 03:36:13', 'CGATE 361', '-1.00', 'tickets'),
 (776, 51, 1, '2014-03-13 03:39:41', 'CGATE 359', '1.00', 'tickets'),
-(777, 51, 1, '2014-03-13 03:39:41', 'CGATE 359', '-1.00', 'tickets');
+(777, 51, 1, '2014-03-13 03:39:41', 'CGATE 359', '-1.00', 'tickets'),
+(778, 8, 1, '2014-03-14 18:36:19', 'CGATE 362', '-1.00', 'tours'),
+(779, 15, 1, '2014-03-14 20:20:23', 'Manual Edit of Quantity', '0.00', 'tours'),
+(780, 15, 1, '2014-03-14 20:42:24', 'Manual Edit of Quantity', '0.00', 'tours'),
+(781, 15, 1, '2014-03-14 20:44:26', 'Manual Edit of Quantity', '0.00', 'tours'),
+(782, 15, 1, '2014-03-14 20:49:22', 'Manual Edit of Quantity', '0.00', 'tours'),
+(783, 9, 1, '2014-03-14 20:52:01', 'Manual Edit of Quantity', '0.00', 'tours'),
+(784, 0, 1, '2014-03-14 21:04:56', 'Manual Edit of Quantity', '0.00', 'tours'),
+(785, 20, 1, '2014-03-14 22:55:28', 'Manual Edit of Quantity', '0.00', 'tours'),
+(786, 20, 1, '2014-03-14 22:58:48', 'Manual Edit of Quantity', '0.00', 'tours'),
+(787, 20, 1, '2014-03-14 23:02:05', 'Manual Edit of Quantity', '0.00', 'tours'),
+(788, 20, 1, '2014-03-14 23:04:14', 'Manual Edit of Quantity', '0.00', 'tours'),
+(789, 20, 1, '2014-03-14 23:05:48', 'Manual Edit of Quantity', '0.00', 'tours'),
+(790, 15, 1, '2014-03-14 23:06:41', 'Manual Edit of Quantity', '0.00', 'tours'),
+(791, 9, 1, '2014-03-14 23:09:41', 'Manual Edit of Quantity', '0.00', 'tours'),
+(792, 8, 1, '2014-03-14 23:26:35', 'Manual Edit of Quantity', '0.00', 'tours'),
+(793, 7, 1, '2014-03-14 23:55:29', 'Manual Edit of Quantity', '0.00', 'tours'),
+(794, 6, 1, '2014-03-14 23:58:02', 'Manual Edit of Quantity', '0.00', 'tours'),
+(795, 18, 1, '2014-03-15 00:37:29', 'Manual Edit of Quantity', '0.00', 'tours'),
+(796, 48, 1, '2014-03-15 16:55:15', 'CGATE 364', '-1.00', 'tickets'),
+(797, 48, 236, '2014-03-15 16:56:11', 'CGATE 365', '-1.00', 'tickets'),
+(798, 49, 236, '2014-03-15 16:59:20', 'CGATE 366', '-1.00', 'tickets'),
+(799, 48, 236, '2014-03-15 17:50:10', 'CGATE 367', '-1.00', 'tickets'),
+(800, 48, 240, '2014-03-15 18:14:29', 'CGATE 368', '-1.00', 'tickets'),
+(801, 51, 1, '2014-03-15 18:30:40', 'CGATE 358', '1.00', 'tickets'),
+(802, 47, 1, '2014-03-15 18:30:40', 'CGATE 358', '1.00', 'tickets'),
+(803, 51, 1, '2014-03-15 18:30:41', 'CGATE 358', '-1.00', 'tickets'),
+(804, 47, 1, '2014-03-15 18:30:42', 'CGATE 358', '-1.00', 'tickets'),
+(805, 51, 1, '2014-03-15 18:41:13', 'CGATE 358', '1.00', 'tickets'),
+(806, 47, 1, '2014-03-15 18:41:13', 'CGATE 358', '1.00', 'tickets'),
+(807, 51, 1, '2014-03-15 18:41:13', 'CGATE 358', '-1.00', 'tickets'),
+(808, 47, 1, '2014-03-15 18:41:13', 'CGATE 358', '-1.00', 'tickets'),
+(809, 51, 1, '2014-03-15 18:54:38', 'CGATE 358', '1.00', 'tickets'),
+(810, 47, 1, '2014-03-15 18:54:38', 'CGATE 358', '1.00', 'tickets'),
+(811, 51, 1, '2014-03-15 18:54:39', 'CGATE 358', '-1.00', 'tickets'),
+(812, 47, 1, '2014-03-15 18:54:39', 'CGATE 358', '-1.00', 'tickets'),
+(813, 51, 1, '2014-03-15 19:00:40', 'CGATE 358', '1.00', 'tickets'),
+(814, 47, 1, '2014-03-15 19:00:40', 'CGATE 358', '1.00', 'tickets'),
+(815, 51, 1, '2014-03-15 19:00:42', 'CGATE 358', '-1.00', 'tickets'),
+(816, 47, 1, '2014-03-15 19:00:42', 'CGATE 358', '-1.00', 'tickets'),
+(817, 46, 1, '2014-03-15 19:27:36', 'Manual Edit of Quantity', '-1.00', 'tickets'),
+(818, 21, 1, '2014-03-15 19:40:26', 'Manual Edit of Quantity', '0.00', 'tickets'),
+(819, 51, 1, '2014-03-15 21:03:43', 'CGATE 369', '-1.00', 'tickets'),
+(820, 51, 1, '2014-03-15 21:06:17', 'CGATE 370', '-1.00', 'tickets'),
+(821, 46, 1, '2014-03-16 01:32:32', 'Manual Edit of Quantity', '-1.00', 'tickets'),
+(822, 46, 1, '2014-03-16 01:32:58', 'Manual Edit of Quantity', '-1.00', 'tickets'),
+(823, 46, 1, '2014-03-16 07:04:10', 'CGATE 371', '-2.00', 'tickets'),
+(824, 7, 1, '2014-03-17 01:20:07', 'CGATE 372', '-1.00', 'massages'),
+(825, 7, 1, '2014-03-17 01:23:19', 'CGATE 373', '-1.00', 'massages');
 
 -- --------------------------------------------------------
 
@@ -1194,22 +1266,24 @@ INSERT INTO `cgate_inventory` (`trans_id`, `trans_items`, `trans_user`, `trans_d
 CREATE TABLE IF NOT EXISTS `cgate_items_bikes` (
   `item_bike_id` int(10) NOT NULL AUTO_INCREMENT,
   `bike_code` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `available` tinyint(1) DEFAULT NULL,
+  `available` tinyint(1) DEFAULT '1',
   `unit_price` decimal(15,2) NOT NULL,
   `actual_price` decimal(15,2) NOT NULL,
   `bike_types` enum('Khmer Bike','Giant') COLLATE utf8_unicode_ci NOT NULL,
-  `deleted` tinyint(1) NOT NULL DEFAULT '1',
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`item_bike_id`),
   KEY `name` (`bike_code`),
   KEY `category` (`available`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `cgate_items_bikes`
 --
 
 INSERT INTO `cgate_items_bikes` (`item_bike_id`, `bike_code`, `available`, `unit_price`, `actual_price`, `bike_types`, `deleted`) VALUES
-(1, '00001', 1, '15.00', '10.00', 'Khmer Bike', 0);
+(1, '00012', 1, '15.00', '10.00', 'Khmer Bike', 0),
+(2, '00022', 0, '15.00', '11.00', 'Giant', 1),
+(3, '00013a', 1, '12.00', '10.00', 'Giant', 0);
 
 -- --------------------------------------------------------
 
@@ -1232,7 +1306,7 @@ CREATE TABLE IF NOT EXISTS `cgate_items_massages` (
   KEY `category` (`massage_desc`),
   KEY `deleted` (`deleted`),
   KEY `fk_cgate_items_massages_cgate_massages_types1_idx` (`massage_typesID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=10 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `cgate_items_massages`
@@ -1243,7 +1317,8 @@ INSERT INTO `cgate_items_massages` (`item_massage_id`, `massage_name`, `massage_
 (6, 'massagetwo', 'sms for showing', 7, '32.00', '0.00', 1, 0),
 (7, 'Massage body with oil', 'this is good for ur body,.. make your body smooth and white', 36, '15.00', '0.00', 1, 0),
 (8, 'testing', 'hello testing', 7, '15.00', '12.00', 1, 1),
-(9, 'sddd', 'fsdfdd', 6, '15.00', '12.00', 1, 0);
+(9, 'Body massage with special oil', 'Hello world jar', 6, '15.00', '12.00', 1, 0),
+(16, 'Body massage with special oil', 'Hello world cup', 6, '15.00', '12.00', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1421,7 +1496,6 @@ INSERT INTO `cgate_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `module_i
 ('module_employees', 'module_employees_desc', 80, 'employees'),
 ('module_guides', 'module_guides_desc', 150, 'guides'),
 ('module_massage', 'module_massage_desc', 120, 'massages'),
-('module_receivings', 'module_receivings_desc', 60, 'receivings'),
 ('module_reports', 'module_reports_desc', 50, 'reports'),
 ('module_sales', 'module_sales_desc', 70, 'sales'),
 ('module_suppliers', 'module_suppliers_desc', 40, 'suppliers'),
@@ -1546,7 +1620,7 @@ CREATE TABLE IF NOT EXISTS `cgate_orders` (
   KEY `fk_orders_tours_guides1_idx` (`guide_id`),
   KEY `fk_cgate_orders_cgate_offices1_idx` (`received_from`),
   KEY `fk_cgate_orders_cgate_commissioner` (`commisioner_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=362 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=374 ;
 
 --
 -- Dumping data for table `cgate_orders`
@@ -1657,10 +1731,21 @@ INSERT INTO `cgate_orders` (`order_id`, `sale_time`, `customer_id`, `employee_id
 (355, '2014-03-07 07:26:57', NULL, 1, NULL, NULL, '', 0, 'Cash: $11.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
 (356, '2014-03-07 07:52:09', 93, 1, NULL, NULL, 'Hello world for 356 id', 0, 'Cash: $136.00<br />', '0', '', 0, 0, NULL, '5', 2, 'tickets'),
 (357, '2014-03-07 10:19:23', 93, 1, NULL, NULL, 'Hello world for 356 id', 0, 'Cash: $136.00<br />', '0', '', 0, 0, NULL, '5', 2, 'tickets'),
-(358, '2014-03-07 13:12:14', 93, 1, NULL, NULL, 'Hello world for 356 id', 0, 'Cash: $136.00<br />', '25', '', 0, 1, NULL, '5', 2, 'tickets'),
+(358, '2014-03-07 13:12:14', 93, 1, NULL, NULL, 'Hello world for 356 id', 0, 'Cash: $136.00<br />', '25', '', 0, 0, NULL, '5', 2, 'tickets'),
 (359, '2014-03-08 10:48:19', NULL, 1, NULL, NULL, '', 0, 'Cash: $126.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
 (360, '2014-03-11 08:47:27', NULL, 1, NULL, NULL, '', 0, 'Cash: $10.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
-(361, '2014-03-13 03:36:13', NULL, 1, NULL, NULL, '', 0, 'Cash: $25.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets');
+(361, '2014-03-13 03:36:13', NULL, 1, NULL, NULL, '', 0, 'Cash: $25.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(362, '2014-03-14 18:36:18', NULL, 1, NULL, NULL, '', 0, 'Cash: $35.00<br />', '0', '', 0, 0, NULL, '0', NULL, ''),
+(364, '2014-03-15 16:55:15', NULL, 1, NULL, NULL, '', 0, 'Cash: $11.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(365, '2014-03-15 16:56:11', NULL, 236, NULL, NULL, '', 0, 'Cash: $11.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(366, '2014-03-15 16:59:20', NULL, 236, NULL, NULL, '', 0, 'Cash: $12.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(367, '2014-03-15 17:50:10', NULL, 236, NULL, NULL, '', 0, 'Cash: $11.00<br />Cash: $11.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(368, '2014-03-15 18:14:29', NULL, 240, NULL, NULL, '', 0, 'Cash: $11.00<br />Cash: $11.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(369, '2014-03-15 21:03:42', 2, 1, NULL, NULL, '', 0, 'Cash: $126.00<br />', '0', '', 0, 0, NULL, '5', 2, 'tickets'),
+(370, '2014-03-15 21:06:17', 123, 1, NULL, NULL, '', 0, 'Cash: $126.00<br />', '0', '', 0, 0, NULL, '5', 7, 'tickets'),
+(371, '2014-03-16 07:04:09', NULL, 1, NULL, NULL, '', 0, 'Cash: $30.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'tickets'),
+(372, '2014-03-17 01:20:07', NULL, 1, NULL, NULL, '', 0, 'Cash: $15.00<br />', '0', '', 0, 0, NULL, '0', NULL, 'massages'),
+(373, '2014-03-17 01:23:19', NULL, 1, NULL, NULL, '', 0, 'Cash: $15.00<br />', '0', '', 0, 1, NULL, '0', NULL, 'massages');
 
 -- --------------------------------------------------------
 
@@ -1749,7 +1834,7 @@ CREATE TABLE IF NOT EXISTS `cgate_people` (
   KEY `first_name` (`first_name`),
   KEY `last_name` (`last_name`),
   KEY `email` (`email`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=226 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=244 ;
 
 --
 -- Dumping data for table `cgate_people`
@@ -1771,7 +1856,7 @@ INSERT INTO `cgate_people` (`first_name`, `last_name`, `phone_number`, `email`, 
 ('sreychen', 'sok', '098123456', 'sreychen@gmail.com', 'Takeo', 'pp', 'toul kork', 'Takeo', '+885', 'Cambodia', '0', 33),
 ('lyhong', 'pon', '0972792214', 'lyhong@gmail.com', 'Takeo', 'pp', 'pp', 'pp', '+888', 'Cambodia', '0', 35),
 ('add', 'bdd', '0971234567', 'add@gmail.com', 'pp', 'pp', 'pp', 'pp', '+885', 'Cambodia', '0', 36),
-('sodaly', 'heom', '0881234567', 'sodaly@gmail.com', 'pp', 'pp', 'pp', 'pp', '+885', 'Cambodia', '0', 37),
+('heom', 'sodaly', '0978675456', 'sodaly@gmail.com', '0', '0', '0', '0', '0', '0', '0', 37),
 ('lay', 'long', '098767876', 'lay@gmail.com', 'pp', 'pp', 'pp', 'pp', '+888', 'Cambodia', 'Hello comments', 38),
 ('dane', 'chen', '098989898', 'dana@gmail.com', 'pp', 'pp', 'pp', 'pp', '+888', 'Cambodia', '0', 39),
 ('nung', 'chan', '098989878', 'nong@gmail.com', 'pp', 'pp', 'pp', 'pp', '+888', 'Cambodia', '0', 40),
@@ -1804,12 +1889,12 @@ INSERT INTO `cgate_people` (`first_name`, `last_name`, `phone_number`, `email`, 
 ('a6', 'run', '979898654', 'smey@gmail.com', 'svay reing', 'pp', 'toul kork', 'Svay reing', '885', 'Cambodia', '', 168),
 ('sokry1', 'sat', '972792217', 'sokry.sat@gmail.com', 'Kompong thom', 'pp', 'toul kork', 'pp', '88', 'Cambodia', 'Hello sokry', 169),
 ('Sreychen', 'chea', '', 'sreychen.chea@gmail.com', '', '', '', '', '', '', '', 170),
-('hanna', 'hem', '', '', '', '', '', '', '', '', '', 171),
+('channak', 'hem', '', '', '', '', '', '', '', '', '', 171),
 ('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 172),
 ('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 173),
-('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 174),
-('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 175),
-('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 176),
+('bopha', 'chan', '', 'bopha@gmail.com', '', '', '', '', '', '', '', 174),
+('Dara', 'Chan', '', 'dara1.chan@gmail.com', '', '', '', '', '', '', '', 175),
+('Darau', 'Chan', '', '', '', '', '', '', '', '', '', 176),
 ('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 177),
 ('Dara', 'Chan', '', '', '', '', '', '', '', '', '', 178),
 ('daya', 'han', '', '', '', '', '', '', '', '', '', 179),
@@ -1826,7 +1911,7 @@ INSERT INTO `cgate_people` (`first_name`, `last_name`, `phone_number`, `email`, 
 ('thavy', 'piv', '', '', '', '', '', '', '', '', '', 190),
 ('rama', 'math', '', '', '', '', '', '', '', '', '', 191),
 ('ramay', 'run', '', '', '', '', '', '', '', '', '', 192),
-('hi', 'helo', '', 'hi.heloo@gmail.com', '', '', '', '', '', '', '', 193),
+('hii', 'helo', '', 'hi.heloo@gmail.com', '', '', '', '', '', '', '', 193),
 ('naga', 'nun', '', '', '', '', '', '', '', '', '', 194),
 ('candy', 'him', '', '', '', '', '', '', '', '', '', 195),
 ('yan', 'dang', '', '', '', '', '', '', '', '', '', 196),
@@ -1837,13 +1922,26 @@ INSERT INTO `cgate_people` (`first_name`, `last_name`, `phone_number`, `email`, 
 ('lovely', 'lucky', '', '', '', '', '', '', '', '', '', 214),
 ('bopha', 'soun', '', '', '', '', '', '', '', '', '', 217),
 ('channa', 'long', '', '', '', '', '', '', '', '', '', 218),
-('ja', 'jan', '', '', '', '', '', '', '', '', '', 219),
+('ja', 'jan', '', 'ja@gmail.com', '', '', '', '', '', '', '', 219),
 ('leng', 'long', '', '', '', '', '', '', '', '', '', 220),
 ('loung', 'lin', '', '', '', '', '', '', '', '', '', 221),
-('lyly', 'loing', '', '', '', '', '', '', '', '', '', 222),
+('lyly', 'long', '', 'lyly.long@gmail.com', '', '', '', '', '', '', '', 222),
 ('hunnak', 'nang', '', '', '', '', '', '', '', '', '', 223),
 ('t', 't', '', '', '', '', '', '', '', '', '', 224),
-('zcehn', 'zhan', '', '', '', '', '', '', '', '', '', 225);
+('zcehn', 'zhan', '0978675456', 'zcehn@gmail.com', '', '', '', '', '', '', '', 225),
+('ka', 'ka', '', '', '', '', '', '', '', '', '', 226),
+('ka', 'ka', '', '', '', '', '', '', '', '', '', 227),
+('ka', 'ka', '', '', '', '', '', '', '', '', '', 228),
+('ka', 'ka', '', '', '', '', '', '', '', '', '', 229),
+('ka', 'ka', '', '', '', '', '', '', '', '', '', 230),
+('kan', 'khan', '', '', '', '', '', '', '', '', '', 231),
+('bopha', 'chan', '', 'bopha@gmail.com', '', '', '', '', '', '', '', 232),
+('channa', 'long', '', '', '', '', '', '', '', '', '', 233),
+('ttggg', 'tttgggg', '', '', '', '', '', '', '', '', '', 235),
+('channa', 'hung', '', '', '', '', '', '', '', '', '', 236),
+('saorin', 'phan', '', '', '', '', '', '', '', '', '', 240),
+('sophan', 'ea', '', '', '', '', '', '', '', '', '', 241),
+('aace', 'ged', '092123430', 'get@mgail.com', '', '', '', '', '', '', '0', 243);
 
 -- --------------------------------------------------------
 
@@ -1874,17 +1972,47 @@ INSERT INTO `cgate_permissions` (`office_id`, `person_id`, `module_id`) VALUES
 (1, 1, 'guides'),
 (1, 1, 'massages'),
 (1, 1, 'reports'),
+(1, 1, 'sales'),
 (1, 1, 'suppliers'),
 (1, 1, 'tickets'),
 (1, 1, 'tours'),
 (1, 1, 'transportations'),
+(2, 1, 'bikes'),
+(2, 1, 'commissioners'),
 (2, 1, 'config'),
 (2, 1, 'customers'),
+(2, 1, 'employees'),
+(2, 1, 'guides'),
+(2, 1, 'massages'),
+(2, 1, 'reports'),
+(2, 1, 'suppliers'),
+(2, 1, 'tickets'),
+(2, 1, 'tours'),
+(2, 1, 'transportations'),
+(3, 1, 'bikes'),
+(3, 1, 'commissioners'),
 (3, 1, 'config'),
 (3, 1, 'customers'),
 (3, 1, 'employees'),
-(5, 1, 'employees'),
-(5, 1, 'receivings'),
+(3, 1, 'guides'),
+(3, 1, 'massages'),
+(3, 1, 'reports'),
+(3, 1, 'suppliers'),
+(3, 1, 'tickets'),
+(3, 1, 'tours'),
+(3, 1, 'transportations'),
+(4, 1, 'bikes'),
+(4, 1, 'commissioners'),
+(4, 1, 'config'),
+(4, 1, 'customers'),
+(4, 1, 'employees'),
+(4, 1, 'guides'),
+(4, 1, 'massages'),
+(4, 1, 'reports'),
+(4, 1, 'suppliers'),
+(4, 1, 'tickets'),
+(4, 1, 'tours'),
+(4, 1, 'transportations'),
 (1, 214, 'customers'),
 (1, 214, 'suppliers'),
 (2, 214, 'customers'),
@@ -1895,10 +2023,25 @@ INSERT INTO `cgate_permissions` (`office_id`, `person_id`, `module_id`) VALUES
 (2, 218, 'tickets'),
 (3, 218, 'sales'),
 (3, 218, 'tickets'),
+(1, 219, 'customers'),
+(2, 219, 'customers'),
 (1, 222, 'customers'),
 (1, 222, 'suppliers'),
 (2, 222, 'customers'),
-(2, 222, 'suppliers');
+(2, 222, 'suppliers'),
+(1, 223, 'customers'),
+(1, 223, 'suppliers'),
+(2, 223, 'customers'),
+(2, 223, 'suppliers'),
+(1, 225, 'customers'),
+(1, 225, 'suppliers'),
+(2, 225, 'customers'),
+(2, 225, 'suppliers'),
+(1, 233, 'customers'),
+(2, 233, 'customers'),
+(1, 236, 'employees'),
+(1, 236, 'tickets'),
+(1, 240, 'tickets');
 
 -- --------------------------------------------------------
 
@@ -1922,9 +2065,6 @@ CREATE TABLE IF NOT EXISTS `cgate_permissions_actions` (
 INSERT INTO `cgate_permissions_actions` (`module_id`, `person_id`, `action_id`) VALUES
 ('bikes', 1, 'add_update'),
 ('bikes', 1, 'delete'),
-('bikes', 1, 'edit_sale'),
-('bikes', 1, 'edit_sale_price'),
-('bikes', 1, 'give_discount'),
 ('bikes', 1, 'search'),
 ('commissioners', 1, 'add_update'),
 ('commissioners', 1, 'delete'),
@@ -1945,6 +2085,9 @@ INSERT INTO `cgate_permissions_actions` (`module_id`, `person_id`, `action_id`) 
 ('sales', 1, 'edit_sale'),
 ('sales', 1, 'edit_sale_price'),
 ('sales', 1, 'give_discount'),
+('suppliers', 1, 'add_update'),
+('suppliers', 1, 'delete'),
+('suppliers', 1, 'search'),
 ('tickets', 1, 'add_update'),
 ('tickets', 1, 'delete'),
 ('tickets', 1, 'edit_sale'),
@@ -1954,8 +2097,6 @@ INSERT INTO `cgate_permissions_actions` (`module_id`, `person_id`, `action_id`) 
 ('tours', 1, 'add_update'),
 ('tours', 1, 'delete'),
 ('tours', 1, 'edit_sale'),
-('tours', 1, 'edit_sale_price'),
-('tours', 1, 'give_discount'),
 ('tours', 1, 'search'),
 ('transportations', 1, 'add_update'),
 ('transportations', 1, 'delete'),
@@ -2005,6 +2146,9 @@ INSERT INTO `cgate_permissions_actions` (`module_id`, `person_id`, `action_id`) 
 ('employees', 223, 'add_update'),
 ('employees', 223, 'delete'),
 ('employees', 223, 'search'),
+('suppliers', 223, 'add_update'),
+('suppliers', 223, 'delete'),
+('suppliers', 223, 'search'),
 ('customers', 224, 'add_update'),
 ('customers', 224, 'delete'),
 ('customers', 224, 'search'),
@@ -2013,7 +2157,31 @@ INSERT INTO `cgate_permissions_actions` (`module_id`, `person_id`, `action_id`) 
 ('customers', 225, 'search'),
 ('suppliers', 225, 'add_update'),
 ('suppliers', 225, 'delete'),
-('suppliers', 225, 'search');
+('suppliers', 225, 'search'),
+('customers', 233, 'add_update'),
+('customers', 233, 'delete'),
+('customers', 233, 'search'),
+('employees', 236, 'add_update'),
+('employees', 236, 'delete'),
+('employees', 236, 'search'),
+('sales', 236, 'edit_sale'),
+('sales', 236, 'edit_sale_price'),
+('sales', 236, 'give_discount'),
+('tickets', 236, 'add_update'),
+('tickets', 236, 'delete'),
+('tickets', 236, 'edit_sale'),
+('tickets', 236, 'edit_sale_price'),
+('tickets', 236, 'give_discount'),
+('tickets', 236, 'search'),
+('sales', 240, 'edit_sale'),
+('sales', 240, 'edit_sale_price'),
+('sales', 240, 'give_discount'),
+('tickets', 240, 'add_update'),
+('tickets', 240, 'delete'),
+('tickets', 240, 'edit_sale'),
+('tickets', 240, 'edit_sale_price'),
+('tickets', 240, 'give_discount'),
+('tickets', 240, 'search');
 
 -- --------------------------------------------------------
 
@@ -2037,7 +2205,7 @@ INSERT INTO `cgate_permissions_office` (`office_id`, `person_id`) VALUES
 (1, 1),
 (2, 1),
 (3, 1),
-(5, 1),
+(4, 1),
 (1, 214),
 (2, 214),
 (1, 217),
@@ -2059,7 +2227,11 @@ INSERT INTO `cgate_permissions_office` (`office_id`, `person_id`) VALUES
 (1, 224),
 (3, 224),
 (1, 225),
-(2, 225);
+(2, 225),
+(1, 233),
+(2, 233),
+(1, 236),
+(1, 240);
 
 -- --------------------------------------------------------
 
@@ -2193,7 +2365,7 @@ CREATE TABLE IF NOT EXISTS `cgate_sales_payments` (
   `sale_type` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`payment_id`),
   KEY `fk_cgate_sales_payments_cgate_orders_tours1` (`sale_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=677 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=694 ;
 
 --
 -- Dumping data for table `cgate_sales_payments`
@@ -2390,10 +2562,23 @@ INSERT INTO `cgate_sales_payments` (`payment_id`, `sale_id`, `payment_type`, `pa
 (666, 356, 'Cash', '136.00', '2014-03-07 10:14:38', 'tickets'),
 (668, 357, 'Cash', '136.00', '2014-03-07 10:14:38', 'tickets'),
 (672, 355, 'Cash', '11.00', '2014-03-07 14:07:51', 'tickets'),
-(673, 358, 'Cash', '136.00', '2014-03-07 10:14:38', 'tickets'),
 (674, 360, 'Cash', '10.00', '2014-03-11 08:47:23', 'tickets'),
 (675, 361, 'Cash', '25.00', '2014-03-13 03:35:35', 'tickets'),
-(676, 359, 'Cash', '126.00', '2014-03-13 03:39:34', 'tickets');
+(676, 359, 'Cash', '126.00', '2014-03-13 03:39:34', 'tickets'),
+(677, 362, 'Cash', '35.00', '2014-03-14 18:36:12', 'tours'),
+(678, 364, 'Cash', '11.00', '2014-03-15 16:55:10', 'tickets'),
+(679, 365, 'Cash', '11.00', '2014-03-15 16:56:05', 'tickets'),
+(680, 366, 'Cash', '12.00', '2014-03-15 16:59:16', 'tickets'),
+(681, 367, 'Cash', '11.00', '2014-03-15 17:50:01', 'tickets'),
+(682, 367, 'Cash', '11.00', '2014-03-15 17:50:06', 'tickets'),
+(683, 368, 'Cash', '11.00', '2014-03-15 18:14:24', 'tickets'),
+(684, 368, 'Cash', '11.00', '2014-03-15 18:14:27', 'tickets'),
+(688, 358, 'Cash', '136.00', '2014-03-07 10:14:38', 'tickets'),
+(689, 369, 'Cash', '126.00', '2014-03-15 21:03:35', 'tickets'),
+(690, 370, 'Cash', '126.00', '2014-03-15 21:06:13', 'tickets'),
+(691, 371, 'Cash', '30.00', '2014-03-16 07:04:01', 'tickets'),
+(692, 372, 'Cash', '15.00', '2014-03-17 01:19:55', 'massages'),
+(693, 373, 'Cash', '15.00', '2014-03-17 01:19:55', 'massages');
 
 -- --------------------------------------------------------
 
@@ -2416,11 +2601,7 @@ CREATE TABLE IF NOT EXISTS `cgate_sessions` (
 --
 
 INSERT INTO `cgate_sessions` (`session_id`, `ip_address`, `user_agent`, `last_activity`, `user_data`) VALUES
-('1a20e67efffc5700c29fed5bd3e07c11', '::1', 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0', 1394632481, ''),
-('6d8dba0329070858a6771bb6092d628d', '::1', 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0', 1394633577, 'a:3:{s:9:"user_data";s:0:"";s:9:"person_id";s:1:"1";s:13:"office_number";s:7:"world_1";}'),
-('78b496c765cecaa81bc7827a9e5c41f3', '::1', 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0', 1394679803, 'a:5:{s:9:"user_data";s:0:"";s:9:"person_id";s:1:"1";s:13:"office_number";s:7:"world_1";s:8:"cur_page";s:7:"world_1";s:10:"pagination";b:0;}'),
-('d16ca63c74593ba1ca224d50411d03ac', '::1', 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0', 1394632475, ''),
-('f06bb7413417ff23982d4de99a29b961', '::1', 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0', 1394632466, '');
+('34d583b27d098ad41e46ba2829fdba40', '::1', 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:28.0) Gecko/20100101 Firefox/28.0', 1395018919, 'a:5:{s:9:"user_data";s:0:"";s:9:"person_id";s:1:"1";s:13:"office_number";s:7:"world_1";s:8:"cur_page";s:7:"world_1";s:10:"pagination";s:2:"20";}');
 
 -- --------------------------------------------------------
 
@@ -2449,14 +2630,14 @@ INSERT INTO `cgate_suppliers` (`supplier_id`, `company_name`, `account_number`, 
 (6, 'ABCD Bicycle', '00001', 1, 3),
 (7, 'Bsokry Bus', '00002', 0, 1),
 (25, 'Codingate', '01000', 0, NULL),
-(29, 'C&C Organization', '06000', 0, NULL),
+(29, 'C&C Organization', '06000', 1, NULL),
 (30, 'Hinghorng_a', '07000', 0, NULL),
 (31, 'Thida company', '09000', 0, NULL),
 (32, 'CCC Company', '00003', 0, NULL),
 (33, 'sreychenComapny', '00004', 0, NULL),
 (35, 'Lyhong', '00005', 0, NULL),
 (36, 'CCD', '00006', 0, NULL),
-(37, 'adidas Company', '00007', 0, NULL),
+(37, 'adidas', '00909', 0, NULL),
 (38, 'lala Company', '00008', 0, NULL),
 (39, 'danda', '00009', 0, NULL),
 (40, 'hongda', '00010', 0, NULL),
@@ -2469,11 +2650,12 @@ INSERT INTO `cgate_suppliers` (`supplier_id`, `company_name`, `account_number`, 
 (51, 'hongkong', '000105', 0, NULL),
 (82, 'Codingating', '010010', 0, NULL),
 (86, 'sreynak company', '002121', 0, NULL),
-(87, 'ddd', '0100001', 0, NULL),
+(87, 'ddd', '0100001', 1, NULL),
 (88, 'x''mak', '0009876', 0, NULL),
 (89, 'z hhuman', '009878', 0, NULL),
-(90, 'ffff', '0087767', 0, NULL),
-(102, 'yyy', '009766', 0, NULL);
+(90, 'flower', '0087767', 0, NULL),
+(102, 'yyy', '009766', 0, NULL),
+(243, 'aaa', '00090956', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -2558,7 +2740,7 @@ INSERT INTO `cgate_tickets` (`ticket_id`, `ticket_name`, `descriptions`, `destin
 (18, 'testing22', '', 1, 0, 1, '10.00', '15.00', 0, '0.00'),
 (19, 'testing21', '', 1, 0, 1, '10.00', '12.00', 0, '0.00'),
 (20, 'testing20', '', 1, 0, 1, '10.00', '11.00', 0, '0.00'),
-(21, 'testing19', '', 1, 0, 1, '10.00', '11.00', 0, '0.00'),
+(21, 'testing19 edit', 'Just testing', 1, 0, 1, '10.00', '11.00', 0, '0.00'),
 (22, 'testing18', '', 1, 0, 1, '10.00', '13.00', 0, '0.00'),
 (23, 'testing17', '', 2, 0, 2, '10.00', '12.00', 0, '0.00'),
 (30, 'testing16', '', 2, 0, 1, '10.00', '10.00', 0, '0.00'),
@@ -2577,7 +2759,7 @@ INSERT INTO `cgate_tickets` (`ticket_id`, `ticket_name`, `descriptions`, `destin
 (43, 'testing3', '', 2, 0, 1, '12.00', '11.00', 0, '1.00'),
 (44, 'testing2', '', 2, 0, 2, '10.00', '8.00', 0, '1.00'),
 (45, 'testing1', '', 3, 0, 1, '12.00', '10.00', 0, '1.00'),
-(46, 'BB ticket 10:00', '', 1, 39, 1, '14.00', '15.00', 0, '1.00'),
+(46, 'AA Ticket', 'Hello worl', 9, 40, 1, '12.00', '15.00', 0, '1.00'),
 (47, 'Takeo ticket 10:00', '', 1, 29, 1, '10.00', '10.00', 0, '1.00'),
 (48, 'Takeo ticket how 10:00 La', '', 1, 7, 1, '14.00', '11.00', 0, '1.00'),
 (49, 'Takeo ticket is how 10:00', '', 1, 36, 1, '14.00', '12.00', 0, '1.00'),
@@ -2619,7 +2801,7 @@ INSERT INTO `cgate_tickets_types` (`ticket_type_id`, `ticket_type_name`, `delete
 CREATE TABLE IF NOT EXISTS `cgate_tours` (
   `tour_id` int(10) NOT NULL AUTO_INCREMENT,
   `tour_name` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
-  `departure_date` datetime NOT NULL,
+  `departure_date` date NOT NULL,
   `departure_time` time NOT NULL,
   `description` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `by` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -2631,27 +2813,28 @@ CREATE TABLE IF NOT EXISTS `cgate_tours` (
   PRIMARY KEY (`tour_id`,`tour_name`),
   KEY `fk_tour_destination_id` (`destinationID`),
   KEY `fk_tour_suppliers` (`supplier_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=21 ;
 
 --
 -- Dumping data for table `cgate_tours`
 --
 
 INSERT INTO `cgate_tours` (`tour_id`, `tour_name`, `departure_date`, `departure_time`, `description`, `by`, `actual_price`, `sale_price`, `destinationID`, `supplier_id`, `deleted`) VALUES
-(1, 'Tour for going to Kampot only tour item', '0000-00-00 00:00:00', '00:00:00', '', '', '50', '45', 2, 6, 0),
-(3, 'Tour testing', '0000-00-00 00:00:00', '00:00:00', '', '', '14', '11', 1, 29, 0),
-(4, 'Tour hello', '0000-00-00 00:00:00', '00:00:00', 'This is the testing of tour record', '', '14', '15', 1, 7, 0),
-(5, 'Tour hello world', '0000-00-00 00:00:00', '00:00:00', 'This is the testing of tour record', '', '14', '15', 1, 7, 0),
-(6, 'Hi tourism', '0000-00-00 00:00:00', '00:00:00', 'Hello everybody', '', '20', '25', 1, 25, 0),
-(7, 'Good morning tour', '0000-00-00 00:00:00', '00:00:00', 'This is the way in business', '', '35', '40', 3, 36, 0),
-(8, 'Hello my tour', '0000-00-00 00:00:00', '00:00:00', 'Hello world', '', '35', '35', 3, 29, 0),
-(9, 'Galla Dinner touring', '0000-00-00 00:00:00', '00:00:00', 'Hello Hinghorng company', '', '20', '26', 1, 30, 0),
-(14, 'testing tour takeo', '2014-02-14 00:00:00', '00:00:00', 'testing tour takeo province', 'bus', '10', '12', 1, 25, 0),
-(15, 'Tour chhing', '2014-03-08 00:00:00', '09:00:00', 'Chhing House', 'bus', '25', '30', 1, 7, 0),
-(16, 'Tour testing ggg', '2014-02-12 00:00:00', '10:00:00', 'sdf', 'bus', '35', '26', 2, 25, 1),
-(17, 'PP - Svay Rieng', '2014-02-13 00:00:00', '06:00:00', 'sdfsds', 'bus', '35', '26', 3, 36, 1),
-(18, 'This is my testing', '2014-03-13 00:00:00', '00:00:00', '', 'bus', '0', '0', 1, 6, 1),
-(19, 'This is my testing2', '2014-03-13 00:00:00', '00:00:00', 'Hello wrold', 'bus', '12', '14', NULL, 25, 0);
+(1, 'Tour for going to Kampot only tour item', '0000-00-00', '00:00:00', '', '', '50', '45', 2, 6, 0),
+(3, 'Tour testing', '0000-00-00', '00:00:00', '', '', '14', '11', 1, 29, 1),
+(4, 'Tour hello', '0000-00-00', '00:00:00', 'This is the testing of tour record', '', '14', '15', 1, 7, 1),
+(5, 'Tour hello world', '0000-00-00', '00:00:00', 'This is the testing of tour record', '', '14', '15', 1, 7, 0),
+(6, 'Hi tourism', '1977-02-23', '00:00:00', 'Hello everybody', '', '20', '25', 1, 25, 0),
+(7, 'Good morning tour', '2014-03-19', '00:00:00', 'This is the way in business', '', '35', '40', 3, 36, 0),
+(8, 'Hello my tour', '2014-03-28', '10:00:00', 'Hello world he', 'ven', '30', '35', 3, 29, 1),
+(9, 'Galla Dinner touring', '2014-05-15', '00:00:00', 'Hello Hinghorng company, kill', 'bus', '20', '26', 1, 30, 0),
+(14, 'testing tour takeo', '2014-02-14', '00:00:00', 'testing tour takeo province', 'bus', '10', '12', 1, 25, 1),
+(15, 'Tour chhing 1', '2014-03-21', '09:00:00', 'Chhing House', 'bus', '25', '30', 1, 7, 0),
+(16, 'Tour testing ggg', '2014-02-12', '10:00:00', 'sdf', 'bus', '35', '26', 2, 25, 1),
+(17, 'PP - Svay Rieng', '2014-02-13', '06:00:00', 'sdfsds', 'bus', '35', '26', 3, 36, 0),
+(18, 'This is my testing', '2014-03-13', '00:00:00', 'hello', 'bus', '10', '13', 1, 6, 0),
+(19, 'This is my testing2', '2014-03-13', '00:00:00', 'Hello wrold', 'bus', '12', '14', NULL, 25, 0),
+(20, 'kakaka', '1983-03-24', '09:00:00', 'Hello world, him', 'taxi', '10', '15', 9, 40, 1);
 
 -- --------------------------------------------------------
 
@@ -2729,7 +2912,7 @@ ALTER TABLE `cgate_detail_orders_tours`
 -- Constraints for table `cgate_detail_orders_visas`
 --
 ALTER TABLE `cgate_detail_orders_visas`
-  ADD CONSTRAINT `fk_cgate_detail_orders_visas_cgate_employees1` FOREIGN KEY (`received_from_employee`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_cgate_detail_orders_visas_cgate_employees` FOREIGN KEY (`received_from_employee`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_cgate_detail_orders_visas_cgate_orders1` FOREIGN KEY (`orderID`) REFERENCES `cgate_orders` (`order_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_cgate_detail_orders_visas_cgate_suppliers1` FOREIGN KEY (`commisioner`) REFERENCES `cgate_suppliers` (`supplier_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_detail_orders_visas_visas_types1` FOREIGN KEY (`item_visa_typeID`) REFERENCES `cgate_visas_types` (`visa_type_id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -2738,7 +2921,7 @@ ALTER TABLE `cgate_detail_orders_visas`
 -- Constraints for table `cgate_employees`
 --
 ALTER TABLE `cgate_employees`
-  ADD CONSTRAINT `cgate_employees_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `cgate_people` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cgate_employees_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `cgate_people` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_cgate_employees_cgate_positions1` FOREIGN KEY (`position_id`) REFERENCES `cgate_positions` (`position_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
@@ -2746,7 +2929,7 @@ ALTER TABLE `cgate_employees`
 --
 ALTER TABLE `cgate_exchange_money`
   ADD CONSTRAINT `fk_exchange_money_currency_types1` FOREIGN KEY (`currency_typeID`) REFERENCES `cgate_currency_types` (`currency_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_exchange_money_employees1` FOREIGN KEY (`employeeID`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_exchange_money_exchanges` FOREIGN KEY (`employeeID`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_exchange_money_offices` FOREIGN KEY (`received_from`) REFERENCES `cgate_offices` (`office_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -2759,7 +2942,7 @@ ALTER TABLE `cgate_giftcards`
 -- Constraints for table `cgate_inventory`
 --
 ALTER TABLE `cgate_inventory`
-  ADD CONSTRAINT `cgate_inventory_ibfk_2` FOREIGN KEY (`trans_user`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_inventory_employees` FOREIGN KEY (`trans_user`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `cgate_items_massages`
@@ -2812,9 +2995,9 @@ ALTER TABLE `cgate_modules_actions`
 -- Constraints for table `cgate_orders`
 --
 ALTER TABLE `cgate_orders`
-  ADD CONSTRAINT `cgate_orders_ibfk_100` FOREIGN KEY (`employee_id`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `cgate_orders_ibfk_200` FOREIGN KEY (`customer_id`) REFERENCES `cgate_customers` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_cgate_orders_cgate_commissioner` FOREIGN KEY (`commisioner_id`) REFERENCES `cgate_commissioners` (`commisioner_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_cgate_orders_cgate_employees` FOREIGN KEY (`employee_id`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_cgate_orders_cgate_offices1` FOREIGN KEY (`received_from`) REFERENCES `cgate_offices` (`office_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_orders_tours_guides1` FOREIGN KEY (`guide_id`) REFERENCES `cgate_guides` (`guide_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -2829,7 +3012,7 @@ ALTER TABLE `cgate_orders_item_kits`
 -- Constraints for table `cgate_permissions`
 --
 ALTER TABLE `cgate_permissions`
-  ADD CONSTRAINT `cgate_permissions_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `cgate_employees` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cgate_permissions_ibfk_1` FOREIGN KEY (`person_id`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_permissions_cgate_modules` FOREIGN KEY (`module_id`) REFERENCES `cgate_modules` (`module_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_permissions_offices` FOREIGN KEY (`office_id`) REFERENCES `cgate_offices` (`office_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -2837,7 +3020,7 @@ ALTER TABLE `cgate_permissions`
 -- Constraints for table `cgate_permissions_actions`
 --
 ALTER TABLE `cgate_permissions_actions`
-  ADD CONSTRAINT `cgate_permissions_actions_employees` FOREIGN KEY (`person_id`) REFERENCES `cgate_employees` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `cgate_permissions_actions_employees` FOREIGN KEY (`person_id`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `cgate_permissions_actions_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `cgate_modules` (`module_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `cgate_permissions_actions_ibfk_3` FOREIGN KEY (`action_id`) REFERENCES `cgate_modules_actions` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -2846,7 +3029,7 @@ ALTER TABLE `cgate_permissions_actions`
 --
 ALTER TABLE `cgate_permissions_office`
   ADD CONSTRAINT `fk_permissions_offices_in_offices` FOREIGN KEY (`office_id`) REFERENCES `cgate_offices` (`office_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_permissions_person` FOREIGN KEY (`person_id`) REFERENCES `cgate_employees` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_permissions_person` FOREIGN KEY (`person_id`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `cgate_receivings`
@@ -2867,7 +3050,7 @@ ALTER TABLE `cgate_receivings_items`
 -- Constraints for table `cgate_register_logs`
 --
 ALTER TABLE `cgate_register_logs`
-  ADD CONSTRAINT `cgate_register_logs_ibfk_1` FOREIGN KEY (`employeeID`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_register_logs_employees` FOREIGN KEY (`employeeID`) REFERENCES `cgate_employees` (`employee_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `cgate_sales_items_taxes`
