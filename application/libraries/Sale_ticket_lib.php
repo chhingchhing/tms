@@ -485,6 +485,8 @@ class Sale_ticket_lib
 		$this->CI->sale_lib->set_item_number($this->CI->Ticket->get_item_number($sale_id));
 		$this->CI->sale_lib->set_times_departure($this->CI->Ticket->get_times_departure($sale_id));
 		$this->CI->sale_lib->set_date_departures($this->CI->Ticket->get_date_departures($sale_id));
+		$this->CI->sale_lib->set_hotels($this->CI->Ticket->get_hotels($sale_id));
+		$this->CI->sale_lib->set_room_numbers($this->CI->Ticket->get_room_numbers($sale_id));
 		$this->CI->sale_lib->set_commissioner($this->CI->Sale->get_commissioner($sale_id)->commisioner_id);
 		$this->CI->sale_lib->set_commissioner_price($this->CI->Sale->get_commission_price($sale_id));
 		$this->CI->sale_lib->set_deposit_price($this->CI->Sale->get_deposit_price($sale_id));

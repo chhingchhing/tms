@@ -11,6 +11,7 @@ class Sale_tour_lib
 
 	function add_item($item_id,$quantity=1,$category,$discount=0,$price=null,$description=null,$serialnumber=null)
 	{
+            
 		//make sure item exists
 		if(!$this->CI->tour_item->exists(is_numeric($item_id) ? (int)$item_id : -1))	
 		{
@@ -77,7 +78,7 @@ class Sale_tour_lib
 			'by'=>$this->CI->tour_item->get_info($item_id)->by,
 			'description'=>$description!=null ? $description: $this->CI->tour_item->get_info($item_id)->description,
 			'quantity'=>$quantity,
-            'discount'=>$discount,
+                        'discount'=>$discount,
 			'price'=>$price!=null ? $price:$price_to_use
 			)
 		);
@@ -400,6 +401,8 @@ class Sale_tour_lib
 
 		$this->CI->sale_lib->set_customer($this->CI->Sale->get_customer($sale_id)->customer_id);
 		$this->CI->sale_lib->set_guide($this->CI->Sale->get_guide($sale_id)->guide_id);
+		$this->CI->sale_lib->set_times_departure($this->CI->tour->get_times_departure($sale_id));
+		$this->CI->sale_lib->set_date_departures($this->CI->tour->get_date_departures($sale_id));
 		$this->CI->sale_lib->set_commissioner($this->CI->Sale->get_commissioner($sale_id)->commisioner_id);
 		$this->CI->sale_lib->set_commissioner_price($this->CI->Sale->get_commission_price($sale_id));
 		$this->CI->sale_lib->set_comment($this->CI->Sale->get_comment($sale_id));
@@ -524,12 +527,8 @@ class Sale_tour_lib
 		$total = 0;
 		foreach($this->CI->sale_lib->get_cart() as $item)
 		{
-            $total+=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
+            $total+=($item['price']*$item['quantity'] - $item['discount']);
 		}
-		/*foreach($this->CI->sale_tour_lib->get_taxes($sale_id) as $tax)
-		{
-			$total+=$tax;
-		}*/
 		return to_currency_no_money($total);
 	}
 

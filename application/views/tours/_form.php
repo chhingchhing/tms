@@ -7,7 +7,7 @@
       
     <div class="modal-body">
       <?php
-      echo form_open('tours/save/'.$tour_info->tour_id,array('id'=>'tour_form','post', 'class'=>'add_update', 'role'=>'form','class'=>'form-horizontal'));
+      echo form_open('tours/save/'.$tour_info->tour_id,array('id'=>'tour_form','post', 'role'=>'form','class'=>'form-horizontal'));
       ?>
       <!--Ms error show-->
         <div id="error" style="display: none"><div id="getSmsError"></div><span class="cross">X</span>

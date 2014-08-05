@@ -20,9 +20,7 @@ class Massages extends Person_controller {
     }
 
     function manage_massage() {
-        $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $logged_in_employee_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
 
         $this->check_action_permission('search');
         $data['supplierId'] = $this->massage->select_supplier_id();
@@ -51,12 +49,14 @@ class Massages extends Person_controller {
 
         $this->load->view('massages/manage_massage', $data);
     }
+
     function check_duplicate_data() {
-        $tCode = $this->input->post("massage_name");
-        $tDestination = $this->input->post("massage_desc");
-        $tType = $this->input->post("massage_typesID");
-        echo json_encode(array('duplicate' => $this->massage->check_duplicate_data($tCode, $tDestination, $tType)));
+        $massageName = $this->input->post("massage_name");
+        // $tDestination = $this->input->post("massage_desc");
+        // $tType = $this->input->post("massage_typesID");
+        echo json_encode(array('duplicate' => $this->massage->check_duplicate_data($massageName)));
     }
+
 //      get data for inserting to tbl items_massages
     function get_massage($massage, $item_massage_id) {
         $item_massage_id = $this->input->post("item_massage_id");
@@ -192,6 +192,9 @@ class Massages extends Person_controller {
         $quantity = $this->input->post("quantity");
         $discount = $this->input->post("discount");
         $seat_no = $this->input->post("seat_no");
+        if ($discount == "" or $discount == 0) {
+            $tip_price = $this->sale_lib->set_tip_price(1);
+        }
 
         if ($this->form_validation->run() != FALSE) {
             $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price);
@@ -240,7 +243,7 @@ class Massages extends Person_controller {
         $search = $this->input->post('search');
         $per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
 
-        $search_data = $this->massage->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'massage_name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+        $search_data = $this->massage->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'massage_name', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc');
         $config['base_url'] = site_url('massages/massages' . $this->uri->segment(3));
         $config['total_rows'] = $this->massage->search_count_all($search);
         $config['per_page'] = $per_page;
@@ -267,6 +270,19 @@ class Massages extends Person_controller {
         echo json_encode($this->massage->get_info($massage_id));
     }
 
+    function view_massager($employee_id = -1) {
+        $this->check_action_permission('add_update');
+        $data['controller_name'] = strtolower(get_class());
+        $data['person_info'] = $this->Employee->get_info($employee_id);
+        $data['positions'] = array();
+        foreach ($this->Module->get_all_positions()->result() as $position)
+        {
+            $data['positions'][$position->position_id] = $position->position_name;
+        }
+
+        $this->load->view("employees/_massager", $data);
+    }
+
     function view($massage_id = -1) {
         $this->check_action_permission('add_update');
         $data['person_info'] = $this->massage->get_info($massage_id);
@@ -278,7 +294,6 @@ class Massages extends Person_controller {
         $data['massage_info'] = $this->massage->get_info($massage_id);
         $data['supplierId'] = $this->massage->select_supplier_id();
         $this->load->view("massages/_form", $data);
-        // echo json_encode($data['person_info']);
     }
 
     function account_number_exists() {
@@ -300,6 +315,8 @@ class Massages extends Person_controller {
             'supplierID' => $this->input->post('supplier_id'),
             'price_one' => $this->input->post('price_one'),
             'actual_price' => $this->input->post('actual_price'), 
+            'commission_price_massager' => $this->input->post('commission_price_massager'), 
+            'commission_price_receptionist' => $this->input->post('commission_price_receptionist'), 
             // 'massage_typesID' => $this->input->post('massage_typesID'),
             'deleted' => '0'
         );       
@@ -328,7 +345,7 @@ class Massages extends Person_controller {
         $data = $this->massage->get_massages()->result_object();
         $this->load->helper('report');
         $rows = array();
-        $row = array(lang('common_item_module_id'), lang('common_massage_name'), lang('common_massage_desc'),  lang('common_supplier_id'), lang('common_price_one'), lang('common_actual_price'), lang('common_massage_typesID'), lang('common_deleted'));
+        $row = array(lang('common_item_module_id'), lang('common_massage_name'), lang('common_massage_desc'), lang('common_price_one'), lang('common_actual_price'), lang('common_massage_typesID'), lang('common_deleted'));
 
         $n = 1;
         $rows[] = $row;
@@ -342,7 +359,6 @@ class Massages extends Person_controller {
                // $r->price_haft,
                 $r->price_one,
                 $r->actual_price,
-                $r->massage_typesID,
                 $r->deleted,
             );
             $rows[] = $row;
@@ -382,19 +398,21 @@ class Massages extends Person_controller {
         echo $data_row;
     }
 
-//        sale massage function
-
+//  sale massage function
     function sales() {
+        /*$office_id = $this->session->userdata("office_id");
+        var_dump($office_id);
+        $office_name = $this->session->userdata("office_number");
+        var_dump($office_name); die();*/
         
+        $this->sale_lib->clear_all();
+
         $this->sale_massage_lib->clear_all();
         $this->load->library("sale_massage_lib");
         $this->sale_massage_lib->empty_payments();
         $this->sale_massage_lib->delete_customer();
 
-        $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
-
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $logged_in_employee_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
         // this condition below not run   
         if ($this->config->item('track_cash')) {
             if ($this->input->post('opening_amount') != '') {
@@ -424,8 +442,7 @@ class Massages extends Person_controller {
 
     function _reload($data = array(), $is_ajax = true) {
         $person_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
 
         $data['controller_name'] = strtolower(get_class());
         $data['cart'] = $this->sale_lib_sms->get_cart();
@@ -437,7 +454,7 @@ class Massages extends Person_controller {
         $data['mode'] = $this->sale_lib->get_mode();
         $data['items_in_cart'] = $this->sale_lib_sms->get_items_in_cart();
         $data['subtotal'] = $this->sale_lib_sms->get_subtotal();
-        $data['taxes'] = $this->sale_massage_lib->get_taxes();
+        // $data['taxes'] = $this->sale_massage_lib->get_taxes();
         $data['total'] = $this->sale_lib_sms->get_total();
         $data['items_module_allowed'] = $this->Employee->has_module_permission('massages', $person_info->employee_id);
         $data['comment'] = $this->sale_lib_sms->get_comment();
@@ -452,6 +469,7 @@ class Massages extends Person_controller {
         $data['supplier_type_Id'] = $this->massage->select_massage_type_id();
         $data['change_sale_date_enable'] = $this->sale_lib->get_change_sale_date_enable();
         $data['change_sale_date'] = $this->sale_lib->get_change_sale_date();
+        $data['tip_price'] = $this->sale_lib->get_tip_price();
 
 //         $data['payment_options'] = "Cash";
          if ($this->config->item('enable_credit_card_processing'))
@@ -470,7 +488,10 @@ class Massages extends Person_controller {
                 lang('sales_check') => lang('sales_check'),
                 lang('sales_giftcard') => lang('sales_giftcard'),
                 lang('sales_debit') => lang('sales_debit'),
-                lang('sales_credit') => lang('sales_credit')
+                lang('sales_credit') => lang('sales_credit'),
+                lang('sales_visa_card') => lang('sales_visa_card'),
+                lang('sales_master_card') => lang('sales_master_card'),
+                lang('sales_western_union') => lang('sales_western_union') 
                 );            
         }
         
@@ -496,10 +517,18 @@ class Massages extends Person_controller {
         $data['payments_cover_total'] = $this->_payments_cover_total();
 
         $commissioner_id = $this->sale_lib->get_commissioner();
+        $data["commissioner_id"] = $commissioner_id;
         if($commissioner_id!=-1)
         {
             $info_comm = $this->commissioner->get_info($commissioner_id);
             $data['commissioner'] = $info_comm->first_name.' '.$info_comm->last_name.($info_comm->tel==''  ? '' :' ('.$info_comm->tel.')');
+        }
+
+        $person_id = $this->sale_lib->get_massager();
+        $data["massager_id"] = $person_id;
+        if ($person_id != -1) {
+            $info_massager = $this->Employee->get_info($person_id);
+            $data['massager'] = $info_massager->first_name . ' ' . $info_massager->last_name . ($info_massager->phone_number == '' ? '' : ' (' . $info_massager->phone_number . ')');
         }
         
         if ($is_ajax)
@@ -613,42 +642,27 @@ class Massages extends Person_controller {
     }
 
     function complete() {
-
         $person_info = $this->Employee->get_logged_in_employee_info();
+        $office_name = $this->session->userdata("office_number");
        
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
         $data['controller_name'] = strtolower(get_class());
         $data['is_sale'] = TRUE;
         $data['cart'] = $this->sale_massage_lib->get_cart();
+        $data['tip_price'] = $this->sale_lib->get_tip_price();
 
         $data['subtotal'] = $this->sale_massage_lib->get_subtotal();
-
-        $data['taxes'] = $this->sale_massage_lib->get_taxes();
-
-        $data['total'] = $this->sale_massage_lib->get_total();
-        
-        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total']);
-         
+        $data['total'] = $this->sale_massage_lib->get_total();      
+        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->Office->get_office_default_currency($office_name));
         $data['receipt_title'] = lang('sales_receipt');
-
         $customer_id = $this->sale_lib->get_customer();
-
-        // $employee_id=$this->Employee->get_logged_in_employee_info()->employee_id;
         $employee_id = $person_info->employee_id;
-
         $data['comment'] = $this->sale_lib->get_comment();
-
         $data['show_comment_on_receipt'] = $this->sale_lib->get_comment_on_receipt();
-
         $emp_info = $this->Employee->get_info($employee_id);
-
         $data['payments'] = $this->sale_massage_lib->get_payments();
-
         $data['amount_change'] = $this->sale_massage_lib->get_amount_due_round() * -1;
-
         $data['employee'] = $emp_info->first_name . ' ' . $emp_info->last_name;
-
         $data['ref_no'] = $this->session->flashdata('ref_no') ? $this->session->flashdata('ref_no') : '';
 
         $commissioner_id=$this->sale_lib->get_commissioner();
@@ -672,16 +686,25 @@ class Massages extends Person_controller {
             $comm_info=$this->commissioner->get_info($commissioner_id);
             $data['commissioner']=$comm_info->first_name.' '.$comm_info->last_name.($comm_info->tel==''  ? '' :' ('.$comm_info->tel.')');
         }
+        $massager_id = $this->sale_lib->get_massager();
 
         // set variable time in for get time in from session of sale massage
         $data['time_in'] = $this->sale_lib_sms->get_time_in();
         // set variable time out for get time out from session of sale massge
-        $data['time_out'] = $this->sale_lib_sms->get_time_out();
+        // $data['time_out'] = $this->sale_lib_sms->get_time_out();
+        $office_info = $this->Office->get_info($this->session->userdata('office_id'));
+
+        date_default_timezone_set($office_info->ofc_timezone);
+        $date = date('m/d/Y h:i:s a', time());
+        $dates = explode(' ', $date);
+
+        $data['time_out'] = $dates['1'];
+        
         $suspended_change_sale_id = $this->sale_lib->get_suspended_sale_id() ? $this->sale_lib->get_suspended_sale_id() : $this->sale_lib->get_change_sale_id() ;
         //SAVE sale to database
-        $data['sale_id'] = 'CGATE ' . $this->Sale_massage->save($data['cart'], $customer_id, $employee_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $suspended_change_sale_id, 0, $data['ref_no']);
+        $data['sale_id'] = strtoupper($office_name).' ' . $this->Sale_massage->save($office_name,$data['cart'], $data['tip_price'], $customer_id, $employee_id, $massager_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $suspended_change_sale_id, 0, $data['ref_no']);
  
-        if ($data['sale_id'] == 'CGATE -1') {
+        if ($data['sale_id'] == strtoupper($office_name).' -1') {
             $data['error_message'] = '';
             // Sale_helper, location helpers/sale_helper.php
             if (is_sale_integrated_cc_processing()) {
@@ -759,45 +782,6 @@ class Massages extends Person_controller {
         $this->_reload();
     }
 
-
-//      // Receipt of sale
-//    function receipt($office, $sale_id)
-//    {
-//        $person_info = $this->Employee->get_logged_in_employee_info();
-//        $office = substr($this->uri->segment(3), -1);
-//        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
-//
-//        $data['is_sale'] = FALSE;
-//        $sale_info = $this->Sale->get_info($sale_id)->row_array();
-//        $this->sale_lib->clear_all();
-//        $this->sale_massage_lib->copy_entire_sale($sale_id);
-//        $data['cart']=$this->sale_lib->get_cart();
-//        $data['payments']=$this->sale_lib->get_payments();
-//        $data['show_payment_times'] = TRUE;
-//        $data['controller_name'] = strtolower(get_class());
-//        $data['subtotal']=$this->sale_lib->get_subtotal();
-//        $data['taxes']=$this->sale_massage_lib->get_taxes($sale_id);
-//        $data['total']=$this->sale_lib->get_total($sale_id);
-//        $data['receipt_title']=lang('sales_receipt');
-//        $data['comment'] = $this->Sale->get_comment($sale_id);
-//        $data['amount_change']=$this->sale_lib->get_amount_due($sale_id) * -1;
-//        $data['show_comment_on_receipt'] = $this->Sale->get_comment_on_receipt($sale_id);
-//        $data['transaction_time']= date(get_date_format().' '.get_time_format(), strtotime($sale_info['sale_time']));
-//        $customer_id=$this->sale_lib->get_customer();
-//        $emp_info=$this->Employee->get_info($sale_info['employee_id']);
-//        $data['payment_type']=$sale_info['payment_type'];
-//        $data['employee']=$emp_info->first_name.' '.$emp_info->last_name;
-//        $data['ref_no'] = $sale_info['cc_ref_no'];
-//
-//        if($customer_id!=-1)
-//        {
-//            $cust_info=$this->Customer->get_info($customer_id);
-//            $data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
-//        }
-//        $data['sale_id']='CGATE '.$sale_id;
-//        $this->load->view("sales/receipt",$data);
-//
-//    }
     // Change sale on receipt
     function change_sale($office, $sale_id)
     {
@@ -1019,13 +1003,20 @@ class Massages extends Person_controller {
         $data['amount_change']=$this->sale_lib->get_amount_due($sale_id) * -1;
         $data['employee']=$emp_info->first_name.' '.$emp_info->last_name;
         $data['ref_no'] = $sale_info['cc_ref_no'];
-        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total']);
+        // $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->config->item('default_currency'));
+        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->Office->get_office_default_currency($office));
         if($customer_id!=-1)
         {
             $cust_info=$this->Customer->get_info($customer_id);
             $data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
         }
-        $data['sale_id']='CGATE '.$sale_id;
+        $data['sale_id']= strtoupper($this->session->userdata("office_number")).' '.$sale_id;
+        
+        // set variable time in for get time in from session of sale massage
+        $data['time_in'] = $this->sale_lib_sms->get_time_in();
+        // set variable time out for get time out from session of sale massge
+        $data['time_out'] = $this->sale_lib_sms->get_time_out();
+
         $this->load->view("sales/receipt",$data);
         $this->sale_lib->clear_all();
         $this->sale_lib_sms->clear_all();
@@ -1071,18 +1062,27 @@ class Massages extends Person_controller {
     
      function suspend()
     {
-         
+         $office_name = $this->session->userdata("office_number");
         $data['controller_name'] = strtolower(get_class());
         $data['cart'] = $this->sale_lib_sms->get_cart();
         $data['seat_no'] = $this->sale_lib_sms->get_seat_no();
-        $data['time_in'] = $this->sale_lib_sms->get_time_in();
+        /*$data['time_in'] = $this->sale_lib_sms->get_time_in();
+        $data['time_out'] = $this->sale_lib_sms->get_time_out();*/
+        // Get Time_zone of office
+        $office_info = $this->Office->get_info($this->session->userdata('office_id'));
+
+        date_default_timezone_set($office_info->ofc_timezone);
+        $date = date('m/d/Y h:i:s a', time());
+        $dates = explode(' ', $date);
+
+        $data['time_in'] = $dates['1'];
         $data['time_out'] = $this->sale_lib_sms->get_time_out();
         //$data['modes']=array('sale'=>lang('sales_sale'),'return'=>lang('sales_return'));
         $data['modes']= "Sale";
         $data['mode'] = $this->sale_lib->get_mode();
         $data['items_in_cart'] = $this->sale_lib_sms->get_items_in_cart();
         $data['subtotal'] = $this->sale_lib_sms->get_subtotal();
-        $data['taxes'] = $this->sale_massage_lib->get_taxes();
+        // $data['taxes'] = $this->sale_massage_lib->get_taxes();
         $data['total'] = $this->sale_lib_sms->get_total();
         $data['items_module_allowed'] = $this->Employee->has_module_permission('massages', $person_info->employee_id);
         $data['comment'] = $this->sale_lib_sms->get_comment();
@@ -1097,22 +1097,13 @@ class Massages extends Person_controller {
         $data['supplier_type_Id'] = $this->massage->select_massage_type_id();
         $data['change_sale_date_enable'] = $this->sale_lib->get_change_sale_date_enable();
         $data['change_sale_date'] = $this->sale_lib->get_change_sale_date();
+        $data['ref_no'] = $this->session->flashdata('ref_no') ? $this->session->flashdata('ref_no') : '';
 
-         
-         
-//        $data['seat_no'] = $this->sale_lib->get_seat_no();
-//        $data['item_number'] = $this->sale_lib->get_item_number();
-//        $data['item_vol'] = $this->sale_lib->get_item_vol();
-//        $data['dates_departure']=$this->sale_lib->get_date_departures();
-//        $data['times_departure']=$this->sale_lib->get_times_departure();
-//        $data['deposit_price'] = $this->sale_lib->get_deposit_price();
-//        $data['cart'] = $this->sale_lib->get_cart();
-//        $data['subtotal'] = $this->sale_lib->get_subtotal();
-//        $data['total'] = $this->sale_lib->get_total();
         $data['receipt_title'] = lang('sales_receipt');
         $data['transaction_time'] = date(get_date_format().' '.get_time_format());
         $customer_id = $this->sale_lib->get_customer();
         $employee_id = $this->Employee->get_logged_in_employee_info()->employee_id;
+
         $commissioner_id=$this->sale_lib->get_commissioner();
         $commissioner_price = $this->sale_lib->get_commissioner_price();
         $comment = $this->sale_lib->get_comment();
@@ -1135,24 +1126,21 @@ class Massages extends Person_controller {
         {
             $total_payments += $payment['payment_amount'];
         }
+        $massager_id = $this->sale_lib->get_massager();
         
         $sale_id = $this->sale_lib->get_suspended_sale_id();
         //SAVE sale to database
+        $tip_price = 0;
 
-        // $category,$items, $seat_no,$item_number,$item_vol,$times_departure,$dates_departure, $deposit_price, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false
-
-//        $data['sale_id']='CGATE '.$this->Sale_massage->save(strtolower(get_class()),$data['cart'],$data['controller_name'], $data['time_in'], $data['time_out'],$data['comment'],
-//            $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$data['payments'], $sale_id, 1);
-      
-          $data['sale_id'] = 'CGATE ' . $this->Sale_massage->save($data['cart'], $customer_id, $employee_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $sale_id, 1);
-        if ($data['sale_id'] == 'CGATE -1')
+        $data['sale_id'] = strtoupper($office_name).' ' . $this->Sale_massage->save($office_name,$data['cart'], $tip_price, $customer_id, $employee_id, $massager_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $sale_id, 1, $data['ref_no']);
+        if ($data['sale_id'] == strtoupper($office_name).' -1')
         {
             $data['error_message'] = lang('sales_transaction_failed');
         }
         $this->sale_lib->clear_all();
         $this->sale_lib_sms->clear_all();
         $this->_reload(array('success' => lang('sales_successfully_suspended_sale')));
-        // $this->_reload($data);
+
     }
 
     // Cancel sale
@@ -1234,5 +1222,74 @@ class Massages extends Person_controller {
         }
         $this->_reload(array('success' => lang('sales_successfully_deleted')), false);
     }
+
+    /*
+      Inserts/updates an employee
+     */
+    function save_massager($employee_id=-1)
+    {
+        $this->check_action_permission('add_update');
+        $person_data = array(
+            'first_name'=>$this->input->post('first_name'),
+            'last_name'=>$this->input->post('last_name'),
+            'email'=>$this->input->post('email'),
+            'phone_number'=>$this->input->post('phone_number'),
+            'address_1'=>$this->input->post('address_1'),
+            'address_2'=>$this->input->post('address_2'),
+            'city'=>$this->input->post('city'),
+            'state'=>$this->input->post('state'),
+            'zip'=>$this->input->post('zip'),
+            'country'=>$this->input->post('country'),
+            'comments'=>$this->input->post('comments')
+        );
+        
+        $employee_data=array(
+        'username'=>$this->input->post('first_name').'.'.$this->input->post('last_name'),
+        'position_id' => $this->input->post("position")
+        );
+
+        if ($this->massage->save_massager($person_data,$employee_data, $employee_id))
+        {            
+            //New employee
+            if($employee_id==-1)
+            {
+                echo json_encode(array('success'=>true,'message'=>lang('employees_successful_adding').' '.
+                $person_data['first_name'].' '.$person_data['last_name'],'person_id'=>$employee_data['employee_id']));
+            }
+            else //previous employee
+            {
+                echo json_encode(array('success'=>true,'message'=>lang('employees_successful_updating').' '.
+                $person_data['first_name'].' '.$person_data['last_name'],'person_id'=>$employee_id));
+            }
+        }
+        else//failure
+        {   
+            echo json_encode(array('success'=>false,'message'=>lang('employees_error_adding_updating').' '.
+            $person_data['first_name'].' '.$person_data['last_name'],'person_id'=>-1));
+        }
+    }
+
+    function select_massager() {
+        $data = array();
+        $person_id = $this->input->post("term");
+        if ($this->Employee->exists($person_id)) {
+            $this->sale_lib->set_massager($person_id);
+        } else {
+            $data['error'] = lang('sales_unable_to_add_commissioner');
+        }
+        $this->_reload($data);
+    }
+
+    function delete_massager()
+    {
+        $this->sale_lib->delete_massger();
+        $this->_reload();
+    }
+
+    function massager_search() {
+        $suggestions = $this->Employee->search_suggestions($this->input->get('term'), 100);
+        echo json_encode($suggestions);
+    }
+
 }
 ?>

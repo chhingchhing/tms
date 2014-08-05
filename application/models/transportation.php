@@ -31,7 +31,7 @@ class Transportation extends CI_Model {
             $query = "
 			select *
 			from (
-	           	(select " . $this->db->dbprefix('transports') . ".*, " . ".company_name,taxi_fname,taxi_lname,
+	           	(select " . $this->db->dbprefix('transports') . ".*, " . ".company_name,taxi_fname,taxi_lname,vehicle
 	           	from " . $this->db->dbprefix('transports') . "
 	           	where transport_id like '" . $this->db->escape_like_str($search) . "%' and deleted = 0
 	           	order by `" . $column . "` " . $orderby . " limit " . $this->db->escape($limit) . ") 				
@@ -43,6 +43,7 @@ class Transportation extends CI_Model {
             $this->db->from('transports');
             $this->db->where("(company_name LIKE '%" . $this->db->escape_like_str($search) . "%' or  
             phone LIKE '%" . $this->db->escape_like_str($search) . "%' or 
+            vehicle LIKE '%" . $this->db->escape_like_str($search) . "%' or 
 			transport_id LIKE '%" . $this->db->escape_like_str($search) . "%' or 
 			CONCAT(`taxi_fname`,' ',`taxi_lname`) LIKE '%"  . $this->db->escape_like_str($search) . "%') and deleted=0");
             $this->db->order_by($column, $orderby);
@@ -58,7 +59,7 @@ class Transportation extends CI_Model {
             $query = "
 			select *
 			from (
-	           	(select " . $this->db->dbprefix('transports') . ".*, " . ".company_name,taxi_fname,taxi_lname,
+	           	(select " . $this->db->dbprefix('transports') . ".*, " . ".company_name,taxi_fname,taxi_lname,vehicle
 	           	from " . $this->db->dbprefix('transports') . "
 	           	where transport_id like '" . $this->db->escape_like_str($search) . "%' and deleted = 0
 	           	order by `" . $column . "` " . $orderby . " limit " . $this->db->escape($limit) . ") 				
@@ -68,7 +69,8 @@ class Transportation extends CI_Model {
             return $this->db->query($query);
         } else {
             $this->db->from('transports');
-            $this->db->where("(company_name LIKE '%" . $this->db->escape_like_str($search) . "%' or 
+            $this->db->where("(company_name LIKE '%" . $this->db->escape_like_str($search) . "%' or
+            vehicle LIKE '%" . $this->db->escape_like_str($search) . "%' or  
 			transport_id LIKE '%" . $this->db->escape_like_str($search) . "%' or 
 			CONCAT(`taxi_fname`,' ',`taxi_lname`) LIKE '%"  . $this->db->escape_like_str($search) . "%') and deleted=0");
             $this->db->order_by($column, $orderby);
@@ -187,6 +189,16 @@ class Transportation extends CI_Model {
         foreach ($by_phone_number->result() as $row) {
             $suggestions[] = array('label' => $row->taxi_lname);
         }
+
+        $this->db->from('transports');
+        $this->db->where('deleted', 0);
+        $this->db->like("vehicle", $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+        $this->db->order_by("vehicle", "desc");
+        $vehicle = $this->db->get();
+        foreach ($vehicle->result() as $row) {
+            $suggestions[] = array('label' => $row->vehicle);
+        }
+
 
         //only return $limit suggestions
         if (count($suggestions > $limit)) {

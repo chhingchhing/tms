@@ -1,13 +1,13 @@
 <div id="overall_sale">
     <?php $this->load->view("sales/components/suspend_sale"); ?>
 
-    <div id="customer_info_shell"> 
+    <div id="customer_info_shell">
         <?php
         if (isset($customer)) {
             echo "<div id='customer_info_filled' class='col-md-12'>";
             echo '<h5 id="customer_txt">' . lang('customers_customer') . '</h5>';
             echo '<div id="customer_name" class="col-md-8"><span>' . character_limiter($customer, 25) . '</span></div>';
-            echo '<div id="customer_edit" class="col-md-1">' . anchor("#customers/view/$customer_id", ' ', array('id'=>'sale_edit_customer','class' => 'thickbox none glyphicon edit glyphicon-edit', 'title' => lang('customers_update'), 'data-toggle' => 'modal', 'data-target' => "#customers")) . '</div>';
+            echo '<div id="customer_edit" class="col-md-1">' . anchor("#customers/view/$customer_id/$controller_name", ' ', array('id'=>'sale_edit_customer','class' => 'thickbox none glyphicon edit glyphicon-edit', 'title' => lang('customers_update'), 'modals' => 'customers' )) . '</div>';
             echo '<div id="customer_remove" class="col-md-1">' . anchor("$controller_name/delete_customer", ' ', array('id' => 'delete_customer', 'class' => 'glyphicon glyphicon-remove-circle')) . '</div>';
             echo '<div class="clearboth"></div>';
             echo "</div>";
@@ -26,7 +26,7 @@
                         <?php echo lang('common_or'); ?>
                     </div>					
                     <?php
-                    echo anchor("#customers", "<div class='small_button' style='margin:0 auto;'> <span>" . lang('sales_new_customer') . "</span> </div>", array('class' => 'thickbox none btn btn-primary btn-sm', 'title' => lang('sales_new_customer'), 'role' => 'button', 'data-toggle' => 'modal', 'data-target' => "#customers"));
+                      echo anchor("#customers/view", "<div class='small_button' style='margin:0 auto;'> <span>" . lang('sales_new_customer') . "</span> </div>", array('class' => 'thickbox edit none btn btn-primary btn-sm', 'title' => lang('sales_new_customer'), 'role' => 'button', 'id' => 'add_customer', 'modals' => "customers"));
                     ?>
                 </div>
             </div>
@@ -34,18 +34,53 @@
         
     </div>
     
+     <!--date for bike--> 
+         <?php if ($controller_name == "bikes") { ?>
+             <?php echo form_open("$controller_name/edit_item/" . $this->session->userdata("office_number") . "/$line", array('class' => 'line_item_form')); ?>
+             <?php echo form_hidden("line", $line); ?>
+                <div id="reg_item_date_departure">
+                    <div class='form_field' id="rent_date">
+                        <label>Rent Date: </label> <br/>
+                        <?php
+                        echo form_input(array('name' => 'rent_date',
+                            'value' => $rent_dates[$line - 1] != "" ? $rent_dates[$line - 1] : "0000-00-00",
+                            'id' => 'rent_date', 'class' => 'date-pick dp-applied'));
+                        ?>
+                    </div>
+                </div>
+                        
+                <div id="reg_item_date_departure">
+                    <div class='form_field' id="return_date">
+                        <label>Return Date: </label> <br/>
+                        <?php
+                        echo form_input(array('name' => 'return_date',
+                            'value' => $return_dates[$line - 1] != "" ? $return_dates[$line - 1] : "0000-00-00",
+                            'id' => 'return_date', 'class' => 'date-pick dp-applied'));
+                        ?>
+                    </div>
+                </div>
+            <?php form_close();?>
+        <?php } ?>
+        <!--end date-->
+    
         <div>
             <?php 
-		if ($controller_name == "massages") {
+		/*if ($controller_name == "massages" || $controller_name == "bikes") {
 			$this->load->view('sales/components/time_in');
-		}
+		}*/
+        if ($controller_name == "bikes") {
+            $this->load->view('sales/components/time_in');
+        }
 		?>
         </div>
         <div>
             <?php 
-		if ($controller_name == "massages") {
+		/*if ($controller_name == "massages" || $controller_name == "bikes") {
 			$this->load->view('sales/components/time_out');
-		}
+		}*/
+        if ($controller_name == "bikes") {
+            $this->load->view('sales/components/time_out');
+        }
 		?>
         </div>
 
@@ -55,11 +90,11 @@
 		<?php
 		if(isset($guides))
 		{
-			echo "<div id='guide_info_filled'>";
-				echo '<h4>'.lang('sales_guide').'</h4>';
-				echo '<div id="guide_name">'.character_limiter($guides, 25).'</div>';
-				echo '<div id="guide_edit">'.anchor("guides/view/$guide_id/width~550", lang('common_edit'),  array('class'=>'thickbox none','title'=>lang('sales_guide_update'))).'</div>';
-				echo '<div id="guide_remove">'.anchor("$controller_name/delete_guide", lang('sales_detach'),array('id' => 'delete_guide')).'</div>';
+			echo "<div id='guide_info_filled' class='col-md-12'>";
+				echo '<h5 id="sale_com">'.lang('sales_guide').'</h5>';
+				echo '<div id="guide_name" class="col-md-8"><span>'.character_limiter($guides, 25).'</span></div>';
+				echo '<div id="guide_edit" class="col-md-1">'.anchor("#guides/view/$guide_id/$controller_name", ' ',  array('class'=>'thickbox none glyphicon edit glyphicon-edit','title'=>lang('sales_guide_update'), 'modals'=>'guides')).'</div>';
+				echo '<div id="guide_remove" class="col-md-1">'.anchor("$controller_name/delete_guide", ' ',array('id' => 'delete_guide', 'class' => 'glyphicon glyphicon-remove-circle')).'</div>';
 			echo "</div>";
 		}
 		else
@@ -76,26 +111,73 @@
 						<?php echo lang('common_or'); ?>
 					</div>					
 					<?php 
-						echo anchor("#guides", 
-							"<div class='small_button' style='margin:0 auto;'> <span>".lang('sales_add_guide')."</span> </div>", 
-							array('class'=>'thickbox none btn btn-primary btn-sm','title'=>lang('sales_add_guide'), 'role'=>'button', 'data-toggle' => 'modal', 'data-target' => "#guides"));
+					echo anchor("#guides/view", 
+						"<div class='small_button' style='margin:0 auto;'> <span>".lang('sales_add_guide')."</span> </div>", 
+						array('class'=>'thickbox edit none btn btn-primary btn-sm','title'=>lang('sales_add_guide'), 'role'=>'button', 'id' => 'add_guide', 'modals' => "guides"));
 					?>
 				</div>
 			</div>
 		<?php } ?>
 	</div>
-	<?php } ?>
+	<?php } ?>             
 <!-- End Guides -->
 
-    <!-- Commissioners -->
-    
+
+<!-- Massager --> 
+<?php if ($controller_name == "massages") { ?>   
+    <div id="massager_info_shell">
+        <?php
+        if (isset($massager)) {
+            echo "<div id='massager_info_filled' class='col-md-12'>";
+            echo '<h5 id="sale_com">' . lang('sales_massager') . '</h5>';
+            echo '<div id="massager_name" class="col-md-8">' . character_limiter($massager, 25) . '</div>';
+            echo '<div id="massager_edit" class="col-md-1">' . anchor("#massages/view_massager/$massager_id", ' ', array('class' => 'thickbox edit none glyphicon glyphicon-edit', 'title' => lang('commissioner_update'), 'id' => 'edit_commissioner', 'modals' => "add_massager")) . '</div>';
+            echo '<div id="massager_remove" class="col-md-1">' . anchor("$controller_name/delete_massager", ' ', array('id' => 'delete_commissioner', 'class' => 'glyphicon glyphicon-remove-circle')) . '</div>';
+            echo '<div class="clearboth"></div>';
+            echo "</div>";
+        } else {
+            ?>
+            <div id='guide_info_empty'>
+                <?php echo form_open("$controller_name/select_massager",array('id'=>'select_massager_form')); ?>
+                <label id="massager_label" for="massager">
+                    <?php echo lang('sales_select_massager'); ?>
+                </label>
+                <?php echo form_input(array('name'=>'massager','id'=>'massager','size'=>'30','value'=>'','placeholder'=>lang('sales_start_typing_massager_name'),  'accesskey' => 'm', 'class'=>'form-control input-sm'));?>
+                </form>
+                <div id="add_massager_info">
+                    <div id="common_or"> 
+                        <?php echo lang('common_or'); ?>
+                    </div>                  
+                    <?php 
+                    echo anchor("#massages/view_massager", 
+                        "<div class='small_button' style='margin:0 auto;'> <span>".lang('sales_add_massagers')."</span> </div>", 
+                        array('class'=>'thickbox edit none btn btn-primary btn-sm','title'=>lang('sales_add_massagers'), 'modals' => "add_massager"));
+                    ?>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+    <!-- Tip money for massager -->
+    <div id='info_empty_price_tip'>
+        <?php $tip_price = count($cart) == 0 ? 0 : $tip_price;  ?>
+        <?php echo form_open("$controller_name/set_commissioner_tip", array('id' => 'price_tip_form')); ?>
+        <label id="price_commissioner_label" for="tip_price">
+            <?php echo lang('sales_price_tip'); ?>
+        </label>
+        <?php echo form_input(array('name' => 'tip_price', 'id' => 'tip_price', 'size' => '30', 'value' => $tip_price, 'placeholder' => lang('sales_start_typing_tip_price'), 'accesskey' => 't', 'class' => 'form-control input-sm')); ?>
+        </form>
+    </div>
+<?php } ?>
+    <!-- End Massager -->
+
+    <!-- Commissioners -->    
     <div id="commissioner_info_shell">
         <?php
         if (isset($commissioner)) {
             echo "<div id='commissioner_info_filled' class='col-md-12'>";
             echo '<h5 id="sale_com">' . lang('sales_commissioner') . '</h5>';
             echo '<div id="commissioner_name" class="col-md-8">' . character_limiter($commissioner, 25) . '</div>';
-            echo '<div id="commissioner_edit" class="col-md-1">' . anchor("#commissioners/view/$commissioner_id", ' ', array('id'=>'sale_edit_commissioners','class' => 'thickbox none glyphicon glyphicon-edit', 'title' => lang('commissioner_update'), 'data-toggle' => 'modal', 'data-target' => "#commissioners")) . '</div>';
+            echo '<div id="commissioner_edit" class="col-md-1">' . anchor("#commissioners/view/$commissioner_id", ' ', array('id'=>'sale_edit_commissioners','class' => 'thickbox edit none glyphicon glyphicon-edit', 'title' => lang('commissioner_update'), 'id' => 'edit_commissioner', 'modals' => "commissioners")) . '</div>';
             echo '<div id="commissioner_remove" class="col-md-1">' . anchor("$controller_name/delete_commissioner", ' ', array('id' => 'delete_commissioner', 'class' => 'glyphicon glyphicon-remove-circle')) . '</div>';
             echo '<div class="clearboth"></div>';
             echo "</div>";
@@ -113,7 +195,7 @@
                         <?php echo lang('common_or'); ?>
                     </div>					
                     <?php
-                    echo anchor("#commissioners", "<div class='small_button' style='margin:0 auto;'> <span>" . lang('sales_add_commissioner') . "</span> </div>", array('class' => 'thickbox none btn btn-primary btn-sm', 'title' => lang('sales_add_commissioner'), 'role' => 'button', 'data-toggle' => 'modal', 'data-target' => "#commissioners"));
+                    echo anchor("#commissioners/view", "<div class='small_button' style='margin:0 auto;'> <span>" . lang('sales_add_commissioner') . "</span> </div>", array('class' => 'thickbox edit none btn btn-primary btn-sm', 'title' => lang('sales_add_commissioner'), 'role' => 'button', 'id' => 'add_commissioner', 'modals' => "commissioners"));
                     ?>
                 </div>
             </div>
@@ -139,16 +221,16 @@
             <?php echo form_input(array('name' => 'deposit_price', 'id' => 'deposit_price', 'size' => '30', 'value' => $deposit_price, 'placeholder' => lang('sales_start_typing_deposit_price'), 'accesskey' => 'd', 'class' => 'form-control input-sm'));}; ?>
             </form>
         </div>
-
-        <?php
-        // if ($controller_name == "tickets") {
-        //     $this->load->view('sales/components/time_sale');
-        // }
-        ?>
     </div>
     <!-- End Commissioners -->
    
     <div id='sale_details'>
+        <table id="deposit_items_total">
+            <tr>
+                <td class="left"><?php echo lang('sales_deposit'); ?>:</td>
+                <td class="right"><?php echo to_currency($deposit_price); ?></td>
+            </tr>
+        </table>
         <table id="sales_items">
             <tr>
                 <td class="left"><?php echo lang('sales_items_in_cart'); ?>:</td>
@@ -239,10 +321,7 @@
                             <?php echo lang('sales_add_payment'); ?>:
                         </td>
                         <td>
-                            <?php // echo form_hidden('payment_type', $payment_options); 
-                            // echo $payment_options;
-                            ?>
-                            <?php echo form_dropdown('payment_type', $payment_options, $this->config->item('default_payment_type'), 'id="payment_types"'); ?>
+                            <?php echo form_dropdown('payment_type', $payment_options, $this->config->item('default_payment_type'), 'id="payment_types" class="form-control"'); ?>
                         </td>
                     </tr>
                     <tr id="mpt_bottom">
@@ -265,16 +344,18 @@
         echo '<label id="comment_label" for="comment">';
         echo lang('common_comments');
         echo ':</label><br />';
-        echo form_textarea(array('name' => 'comment', 'id' => 'comment', 'value' => $comment, 'rows' => '1', 'accesskey' => 'o', 'cols' => '27'));
+        echo form_textarea(array('class'=>'form-control', 'name' => 'comment', 'id' => 'comment', 'value' => $comment, 'rows' => '1', 'accesskey' => 'o', 'cols' => '27'));
         echo '<br />';
         echo '</div>';
 
 	// Only show this part if there is at least one payment entered.
 	if((count($payments) > 0 && !is_sale_integrated_cc_processing()) || ($this->sale_lib->get_change_sale_id() && count($payments) > 0)){
     ?>
-        <div id="sale_change_date">
         <?php
-            if($this->sale_lib->get_change_sale_id()) {
+            if($this->sale_lib->get_change_sale_id()) { ?>
+            
+        <div id="sale_change_date">
+                <?php
                 echo '<label id="comment_label" for="change_sale_date_enable">';
                 echo lang('sales_change_date');
                 echo ':</label>  ';
@@ -292,11 +373,11 @@
                         'id'=>'change_sale_date', 'class'=>'date-pick dp-applied'));?>
                     </div>
                 </div>
+            <br/>
+        </div>
         <?php 
             } 
             ?>
-            <br/>
-        </div>
 
         <div id="finish_sale">
 			<?php echo form_open("$controller_name/complete/".$this->session->userdata("office_number"),array('id'=>'finish_sale_form')); ?>
@@ -306,8 +387,9 @@
 				echo form_submit('finish_sale_button', lang('sales_complete_sale'), 'class="btn btn-primary" id="finish_sale_button"');
 			}
 			?>
+            <?php echo form_close(); ?> 
 		</div>
-	<?php echo form_close(); ?> 
+	
 
 	<?php } elseif (count($payments) > 0) { ?>
         
@@ -346,8 +428,8 @@
 				}
 			}
 			?>
+    </form>
 		</div>
-	</form>
 	<?php } 
  }	// End of if (count($cart)) 
  ?>

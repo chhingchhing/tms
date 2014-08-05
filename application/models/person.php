@@ -64,34 +64,6 @@ class Person extends CI_Model
 		$this->db->order_by("last_name", "asc");
 		return $this->db->get();		
 	}
-	
-	/*
-	Inserts or updates a person
-	*/
-	/*function save(&$person_data,$person_id=false)
-	{
-		// var_dump(&$person_data); die();
-		if (!$person_id or !$this->exists($person_id))
-		{
-			echo "string"; die();
-			if ($this->db->insert('people',$person_data))
-			{
-				$person_data['person_id']=$this->db->insert_id();
-				// return true;
-				echo "true";
-			} else {
-				echo 'die()';
-			}
-			// return false;
-			echo "false";
-		} else {
-			echo "has"; die();
-			$this->db->where('person_id', $person_id);
-			return $this->db->update('people',$person_data);
-		}
-	}*/
-
-/* Starting of chhing coding*/
 
 	function saved(&$person_data,$person_id)
 	{
@@ -109,18 +81,14 @@ class Person extends CI_Model
 		}
 	}
 
-// Chhingchhing HEM coding
 	function existsing($person_id)
 	{
 		$this->db->from('people');	
 		$this->db->where('people.person_id',$person_id);
 		$query = $this->db->get();
-		
+
 		return ($query->num_rows()==1);
 	}
-	
-/* End of chhing coding*/
-
 
 	/*
 	Deletes one Person (doesn't actually do anything)

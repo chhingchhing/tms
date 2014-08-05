@@ -1,19 +1,19 @@
 <?php
-// Start chen
-$lang['commissioners_id'] = 'No';
-$lang['commissioners_first_name'] = 'First name';
-$lang['commissioners_last_name'] = 'Last name';
-$lang['commissioners_name'] = 'Name';
-$lang['commissioners_tel'] = 'Tel';
-$lang['commissioners_action'] = 'Action';
-$lang['commis_no_guide_display'] = 'No transportations to display';
-$lang['commissioners_new']=' New Commissioner';
+$lang['commissioners_id'] = 'ល.រ';
+$lang['commissioners_first_name'] = 'នាម';
+$lang['commissioners_last_name'] = 'គោត្តនាម';
+$lang['commissioners_name'] = 'ឈ្មោះ';
+$lang['commissioners_tel'] = 'លេខទូរសព្ទ័';
+$lang['commissioners_action'] = 'សកម្មភាព';
+$lang['commis_no_guide_display'] = 'ពុំមានការអ្នកនាំភ្ញៀវណាមួយសំរាប់បង្ហាញទេ!';
+$lang['commissioners_new']='​ អ្នកនាំភ្ញៀវថ្មី';
+$lang['transport_info']='ពត៏មាន នៃ ការដឹកជញ្ជួន';
+$lang['transport_company_name']='ឈ្មោះក្រុមហ៊ុន';
+$lang['transport_taxi_name']='អ្នកបើកបរ';
+$lang['transport_phone']='លេខទូរសព្ទ័';
+$lang['transport_mark']='កំណត់ចំណាំ';
+$lang['commissioners_successful_deleted']='ការលុបរបស់អក្នបានជោគជ័យ';
+$lang['commissioners_one_or_multiple']='អ្នកនាំភ្ញៀវ(s)';
+$lang['commissioners_cannot_be_deleted']='ការលុបមានបញ្ហា, អ្នកមិនអាចលុបអ្នកនាំភ្ញៀវបានទេ';
 
-$lang['transport_info']='Transportation Information';
-$lang['transport_company_name']='Company Name';
-$lang['transport_taxi_name']='Driver';
-$lang['transport_phone']='Tel';
-$lang['transport_mark']='Mark';
-
-//chen
 ?>

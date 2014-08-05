@@ -2,9 +2,6 @@
 <div class="panel panel-info">
     <div class="panel-heading">
         <div class="row" id="title_bar">
-            <!--			<div class="col-md-2" id="title_icon">
-                                            <img src='<?php echo base_url() ?>images/menubar/<?php echo $controller_name; ?>.png' alt='title icon' />
-                                    </div>-->
             <div class="col-md-9" id="title">
                 <img src='<?php echo base_url() ?>images/menubar/<?php echo $controller_name; ?>.png' alt='title icon' />
                 <?php echo lang('common_list_of') . ' ' . lang('module_' . $controller_name); ?>
@@ -13,7 +10,6 @@
                 <?php echo form_open("$controller_name/search", array('id' => 'search_form')); ?>
                 <input type="text" name ='search' id='search' class="form-control"/>
                 <span class="glyphicon glyphicon-search"></span>
-                <!--<img src='<?php echo base_url() ?>images/spinner_small.gif' alt='spinner' id='spinner' />-->
                 </form>
             </div>
         </div>
@@ -24,9 +20,9 @@
             <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
                 <div class="list-group">
                     <?php
-                    echo anchor("#massages", lang('common_massage'),
-                            // array('class'=>'list-group-item thickbox none new', 'title'=>lang($controller_name.'_new')));
-                            array('class' => 'list-group-item glyphicon glyphicon-plus-sign', 'title' => lang($controller_name . '_new'), 'data-toggle' => 'modal', 'data-target' => '#massages'));
+                    if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->employee_id)) {
+                        echo anchor("#$controller_name/viewJSON/", lang('common_massage'), array('class' => 'list-group-item edit glyphicon glyphicon-plus-sign', 'id' => 'add_massage', 'modals' => "massages"));
+                    }
 
                     $this->load->view('massages/form.php');
                     ?>
@@ -36,7 +32,11 @@
                     <?php
                     echo anchor("$controller_name/excel_export", lang('common_excel_export'), array('class' => 'list-group-item none import glyphicon glyphicon-circle-arrow-left'));
                     ?>
-                    <?php echo anchor("$controller_name/delete", $this->lang->line("common_delete"), array('id' => 'delete', 'class' => 'list-group-item delete_inactive glyphicon glyphicon-trash')); ?>
+                    <?php
+                    if ($this->Employee->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->employee_id)) {
+                        echo anchor("$controller_name/delete", $this->lang->line("common_delete"), array('id' => 'delete', 'class' => 'list-group-item delete_inactive glyphicon glyphicon-trash')); 
+                    }
+                    ?>
 
                 </div>
             </div>

@@ -19,7 +19,6 @@
         <!-- Panel content -->
         <div class="row" id="contents">
             <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
-                <?php $this->load->view("partial/show_sms"); ?>
                 <div class="list-group">
                     <?php echo form_hidden("controller_name", $controller_name); ?>
                     <?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) { ?>
@@ -46,9 +45,9 @@
                         echo anchor("$controller_name/excel_export", lang('common_excel_export'), array('class' => 'list-group-item none import glyphicon glyphicon-circle-arrow-left'));
                     }
 
-                    if ($controller_name == 'customers') {
-                        echo anchor("#excel_import_master", lang('common_excel_import_update'), array('class' => 'list-group-item thickbox none import glyphicon glyphicon-edit', 'title' => lang('customers_import_customers_from_excel'), 'data-toggle' => 'modal', 'data-target' => "#excel_import_master"));
-                    }
+                    // if ($controller_name == 'customers') {
+                    //     echo anchor("#excel_import_master", lang('common_excel_import_update'), array('class' => 'list-group-item thickbox none import glyphicon glyphicon-edit', 'title' => lang('customers_import_customers_from_excel'), 'data-toggle' => 'modal', 'data-target' => "#excel_import_master"));
+                    // }
                     ?>
                     <?php if ($this->Employee->has_module_action_permission($controller_name, 'delete', $this->Employee->get_logged_in_employee_info()->person_id)) { ?>
                         <?php echo anchor("$controller_name/delete", $this->lang->line("common_delete"), array('id' => 'delete', 'class' => 'list-group-item delete_inactive glyphicon glyphicon-trash')); ?>

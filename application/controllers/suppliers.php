@@ -30,6 +30,9 @@ class Suppliers extends Person_controller
 		$this->pagination->initialize($config);
 		$data['pagination'] = $this->pagination->create_links();
 		$data['controller_name']=strtolower(get_class());
+
+		$data['suppliers_type'] = $this->Supplier->select_supplier_by_type();
+
 		$data['form_width']=$this->get_form_width();
 		if ($this->uri->segment(4)) {
 			$data['manage_table'] = $this->sorting($this->uri->segment(4));
@@ -156,16 +159,18 @@ class Suppliers extends Person_controller
 	*/
 	function viewJSON($supplier_id=-1)
 	{
+            
 		$this->check_action_permission('add_update');		
+		$data['suppliers_type'] = $this->Supplier->select_supplier_by_type();
 		$data['person_info']=$this->Supplier->get_info($supplier_id);
-		echo json_encode($data['person_info']);
+		$this->load->view("suppliers/_form", $data);
 	}
 	
 
 	/*
 	Inserts/updates a supplier
 	*/
-	function save_mine($supplier_id=-1)
+	/*function save_mine($supplier_id=-1)
 	{
 		$this->check_action_permission('add_update');
 		if($this->Supplier->save($person_data,$supplier_data,$supplier_id))
@@ -191,7 +196,7 @@ class Suppliers extends Person_controller
 			echo json_encode(array('success'=>false,'message'=>lang('suppliers_error_adding_updating').' '.
 			$supplier_data['company_name'],'person_id'=>-1));
 		}
-	}
+	}*/
 
 
 		
@@ -258,11 +263,20 @@ class Suppliers extends Person_controller
 			'country'=>$this->input->post('country'),
 			'comments'=>$this->input->post('comments')
 		);
-		// var_dump($person_data);
+
+		if ($this->input->post('new_supplier_type')) {
+            $supplier_types = array(
+                'supplier_type_name' => $this->input->post('new_supplier_type')
+            );
+            $this->Supplier->add_new_supplier_type($supplier_types);
+            $supplier_typeID = $supplier_types['supplier_type_id'];
+        }
 		$supplier_data=array(
 			'company_name'=>$this->input->post('company_name'),
 			'account_number'=>$this->input->post('account_number')=='' ? null:$this->input->post('account_number'),
+			'supplier_typeID' => $this->input->post('supplier_type') != 0 ? $this->input->post('supplier_type') : $supplier_typeID
 		);
+
 		$email = $this->input->post('email');
 		$first_name = $this->input->post('first_name');
 		$last_name = $this->input->post('last_name');
@@ -294,7 +308,7 @@ class Suppliers extends Person_controller
 			if($supplier_id==-1)
 			{
 				echo json_encode(array('success'=>true,'message'=>lang('suppliers_successful_adding').' '.
-				$supplier_data['company_name'],'person_id'=>$supplier_data['person_id']));
+				$supplier_data['company_name'],'person_id'=>$supplier_data['supplier_id']));
 			}
 			else //previous supplier
 			{
@@ -312,6 +326,18 @@ class Suppliers extends Person_controller
 	function email_to() {
 
 	}
+
+	/*
+	Returns hotel name from suppliers table data rows. This will be called with AJAX.
+	*/
+	function filter_hotels() {
+        $suggestions = $this->Supplier->filter_hotels($this->input->post('term'), 100);
+        echo json_encode($suggestions);
+    }
+
+    function check_hotel() {
+        echo json_encode(array('duplicate' => $this->Supplier->check_duplicate_hotel($this->input->post("company_name"))));
+    }
 
 
 }

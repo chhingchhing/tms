@@ -24,7 +24,7 @@
                 <div class="list-group">
                     <?php if ($this->Employee->has_module_action_permission($controller_name, 'add_update', $this->Employee->get_logged_in_employee_info()->person_id)) { ?> 
                     <?php
-                     echo anchor("#commissioners", lang($controller_name . '_new'), array('class' => 'list-group-item glyphicon glyphicon-plus-sign', 'title' => lang($controller_name . '_new'), 'data-toggle' => 'modal', 'data-target' => '#commissioners'));
+                    echo anchor("#commissioners", lang($controller_name . '_new'), array('class' => 'list-group-item glyphicon glyphicon-plus-sign', 'title' => lang($controller_name . '_new'), 'data-toggle' => 'modal', 'data-target' => '#commissioners'));
                     ?> 
 
                     <?php } ?>

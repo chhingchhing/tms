@@ -19,12 +19,13 @@ class Summary_massages extends Report {
             array('data'=>lang('summary_reports_massage_cost'), 'align'=> 'right'),
             array('data'=>lang('summary_reports_massage_sale_price'), 'align'=> 'right'),
             array('data'=>lang('summary_reports_massage_qty'), 'align'=> 'right'),
-            array('data'=>lang('summary_reports_massage_disc'), 'align'=> 'right'),
+            array('data'=>lang('summary_reports_massage_disc').'', 'align'=> 'right'),
             array('data'=>lang('summary_reports_massage_commission_price'), 'align'=> 'right'),
             array('data'=>lang('summary_reports_ticket_total'), 'align'=> 'right'),
             array('data'=>lang('reports_profit'), 'align'=> 'right'), 
             array('data'=>lang('summary_reports_massage_comment'), 'align'=> 'right'),
-            array('data'=>lang('summary_reports_ticket_seller'), 'align'=> 'right')
+            array('data'=>lang('summary_reports_ticket_seller'), 'align'=> 'right'),
+            array('data'=>lang('summary_reports_massage_massager'), 'align'=> 'right')
         );
     }
 
@@ -32,20 +33,20 @@ class Summary_massages extends Report {
     {
         //this code on commet just use for show field 
         
-//        $result = mysql_query("SHOW COLUMNS FROM cgate_sales_massages_temp");
-//if (!$result) {
-//   echo 'Impossible d\'exécuter la requête : ' . mysql_error();
-//   exit;
-//}
-//if (mysql_num_rows($result) > 0) {
-//   while ($row = mysql_fetch_assoc($result)) {
-//      print_r($row);
-//   }
-//}
+/*       $result = mysql_query("SHOW COLUMNS FROM cgate_sales_massages_temp");
+if (!$result) {
+  echo 'Impossible d\'exécuter la requête : ' . mysql_error();
+  exit;
+}
+if (mysql_num_rows($result) > 0) {
+  while ($row = mysql_fetch_assoc($result)) {
+     print_r($row);
+  }
+}*/
       
         
         $this->db->select('ID, issue_date, discount_percent,comment, commision_price, unit_price, time_in, time_out, massage_typesID, name_of_massage, commisioner_id, employee_id, sale_price, sum(quantity_purchased) as quantity_purchased, 
-         sum(subtotal) as subtotal, sum(total) as total, sum(unit_price) as cost_price, sum(profit) as profit, sum(commision_price) as total_com_price, sum(profit_inclod_com_price) as profit_inclod_com_price,
+         sum(subtotal) as subtotal, sum(total) as total, sum(unit_price) as cost_price, sum(profit) as profit, sum(commision_price) as total_com_price, sum(profit_inclod_com_price) as profit_inclod_com_price, massager_id, 
          sale_date, '.$this->db->dbprefix('sales_massages_temp').'.deleted '
          );
         $this->db->from('sales_massages_temp');

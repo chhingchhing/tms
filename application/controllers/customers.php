@@ -18,14 +18,13 @@ class Customers extends Person_controller
 
 		$logged_in_employee_info=$this->Employee->get_logged_in_employee_info();
 		$office = substr($this->uri->segment(3), -1);
-		$data['allowed_modules']=$this->Module->get_allowed_modules($office, $logged_in_employee_info->person_id);//get officle allowed
+		$data['allowed_modules']=$this->Module->get_allowed_modules($office, $logged_in_employee_info->employee_id);//get officle allowed
 		
         $this->check_action_permission('add_update');
 		$data['person_info']=$this->Employee->get_info($employee_id);
 		$data['all_modules']=$this->Module->get_all_modules();
                 
 		$this->check_action_permission('search');
-		// $config['base_url'] = site_url('customers/sorting');
 		$config['base_url'] = site_url('customers/customers/'.$this->uri->segment(3));
 		$config['total_rows'] = $this->Customer->count_all();
 		$config['per_page'] = $this->config->item('number_of_items_per_page') ? (int)$this->config->item('number_of_items_per_page') : 20; 
@@ -104,8 +103,9 @@ class Customers extends Person_controller
 	function view($customer_id=-1)
 	{
 		$this->check_action_permission('add_update');
+		$data['controller_name'] = $this->uri->segment(4);
 		$data['person_info']=$this->Customer->get_info($customer_id);
-		echo json_encode($data['person_info']);
+		$this->load->view("customers/_form", $data);
 	}
 	
 	function account_number_exists()
@@ -139,9 +139,9 @@ class Customers extends Person_controller
 		$customer_data=array(
 			'company_name' => $this->input->post('company_name'),
 			'account_number'=>$this->input->post('account_number')=='' ? null:$this->input->post('account_number'),
-			'taxable'=>$this->input->post('taxable')=='' ? 0:1,
+			/*'taxable'=>$this->input->post('taxable')=='' ? 0:1,
 			'hotel_name' => $this->input->post('hotel_name'),
-			'room_number' => $this->input->post('room_number')
+			'room_number' => $this->input->post('room_number')*/
 		);
 		
 		if ($this->input->post('delete_cc_info'))

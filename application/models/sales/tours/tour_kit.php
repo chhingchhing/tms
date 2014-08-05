@@ -7,9 +7,8 @@ class Tour_kit extends CI_Model
 	// Chhingchhing *
 	function exists($item_kit_id)
 	{
-		// echo $item_kit_id;
-		$query = $this->db->where("category", "tickets")
-				->where('item_kit_id',$item_kit_id)
+		$query = $this->db->where('item_kit_id',$item_kit_id)
+				// ->where("category", "tickets")
 				->get("item_kits");
 
 		return ($query->num_rows() == 1);
@@ -22,7 +21,7 @@ class Tour_kit extends CI_Model
 	function get_item_kit_id($item_kit_id)
 	{
 		$query = $this->db->where('item_kit_id',$item_kit_id)
-				->where("category", "tickets")
+				// ->where("category", "tickets")
 				->get("item_kits");
 
 		if($query->num_rows()==1)
@@ -95,7 +94,7 @@ class Tour_kit extends CI_Model
 
 		$by_name = $this->db->like('name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
 					->where('deleted',0)
-					->where('category',"tours") 
+					// ->where('category',"tours") 
 					->order_by("name", "asc")
 					->get("item_kits");
 		foreach($by_name->result() as $row)
@@ -105,7 +104,7 @@ class Tour_kit extends CI_Model
 		
 		$by_item_kit_number = $this->db->like('item_kit_number', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
 					->where('deleted',0)
-					->where('category',"tours")
+					// ->where('category',"tours")
 					->order_by("item_kit_number", "asc")
 					->get("item_kits");
 		foreach($by_item_kit_number->result() as $row)

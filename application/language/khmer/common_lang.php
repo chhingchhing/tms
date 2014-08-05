@@ -1,10 +1,11 @@
 <?php
+$lang['common_no_permission']='មិនអនុញ្ញាត';
 $lang['common_common']='ជាធម្មតា';
 $lang['common_clearnup_old_massage']='លុបសំបុត្រចាស់ៗ';
 $lang['common_massage']=' ម៉ាស្សាថ្មី';
 $lang['common_ticket']=' សំបុត្រថ្មី';
 $lang['common_tour']=' ទេសចរណ៍ថ្មី';
-$lang['common_bike'] = 'កង់ថ្មី';
+$lang['common_bike'] = ' កង់ថ្មី';
 $lang['common_submit']='បញ្ជូន';
 $lang['common_or']='ឫ';
 $lang['common_powered_by']='បង្កើតដោយ';
@@ -22,7 +23,8 @@ $lang['common_state']='រដ្ឋ/ខេត្ត';
 $lang['common_zip']='Zip';
 $lang['common_country']='ប្រទេស';
 $lang['common_comments']='យោបល់';
-$lang['common_edit']='កែសម្រួល';
+// $lang['common_edit']='កែសម្រួល';
+$lang['common_edit']=' ';
 $lang['common_print_receipt']='បោះពុម្ពបង្កាន់ដៃ';
 $lang['common_search']='ស្វែងរក';
 $lang['common_delete']='​ លុប';
@@ -30,7 +32,7 @@ $lang['common_view_recent_sales']='មើលការលក់ថ្មី';
 $lang['common_you_are_using_phppos']='អក្នកំពុងប្រើប្រាស់Codingate Version';
 $lang['common_please_visit_my']='សូមទស្សនា ';
 $lang['common_website']='វេបផ្សាយ';
-$lang['common_fields_required_message']='ទីលានមានពណ៍ក្រហមត្រូវតែបំពេញ';
+$lang['common_fields_required_message']='កន្លែងមានពណ៍ក្រហមត្រូវតែបំពេញ';
 $lang['common_learn_about_project']='រៀនអំពីពណ៍មានដែលថ្មីបំផុតរបស់គំរោង';
 $lang['common_searched_for']='ស្វែងរក';
 $lang['common_first_name_required']='សូមបំពេញឈ្មោះ';
@@ -78,6 +80,7 @@ $lang['common_male']='ប្រុស';
 
 $lang['common_permission'] = 'សិទ្ធិជា';
 $lang['common_owner'] = 'ម្ចាស់';
-$lang['common_saler'] = 'អក្នលក់';
+$lang['common_saler'] = 'អ្នកលក់';
 $lang['common_you_are_using_tms']='អក្នកំពុងប្រើប្រាស់ប្រពន្ធ័គ្រប់គ្រងទេសចរណ៏វើសិន ';
+$lang['common_unit_price']='តម្លៃមួយឯកត្តា';
 ?>

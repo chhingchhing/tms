@@ -92,7 +92,7 @@ class Guides extends Secure_area {
         $data = $this->guide->get_guides()->result_object();
         $this->load->helper('report');
         $rows = array();
-        $row = array(lang('guides_guide_id'), lang('guides_guide_name'),lang('guides_gender'), lang('guides_tel'), lang('guides_email'), lang('guides_type '));
+        $row = array(lang('guides_guide_id'), lang('guides_guide_name'),lang('guides_gender'), lang('guides_tel'), lang('guides_email'), lang('guides_guide_type'));
 
         $n = 1;
         $rows[] = $row;
@@ -134,8 +134,18 @@ class Guides extends Secure_area {
     function viewJSON($item_id = -1) {
         $this->check_action_permission('add_update');
         $data['person_info'] = $this->guide->get_info($item_id);
-//        var_dump($data['person_info']);die();
         echo json_encode($data['person_info']);
+    }
+
+    /*
+    Loads the guide edit form
+    */
+    function view($guide_id=-1, $controller_name)
+    {
+        $this->check_action_permission('add_update');
+        $data['controller_name'] = $controller_name;
+        $data['guide_info'] = $this->guide->get_info($guide_id);
+        $this->load->view("guides/_form", $data);
     }
     
     function save($guide_id = -1){
@@ -188,7 +198,7 @@ class Guides extends Secure_area {
     /* Search commissioner */
 
     function guide_search() {
-        $suggestions = $this->guide->get_search_suggestions($this->input->post('term'), 100);
+        $suggestions = $this->guide->get_search_suggestions_guide($this->input->post('term'), 100);
         echo json_encode($suggestions);
     }
     

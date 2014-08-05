@@ -44,6 +44,7 @@ class Summary_tickets extends Report {
         $this->db->join('tickets', 'sales_tickets_temp.ticket_id = tickets.ticket_id');
         if ($this->params['sale_type'] == 'sales')
         {
+            
             $this->db->where('quantity_purchased > 0');
         }
         elseif ($this->params['sale_type'] == 'returns')
@@ -59,8 +60,7 @@ class Summary_tickets extends Report {
 
     public function getSummaryData()
     {
-        $this->db->select('sum(subtotal) as subtotal, sum(total) as total, sum(profit) as profit');
-        // $this->db->select('sum(subtotal) as subtotal, sum(total) as total, (sum(profit) - sum(commision_price)) as profit');
+        $this->db->select('sum(subtotal) as subtotal, sum(total) as total,sum(item_cost_price) as cost_price, sum(profit) as profit,sum(commision_price) as total_com_price, sum(profit_inclod_com_price) as profit_inclod_com_price');
         $this->db->from('sales_tickets_temp');
         $this->db->join('tickets', 'sales_tickets_temp.ticket_id = tickets.ticket_id');
         if ($this->params['sale_type'] == 'sales')

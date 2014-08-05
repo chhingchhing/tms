@@ -10,11 +10,12 @@ $lang['bikes_action']='Action';
 $lang['bikes_sale']=' Rent Bikes';
 
 // for rent bike
+
+$lang['bike_code_exist'] = 'This bike code have already exist in the cart';
 $lang['date_out']='Date out';
 $lang['date_in']='Date in';
 $lang['bikes_successful_deleted']='You have successfully deleted';
 $lang['bikes_one_or_multiple']='bike(s)';
 $lang['bikes_cannot_be_deleted']='Could not deleted selected bikes, one or more of the selected bikes has sales.';
-
 
 ?>

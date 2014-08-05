@@ -28,7 +28,6 @@ class Commissioners extends Secure_area {
 
         $data['per_page'] = $config['per_page'];
         $data['manage_commissioner_data'] = $this->commissioner->get_all();
-//        var_dump($data['manage_commissioner_data']);die();
         if ($this->uri->segment(4)) {
             $data['manage_table'] = $this->sorting($this->uri->segment(4));
         } else {
@@ -43,14 +42,18 @@ class Commissioners extends Secure_area {
     function sorting($offset) {
         $this->check_action_permission('search');
         $search = $this->input->post('search');
+
         $per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
+
         if ($search) {
             $config['total_rows'] = $this->commissioner->search_count_all($search);
             $table_data = $this->commissioner->search($search, $per_page, $offset ? $offset : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'commisioner_id', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+        
         } else {
             $config['tpaginationotal_rows'] = $this->commissioner->count_all();
             $table_data = $this->commissioner->get_all($per_page, $offset ? $offset : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'commisioner_id', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
         }
+
         $config['base_url'] = site_url('commissioners/sorting');
         $config['per_page'] = $per_page;
         $this->pagination->initialize($config);
@@ -91,18 +94,18 @@ class Commissioners extends Secure_area {
                 if($commissioner_id==-1)
                 {
                         echo json_encode(array('success'=>true,'message'=>lang('customers_successful_adding').' '.
-                        $commissioner_data['first_name'].' '.$commissioner_data['last_name'],'commissioner_id'=>$commissioner_data['commisioner_id']));                          
+                        $commissioner_data['first_name'].' '.$commissioner_data['last_name'],'person_id'=>$commissioner_data['commisioner_id']));                          
                 }
                 else //previous customer
                 {
                         echo json_encode(array('success'=>true,'message'=>lang('customers_successful_updating').' '.
-                        $commissioner_data['first_name'].' '.$commissioner_data['last_name'],'commissioner_id'=>$commissioner_id));
+                        $commissioner_data['first_name'].' '.$commissioner_data['last_name'],'person_id'=>$commissioner_id));
                 }
     	}
         else//failure
         {
                 echo json_encode(array('success'=>false,'message'=>lang('customers_error_adding_updating').' '.
-                $commissioner_data['first_name'].' '.$commissioner_data['last_name'],'commissioner_id'=>-1));
+                $commissioner_data['first_name'].' '.$commissioner_data['last_name'],'person_id'=>-1));
         }
     }
 
@@ -183,10 +186,11 @@ class Commissioners extends Secure_area {
     */
     function view($commisioner_id=-1)
     {
-//        echo $commisioner_id;die('commissioner id');
         $this->check_action_permission('add_update');
-        $data['commissioner_info']=$this->commissioner->get_info($commisioner_id);
-        echo json_encode($data['commissioner_info']);
+        $data['controller_name'] = $this->uri->segment(4);
+        $data['commissioner_info'] = $this->commissioner->get_info($commisioner_id);
+        $this->load->view("commissioners/_form", $data);
+        //echo json_encode($data['commissioner_info']);
     }
     
     /* Search commissioner */

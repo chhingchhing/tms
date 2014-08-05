@@ -44,11 +44,10 @@ $lang['tickets_due_amount'] = 'Balance to pay';
 $lang['tickets_amount_pay'] = 'Amount';
 $lang['tickets_delete_cc_info'] = 'Delete credit card Info';
 $lang['tickets_code_ticket'] = 'Code Ticket';
-$lang['tickets_destinationID'] = 'Destination ID';
+$lang['tickets_destinationID'] = 'Destination';
 $lang['tickets_ticket_typeID'] = 'Ticket Type';
 $lang['tickets_actual_price'] = 'Actual Price';
 $lang['tickets_sale_price'] = 'Sale Price';
 $lang['tickets_sale'] = ' Sale Ticket';
 $lang['tickets_code_name'] = 'Ticket Name';
-//Chhing
 ?>

@@ -6,7 +6,15 @@ echo form_hidden("office_number", $this->session->userdata("office_number"));
 <div class="row" id="title_bar">
     <div id="title_icon" class="col-md-3">
     	<img src='<?php echo base_url() ?>images/menubar/<?php echo $controller_name ?>.png' alt='title icon' />
-        <?php echo lang('sales_register'); ?>
+        <?php if($this->sale_lib->get_change_sale_id()) { ?>
+        <?php 
+        $office_id = $this->Office->get_office_id($this->session->userdata("office_number"));
+        ?>
+
+            <?php echo lang('sales_editing_sale'); ?> <b> W <?php echo $office_id.'-'.str_pad($this->sale_lib->get_change_sale_id(), 6, '0',STR_PAD_LEFT); ?> </b> 
+        <?php } else {
+            echo lang('sales_register');
+        } ?>
     </div>
     <div class="col-md-6" id="reg_item_search">
         <div class="col-md-10">

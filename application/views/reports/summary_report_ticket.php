@@ -57,7 +57,6 @@ if($export_excel == 1)
                         <?php foreach ($headers as $header) { ?>
                         <th align="<?php echo $header['align'];?>"><?php echo $header['data']; ?></th>
                         <?php } ?>
-                        <!-- <th><?php //echo lang('summary_reports_ticket_action'); ?></th>  -->
                     </tr>
                 </thead>
 
@@ -67,12 +66,6 @@ if($export_excel == 1)
                         <?php foreach ($row as $cell) { ?>
                         <td align="<?php echo $cell['align'];?>"><?php echo $cell['data']; ?></td>
                         <?php } ?>
-                        <!-- <td> -->
-                            <?php //echo anchor("#", ' ', array('id' => 'edit_report', 'class' => 'glyphicon glyphicon-eye-open'));?>
-                            <?php //echo anchor("#", ' ', array('id' => 'delete_report', 'class' => 'glyphicon glyphicon-remove-circle'));?>
-            
-                            <?php //echo anchor("#", ' ', array('id' => 'edit_report', 'class' => 'glyphicon edit glyphicon-edit'));?>
-                        <!-- </td> -->
                     </tr>
                     <?php } ?>
                 </tbody>

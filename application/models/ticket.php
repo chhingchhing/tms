@@ -1,10 +1,10 @@
 <?php
 
 class Ticket extends CI_Model {
+
     /*
       Determines if a given item_id is an item
      */
-
     function get_times_departure($order_id)
     {
         $this->db->select("time_departure");
@@ -25,6 +25,32 @@ class Ticket extends CI_Model {
         $query = $this->db->get();
         foreach ($query->result_array() as $rows) {
             $data[] = $rows['date_departure'];
+        }
+        return $data;
+    }
+
+// get hotel name of each order of item
+    function get_hotels($order_id)
+    {
+        $this->db->select("hotel_name");
+        $this->db->from('detail_orders_tickets');
+        $this->db->where('orderID',$order_id);
+        $query = $this->db->get();
+        foreach ($query->result_array() as $rows) {
+            $data[] = $rows['hotel_name'];
+        }
+        return $data;
+    }
+
+// get room number of each order of item
+    function get_room_numbers($order_id)
+    {
+        $this->db->select("room_number");
+        $this->db->from('detail_orders_tickets');
+        $this->db->where('orderID',$order_id);
+        $query = $this->db->get();
+        foreach ($query->result_array() as $rows) {
+            $data[] = $rows['room_number'];
         }
         return $data;
     }
@@ -107,7 +133,8 @@ class Ticket extends CI_Model {
 
     //select ticket type 
     function get_ticket_type() {
-        $ticket_type_id = $this->db->select('*')
+        $ticket_type_id = $this->db->select("*")
+                ->group_by("ticket_type_name")
                 ->get('tickets_types');
         $option[] = lang("items_none");
         if ($ticket_type_id->num_rows() > 0) {
@@ -117,6 +144,25 @@ class Ticket extends CI_Model {
         }
         return $option;
     }
+// function get_category_suggestions($search)
+//     {
+//      $suggestions = array();
+//      $this->db->distinct();
+//      $this->db->select('category');
+//      $this->db->from('items');
+//      $this->db->like('category', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+//      $this->db->where('deleted', 0);
+//      $this->db->order_by("category", "asc");
+//      $by_category = $this->db->get();
+//      foreach($by_category->result() as $row)
+//      {
+//          $suggestions[]=array('label' => $row->category);
+//      }
+
+//      return $suggestions;
+//     }
+
+
 
     function exists($item_id) {
         $this->db->from('tickets');
@@ -170,6 +216,9 @@ class Ticket extends CI_Model {
 
     function get_info($ticket_id) {
         $this->db->from('tickets');
+        $this->db->join("destinations", "tickets.destinationID = destinations.destinate_id", "left");
+        $this->db->join("tickets_types", "tickets.ticket_typeID = tickets_types.ticket_type_id", "left");
+        $this->db->join("suppliers", "tickets.supplierID = suppliers.supplier_id", "left");
         $this->db->where('ticket_id', $ticket_id);
 
         $query = $this->db->get();
@@ -240,13 +289,38 @@ class Ticket extends CI_Model {
      */
 
     function add_ticket_type(&$item_ticket_type, $item_id = false) {
-        if (!$item_id) {
+        if (!$this->exists_ticket_type($item_ticket_type)) {
             if ($this->db->insert('tickets_types', $item_ticket_type)) {
                 $item_ticket_type['ticket_type_id'] = $this->db->insert_id();
                 return true;
             }
             return false;
         }
+        $this->db->from('tickets_types');
+        $this->db->where('ticket_type_name', $item_ticket_type['ticket_type_name']);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $item_ticket_type['ticket_type_id'] = $row->ticket_type_id;
+            return true;
+        }
+    }
+
+    // check order if duplicated data of item ticket type
+    function exists_ticket_type($item_ticket_type) {
+        $this->db->from('tickets_types');
+        $this->db->where('ticket_type_name', $item_ticket_type['ticket_type_name']);
+        $query = $this->db->get();
+
+        return ($query->num_rows() == 1);
+    }
+
+    // check order if duplicated data of item destination
+    function exists_destination($item_destination) {
+        $this->db->from('destinations');
+        $this->db->where('destination_name', $item_destination['destination_name']);
+        $query = $this->db->get();
+
+        return ($query->num_rows() == 1);
     }
 
     /*
@@ -254,12 +328,19 @@ class Ticket extends CI_Model {
      */
 
     function add_destination(&$item_destination, $item_id = false) {
-        if (!$item_id) {
+        if (!$this->exists_destination($item_destination)) {
             if ($this->db->insert('destinations', $item_destination)) {
                 $item_destination['destination_id'] = $this->db->insert_id();
                 return true;
             }
             return false;
+        }
+        $this->db->from('destinations');
+        $this->db->where('destination_name', $item_destination['destination_name']);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $item_destination['destinate_id'] = $row->destinate_id;
+            return true;
         }
     }
 
@@ -346,10 +427,11 @@ class Ticket extends CI_Model {
         return $suggestions;
     }
 
+    // Check duplicate data when add new record
     function check_duplicate_data($ticket_name, $tDestination, $tType) {
-        $query = $this->db->where('ticket_name', $this->db->escape($ticket_name))
-                ->where("destinationID", $this->db->escape($tDestination))
-                ->where("ticket_typeID", $this->db->escape($tType))
+        $query = $this->db->where('ticket_name', $ticket_name)
+                ->where("destinationID", $tDestination)
+                ->where("ticket_typeID", $tType)
                 ->where("deleted", 0)
                 ->get('tickets');
 
@@ -513,6 +595,17 @@ class Ticket extends CI_Model {
         }
 
         return false;
+    }
+
+    // Check duplication destination of each new ticket
+    function check_duplicate_destination($tDestination) {
+        $query = $this->db->where('destination_name', $tDestination)
+                ->where("deleted", 0)
+                ->get('destinations');
+
+        if ($query->num_rows() > 0) {
+            return true;
+        }
     }
 
 }

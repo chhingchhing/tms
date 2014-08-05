@@ -1,6 +1,5 @@
 <?php
 $lang['reports_reports_tours'] = 'Reports Tours';
-
 $lang['reports_tours'] = 'Tours';
 $lang['summary_reports_issue_date'] = 'Issue date';
 $lang['summary_reports_departure'] = 'Departure';

@@ -235,4 +235,49 @@ class Guide extends CI_Model {
         }
     }
 
+    function get_search_suggestions_guide($search, $limit = 25) {
+        $suggestions = array();
+
+        $this->db->from('guides');
+
+        if ($this->config->item('speed_up_search_queries')) {
+            $this->db->where("(guide_fname LIKE '" . $this->db->escape_like_str($search) . "%' or 
+                guide_lname LIKE '" . $this->db->escape_like_str($search) . "%' or 
+                CONCAT(`guide_fname`,' ',`guide_lname`) LIKE '" . $this->db->escape_like_str($search) . "%') and deleted=0");
+        } else {
+            $this->db->where("(guide_fname LIKE '%" . $this->db->escape_like_str($search) . "%' or 
+            guide_lname LIKE '%" . $this->db->escape_like_str($search) . "%' or 
+            CONCAT(`guide_fname`,' ',`guide_lname`) LIKE '%" . $this->db->escape_like_str($search) . "%') and deleted=0");
+        }
+        $this->db->order_by("guide_lname", "asc");
+        $by_name = $this->db->get();
+        foreach ($by_name->result() as $row) {
+            $suggestions[] = array('value' => $row->guide_id, 'label' => $row->guide_fname . ' ' . $row->guide_lname);
+        }
+
+        $this->db->from('guides');
+        $this->db->where('deleted', 0);
+        $this->db->like("guide_type", $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+        $this->db->order_by("guide_type", "asc");
+        $by_phone_number = $this->db->get();
+        foreach ($by_phone_number->result() as $row) {
+            $suggestions[] = array('value' => $row->guide_id, 'label' => $row->guide_type);
+        }
+
+        $this->db->from('guides');
+        $this->db->where('deleted', 0);
+        $this->db->like("email", $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+        $this->db->order_by("email", "asc");
+        $by_email = $this->db->get();
+        foreach ($by_email->result() as $row) {
+            $suggestions[] = array('value' => $row->guide_id, 'label' => $row->email);
+        }
+
+        //only return $limit suggestions
+        if (count($suggestions > $limit)) {
+            $suggestions = array_slice($suggestions, 0, $limit);
+        }
+        return $suggestions;
+    }
+
 }

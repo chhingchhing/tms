@@ -44,12 +44,15 @@ $lang['massage_sale'] = '  Sale Massage';
 $lang['common_massage_name']='Massages Name';
 $lang['common_massage_desc']='Description';
 $lang['common_price_one_haft']='Price one half';
-$lang['common_supplier_id']='Supplier id';
+$lang['common_supplier_id']='Supplier';
 $lang['common_price_haft']='Price half';
 $lang['common_price_one']='Sale Price($/h)';
 $lang['common_actual_price']='Actual Price($/h)';
-$lang['common_massage_typesID']='Massage type id';
-$lang['common_item_massage_id']='Item massage id';
+$lang['common_massage_typesID']='Massage Typed';
+$lang['common_item_massage_id']='Item Massage';
 $lang['common_deleted']=' Delete';
+// New 04/08/2014​​​​​​ 
+$lang['massages_commission_price_massager']=' Massager Commission($)';
+$lang['massages_commission_price_receptionist']=' Receptionist Commission($)';
 
 ?>

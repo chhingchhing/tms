@@ -131,6 +131,7 @@ class Transportations extends Secure_area {
             'taxi_fname' => $this->input->post("taxi_fname"),
             'taxi_lname' => $this->input->post("taxi_lname"),
             'phone' => $this->input->post("phone"),
+            'vehicle' => $this->input->post("vehicle_type"),
             'mark' => $this->input->post("mark"),                   
             'deleted' => 0
         );

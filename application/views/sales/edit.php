@@ -9,7 +9,7 @@
 						<td id="title_icon">
 							<img src='<?php echo base_url()?>images/menubar/<?php echo $controller_name; ?>.png' alt='title icon' />
 						</td>
-						<td id="title"><?php echo lang('sales_register')." - ".lang('sales_edit_sale'); ?> CGATE <?php echo $sale_info['sale_id']; ?></td>
+						<td id="title"><?php echo lang('sales_register')." - ".lang('sales_edit_sale'); ?> <?php echo strtoupper($office); ?> <?php echo $sale_info['sale_id']; ?></td>
 					</tr>
 				</table>
             </div>
@@ -25,7 +25,8 @@
 			        <?php echo form_label(lang('sales_receipt') . ':', 'sales_receipt'); ?>
 			    </label>
 			    <div class="col-sm-8">
-			        <?php echo anchor($controller_name.'/receipt/'.$office.'/'.$sale_info['order_id'], 'CGATE '.$sale_info['order_id'], array('target' => '_blank'));?>
+			    	<?php $office_id = $this->Office->get_office_id($this->session->userdata("office_number")); ?>
+			        <?php echo anchor($controller_name.'/receipt/'.$office.'/'.$sale_info['order_id'], strtoupper('W').$office_id.'-'.$sale_info['order_id'], array('target' => '_blank'));?>
 			    </div>
 			</div>
 
@@ -148,7 +149,7 @@
 				{
 				?>
 				<?php 
-				 if ($this->Employee->has_module_action_permission('sales', 'edit_sale', $this->Employee->get_logged_in_employee_info()->employee_id)){
+				 if ($this->Employee->has_module_action_permission($controller_name, 'edit_sale', $this->Employee->get_logged_in_employee_info()->employee_id)){
 				?>
 				<?php
 				echo form_open("$controller_name/change_sale/$office/".$sale_info['order_id'],array('id'=>'sales_change_form')); ?>

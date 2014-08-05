@@ -14,7 +14,17 @@
         ?>
 
         <base href="<?php echo base_url(); ?>" />
-        <title><?php echo $this->config->item('company'); ?></title>
+        <title>
+        <?php 
+            if ($this->session->userdata("office_number")) {
+
+            $office_id = $this->Office->get_office_id($this->session->userdata("office_number"));
+            echo $this->Office->get_info($office_id)->ofc_company; 
+        } else {
+            echo $this->config->item('company');
+        }
+        ?>
+        </title>
         <link rel="icon" href="<?php echo base_url(); ?>codingate.ico" type="image/x-icon"/>
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -34,6 +44,7 @@
         echo link_tag("css/date_picker.css");
 
         echo link_tag("assets/timepicker/css/bootstrap-formhelpers.min.css");
+        // echo link_tag("assets/tokenfield/css/bootstrap-tokenfield.min.css");
         echo link_tag("css/reset.css");
         ?>
         <link rel="stylesheet" href="<?php echo base_url()."assets/tokeninput/css/token-input.css"; ?>" type="text/css" />
@@ -48,6 +59,7 @@
     </head>
     <body>
         <?php echo form_hidden("baseURL", base_url()); ?>
+        <?php echo form_hidden("controller_name", $controller_name); ?>
         <div class="container">
 
             <?php if ($this->uri->segment(1) !== "dashboard" OR $this->uri->segment(2)) {
@@ -77,12 +89,11 @@
                                         <img src="<?php echo base_url() . 'images/menubar/' . $module->module_id . '.png'; ?>" border="0" alt="Menubar Image" /><br>
                                         <?php
                                         if ($module->module_id == 'transportations') {
-                                            echo substr($module->module_id, 0, 9);
+                                            echo ucfirst("transport");
                                         } elseif ($module->module_id == 'commissioners') {
-                                            echo "commissioner";
+                                            echo ucfirst("commissioner");
                                         } else {
-                                        ?>
-                                            <?php echo $module->module_id;
+                                            echo ucfirst($module->module_id);
                                         } ?>
                                     </p>
                                 </a>  

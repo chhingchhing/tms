@@ -4,14 +4,13 @@ class Massage_item extends CI_Model {
 
     //Search for massage item for sale
     function get_item_search_suggestions_for_sale($search, $limit = 25) {
-
         $suggestions = array();
         $by_name = $this->db
-                -> join('massages_types', 'items_massages.massage_typesID = massages_types.massage_type_id')
-                -> where('items_massages.deleted', 0)
-                -> like('massage_name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
-                -> order_by("massage_name", "asc")
-                -> get("items_massages");
+                ->join('massages_types', 'items_massages.massage_typesID = massages_types.massage_type_id', 'left')
+                ->where('items_massages.deleted', 0)
+                ->like('massage_name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
+                ->order_by("massage_name", "asc")
+                ->get("items_massages");
 //        var_dump($by_name);
 
         foreach ($by_name->result() as $row) {

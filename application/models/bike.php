@@ -7,11 +7,20 @@ class Bike extends CI_Model {
 
     function count_all() {
         $this->db->from('items_bikes');
-        $this->db->where('available', 1);
+       // $this->db->where('available', 1);
         $this->db->where('deleted', 0);
         return $this->db->count_all_results();
     }
+    /*
+      Gets information about multiple items
+     */
 
+    function get_multiple_info($item_ids) {
+        $this->db->from('items_bikes');
+        $this->db->where_in('item_bike_id', $item_ids);
+        $this->db->order_by("item_bike_id", "desc");
+        return $this->db->get();
+    }
     function exists($item_id) {
         $this->db->from('items_bikes');
         $this->db->where('item_bike_id', $item_id);
@@ -20,7 +29,7 @@ class Bike extends CI_Model {
         return ($query->num_rows() == 1);
     }
 
-    function get_all($limit = 10000, $offset = 0, $col = 'bike_code', $order = 'asc') {
+    function get_all($limit = 10000, $offset = 0, $col = 'item_bike_id', $order = 'desc') {
         $this->db->from('items_bikes');
         $this->db->where('items_bikes.deleted', 0);
         $this->db->order_by($col, $order);
@@ -35,6 +44,7 @@ class Bike extends CI_Model {
 
     function get_info($bike_id) {
         $this->db->from('items_bikes');
+        $this->db->join("suppliers", "items_bikes.supplierID = suppliers.supplier_id", "left");
         $this->db->where('item_bike_id', $bike_id);
         $query = $this->db->get();
 
@@ -51,7 +61,6 @@ class Bike extends CI_Model {
                 //append those fields to base parent object, we we have a complete empty object
                 $bike_obj->$field = '';
             }
-
             return $bike_obj;
         }
     }
@@ -121,8 +130,8 @@ class Bike extends CI_Model {
         $this->db->order_by("bike_types", "desc");
         $by_name = $this->db->get();
         foreach ($by_name->result() as $row) {
-            $suggestions[] = array('label' => $row->bike_types);
-//            $suggestions[] = array('label' => $row->bike_types.' '. $row->bike_code);
+//            $suggestions[] = array('label' => $row->bike_types,'label'=>$row->bike_code);
+            $suggestions[] = array('label' => $row->bike_types.' '. $row->bike_code);
         }
 
         $this->db->from('items_bikes');
@@ -132,8 +141,9 @@ class Bike extends CI_Model {
         $this->db->order_by("bike_code", "desc");
         $by_bike_type = $this->db->get();
         foreach ($by_bike_type->result() as $row) {
-//            $suggestions[] = array('label' => $row->bike_types.' '. $row->bike_code);
-            $suggestions[] = array('label' => $row->bike_types);
+            $suggestions[] = array('label' => $row->bike_types.' '. $row->bike_code);
+//             $suggestions[] = array('label' => $row->bike_types,'label'=>$row->bike_code);
+            //$suggestions[] = array('label' => $row->bike_types);
         }
         
         $this->db->from('items_bikes');
@@ -168,7 +178,7 @@ class Bike extends CI_Model {
 
     /* search count all guide */
 
-    function search($search, $limit= 10000, $offset = 0, $column = 'bike_code', $orderby = 'asc') {
+    function search($search, $limit= 10000, $offset = 0, $column = 'bike_code', $orderby = 'desc') {
 
         if ($this->config->item('speed_up_search_queries')) {
             $query = "
@@ -197,7 +207,8 @@ class Bike extends CI_Model {
         }
     }
 
-    function search_count_all($search, $limit = 10000, $offset = 0, $column = 'bike_code', $orderby = 'asc') {
+    function search_count_all($search, $limit = 10000, $offset = 0, $column = 'bike_code', $orderby = 'desc') {
+
         if ($this->config->item('speed_up_search_queries')) {
             $query = "
 			select *
@@ -223,8 +234,45 @@ class Bike extends CI_Model {
             return $this->db->get();
         }
     }
-
     //end search
+
+     function get_rent_dates($order_id)
+    {
+        $this->db->select("date_time_out");
+        $this->db->from('detail_orders_bikes');
+        $this->db->where('orderID',$order_id);
+        $query = $this->db->get();
+        foreach ($query->result_array() as $rows) {
+            $data[] = $rows['date_time_out'];
+        }
+        return $data;
+    }
+
+     function get_return_dates($order_id)
+    {
+        $this->db->select("date_time_in");
+        $this->db->from('detail_orders_bikes');
+        $this->db->where('orderID',$order_id);
+        $query = $this->db->get();
+        foreach ($query->result_array() as $rows) {
+            $data[] = $rows['date_time_in'];
+        }
+        return $data;
+    }
+    
+     function get_time_in($order_id)
+    {
+        $this->db->from('detail_orders_bikes');
+        $this->db->where('orderID',$order_id);
+        return $this->db->get()->row()->time_in;
+    }
+    function get_time_out($order_id)
+    {
+        $this->db->from('detail_orders_bikes');
+        $this->db->where('orderID',$order_id);
+        return $this->db->get()->row()->time_out;
+    }
+
 }
 
 ?>

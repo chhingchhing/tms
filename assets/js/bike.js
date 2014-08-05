@@ -6,13 +6,15 @@
 
 var baseURL = jQuery('input[name="baseURL"]').val();
 var controller = jQuery('input[name="controller_name"]').val();
+var checkExistURLItem = baseURL + "bikes/check_duplicate_item";
 
 //chen add new bike and update
 jQuery("body").on("click", "input#saveSubmitBike", function(event) {
     event.preventDefault();
     var bike_id = jQuery("input[name='item_bike_id']").val();
     var checkExistURL = baseURL + "bikes/check_duplicate";
-    var addURL = jQuery("form#bikes_form").attr("action") + "/" + bike_id;
+    // var addURL = jQuery("form#bikes_form").attr("action") + "/" + bike_id;
+    var addURL = jQuery("form#bikes_form").attr("action");
     var code_bike = jQuery("input[name='bike_code']").val();
     var unit_price = jQuery("input[name='unit_price']").val();
     var actual_price = jQuery("input[name='actual_price']").val();
@@ -60,7 +62,7 @@ jQuery("body").on("click", "input#saveSubmitBike", function(event) {
 });
 
 /* Save new bike */
-function save(data, url, modal_id) {
+/*function save(data, url, modal_id) {
     var search = url.replace("save", "search");
     $.ajax({
         type: "POST",
@@ -81,10 +83,9 @@ function save(data, url, modal_id) {
             }
         }
     });
-}
+}*/
 //finish add and update
-
-function getDataSearch(term, url){
+/*function getDataSearch(term, url){
     jQuery.ajax({
         type: "POST",
         url: url,
@@ -100,9 +101,10 @@ function getDataSearch(term, url){
             };
         }
     });
-}
+}*/
 
 //chen add new bike and update
+
 jQuery("body").on("click", "input#submitBike", function(event) {
     event.preventDefault();
     var bike_id = jQuery("input[name='item_bike_id']").val();
@@ -113,6 +115,8 @@ jQuery("body").on("click", "input#submitBike", function(event) {
     var unit_price = jQuery("input[name='unit_price']").val();
     var actual_price = jQuery("input[name='actual_price']").val();
     var bike_types = jQuery("select[name='bike_types']").val();
+    var suppliers = jQuery("input[name='supplier']").val();
+    var desc = jQuery("input[name='description']").val();
 
     if (code_bike == "") {
         jQuery('div#getSmsError').text("Please Input code bike!");
@@ -135,6 +139,7 @@ jQuery("body").on("click", "input#submitBike", function(event) {
         return false;
     }
     if (!bike_id) {
+        
         jQuery.ajax({
             type: "POST",
             url: checkExistURL,
@@ -153,8 +158,6 @@ jQuery("body").on("click", "input#submitBike", function(event) {
         saveBike(saveAction, addAction);
     }
 });
-
-
 
 /* Save new bike */
 //function saveBike(addURL) {
@@ -175,7 +178,7 @@ function saveBike(saveAction, addAction) {
 }
 //finish add and update
 
-// Add ticket to cart
+// Add bike to cart
 function addToCart(bike_id, addAction) {
     $.ajax({
         type: "POST",
@@ -183,6 +186,7 @@ function addToCart(bike_id, addAction) {
         dataType: "html",
         data: {"item": bike_id},
         success: function(respons) {
+            
             $("div#register_container").html(respons);
             jQuery("#bikes").modal('hide');
         }
@@ -225,7 +229,7 @@ jQuery("a#delete_bike").click(function(event) {
 });
 
 // Set message feedback
-function set_feedback(text, classname, keep_displayed)
+/*function set_feedback(text, classname, keep_displayed)
 {
     if(text!='')
     {
@@ -262,4 +266,4 @@ function set_feedback(text, classname, keep_displayed)
         });
     });
     
-}
+}*/

@@ -1,5 +1,6 @@
 <?php
 //Start Chhingchhing
+$lang['common_no_permission']='No Permission';
 $lang['common_close']='Close';
 $lang['common_common']='common';
 $lang['common_clearnup_old_massage']='Cleanup Old Massage';
@@ -11,14 +12,14 @@ $lang['common_tour']=' New Tour';
 $lang['common_submit']='Submit';
 $lang['common_or']='OR';
 $lang['common_powered_by']='Powered by';
-$lang['common_welcome']='Welcome';
+$lang['common_welcome']='Welcome ';
 $lang['common_logout']='Logout';
 $lang['common_list_of']='List of';
 $lang['common_first_name']='First Name';
 $lang['common_last_name']='Last Name';
 $lang['common_email']=' E-Mail';
 $lang['common_phone_number']='Phone Number';
-$lang['common_address_1']='AddresPhones 1';
+$lang['common_address_1']='Addres 1';
 $lang['common_address_2']='Address 2';
 $lang['common_city']='City';
 $lang['common_state']='State/Province';
@@ -73,7 +74,9 @@ $lang['common_guide_type']='Guide Type';
 $lang['common_gender']='Gender';
 $lang['common_female']='Female';
 $lang['common_male']='Male';
+$lang['common_power_by']='Power by';
 $lang['common_price_actual']='Actual Price';
+$lang['common_unit_price']='Unit Price';
 
 //Chhingchhing
 ?>

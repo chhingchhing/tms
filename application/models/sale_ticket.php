@@ -81,7 +81,7 @@ class Sale_ticket extends CI_Model
 	}
 	
 
-	function save ($category,$items, $seat_no,$item_number,$item_vol,$times_departure,$dates_departure, $deposit_price, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false)
+	function save ($office_name,$category,$items, $seat_no,$item_number,$item_vol,$times_departure,$dates_departure, $hotels,$rooms, $deposit_price, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false)
 	{
 		if(count($items)==0)
 			return -1;
@@ -104,7 +104,8 @@ class Sale_ticket extends CI_Model
 				'cc_ref_no' => $cc_ref_no,
 				'commision_price' => $commissioner_price,
 				'commisioner_id' => $this->commissioner->exists($commissioner_id) ? $commissioner_id : null,
-				'category' => $category
+				'category' => $category,
+				'office' => $office_name
 			);
 
 		if($sale_id)
@@ -159,47 +160,35 @@ class Sale_ticket extends CI_Model
 		{
 			if (isset($item['ticket_id']))
 			{
+				if (!$this->Supplier->check_duplicate_hotel($hotels[$item['line']-1])) {
+					$this->add_new_hotel_supplier($hotels[$item['line']-1]);
+				}
 				$cur_item_info = $this->ticket->get_info($item['ticket_id']);
 
-				if ($customer_id) {
+				/*if ($customer_id) {
 					$customer = $this->Customer->get_info($customer_id);
-					$sales_items_data = array
-					(
-						'orderID'=>$sale_id,
-						'ticketID'=>$item['ticket_id'],
-						'line'=>$item['line'],
-						'description'=>$item['description'],
-						'room_number' => $customer->room_number,
-						'hotel_name' => $customer->hotel_name,
-						'issue_date'=>date('Y-m-d H:i:s'),
-						'time_departure'=>$times_departure ? $times_departure[$item['line']-1] : '00:00:00',
-						'date_departure'=>$dates_departure ? $dates_departure[$item['line']-1] : '0000-00-00',
-						'quantity_purchased'=>$item['quantity'],
-						'discount_percent'=>$item['discount'],
-						'item_cost_price' => $cur_item_info->actual_price,
-						'item_unit_price'=>$item['price'],
-						'seat_number' => $seat_no ? $seat_no[$item['line']-1] : null,
-						'item_number' => $item_number ? $item_number[$item['line']-1] : null,
-						'item_vol' => $item_vol ? $item_vol[$item['line']-1] : null
-					);
 				} else {
-					$sales_items_data = array
-					(
-						'orderID'=>$sale_id,
-						'ticketID'=>$item['ticket_id'],
-						'line'=>$item['line'],
-						'description'=>$item['description'],
-						'issue_date'=>date('Y-m-d H:i:s'),
-						'time_departure'=>$times_departure ? $times_departure[$item['line']-1] : '00:00:00',
-						'date_departure'=>$dates_departure ? $dates_departure[$item['line']-1] : '0000-00-00',
-						'quantity_purchased'=>$item['quantity'],
-						'discount_percent'=>$item['discount'],
-						'item_cost_price' => $cur_item_info->actual_price,
-						'item_unit_price'=>$item['price'],
-						'seat_number' => $seat_no ? $seat_no[$item['line']-1] : null,
-						'item_number' => $item_number ? $item_number[$item['line']-1] : null
-					);
-				}
+				}*/
+
+				$sales_items_data = array
+				(
+					'orderID'=>$sale_id,
+					'ticketID'=>$item['ticket_id'],
+					'line'=>$item['line'],
+					'description'=>$item['description'],
+					'room_number' => $rooms ? $rooms[$item['line']-1] : '',
+					'hotel_name' => $hotels ? $hotels[$item['line']-1] : '',
+					'issue_date'=>date('Y-m-d H:i:s'),
+					'time_departure'=>$times_departure ? $times_departure[$item['line']-1] : '00:00:00',
+					'date_departure'=>$dates_departure ? $dates_departure[$item['line']-1] : '0000-00-00',
+					'quantity_purchased'=>$item['quantity'],
+					'discount_percent'=>$item['discount'],
+					'item_cost_price' => $cur_item_info->actual_price,
+					'item_unit_price'=>$item['price'],
+					'seat_number' => $seat_no ? $seat_no[$item['line']-1] : null,
+					'item_number' => $item_number ? $item_number[$item['line']-1] : null,
+					'item_vol' => $item_vol ? $item_vol[$item['line']-1] : null
+				);
 
 				$this->db->insert('detail_orders_tickets',$sales_items_data);
 				
@@ -210,7 +199,7 @@ class Sale_ticket extends CI_Model
 				//Ramel Inventory Tracking
 				//Inventory Count Details
 				$qty_buy = -$item['quantity'];
-				$sale_remarks ='CGATE '.$sale_id;
+				$sale_remarks = strtoupper($office_name).' '.$sale_id;
                                 
 				$inv_data = array
 				(
@@ -253,7 +242,7 @@ class Sale_ticket extends CI_Model
 					//Ramel Inventory Tracking
 					//Inventory Count Details
 					$qty_buy = -$item['quantity'] * $item_kit_item->quantity;
-					$sale_remarks ='CGATE '.$sale_id;
+					$sale_remarks = strtoupper($office_name).' '.$sale_id;
 					$inv_data = array
 					(
 						'trans_date'=>date('Y-m-d H:i:s'),
@@ -273,16 +262,16 @@ class Sale_ticket extends CI_Model
 		{
 			return -1;
 		}
-
+		
+		$sale_id = str_pad($sale_id, 6, '0',STR_PAD_LEFT);
 		return $sale_id;
 	}
-
-
-
-	
+        
+        //CHEN
 	function delete($sale_id, $all_data = false, $category)
 	{
-		$employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
+		$office = $this->session->userdata("office_number");
+		$employee_id=$this->Employee->get_logged_in_employee_info()->employee_id;
 		
 		$this->db->select('ticketID, quantity_purchased');
 		$this->db->from('detail_orders_tickets');
@@ -294,7 +283,7 @@ class Sale_ticket extends CI_Model
 			// $item_data = array('quantity'=>$cur_item_info->quantity + $sale_item_row['quantity_purchased']);
 			// $this->ticket->save($item_data,$sale_item_row['ticketID']);
 		
-			$sale_remarks ='CGATE '.$sale_id;
+			$sale_remarks = strtoupper($office).' '.$sale_id;
 			$inv_data = array
 			(
 				'trans_date'=>date('Y-m-d H:i:s'),
@@ -320,7 +309,7 @@ class Sale_ticket extends CI_Model
 				// $item_data = array('quantity'=>$cur_item_info->quantity + ($sale_item_kit_row['quantity_purchased'] * $item_kit_item->quantity));
 				// $this->ticket->save($item_data,$item_kit_item->ticket_id);
 
-				$sale_remarks ='CGATE '.$sale_id;
+				$sale_remarks = strtoupper($office).' '.$sale_id;
 				$inv_data = array
 				(
 					'trans_date'=>date('Y-m-d H:i:s'),
@@ -398,7 +387,7 @@ class Sale_ticket extends CI_Model
 		
 		if (isset($params['start_date']) && isset($params['end_date']))
 		{
-			$where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'"';
+			$where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'" and office ="'.$params['office'].'"';
 			
 			if ($this->config->item('hide_suspended_sales_in_reports'))
 			{
@@ -407,7 +396,7 @@ class Sale_ticket extends CI_Model
 		}
 		elseif ($this->config->item('hide_suspended_sales_in_reports'))
 		{
-			$where .='WHERE suspended = 0';
+			$where .='WHERE suspended = 0 and office = "'.$params['office'].'"';
 		}
 		
 		$this->_create_sales_tickets_temp_table_query($where);
@@ -419,13 +408,14 @@ class Sale_ticket extends CI_Model
 		(SELECT ".$this->db->dbprefix('orders').".deposit, ".$this->db->dbprefix('orders').".category, ".$this->db->dbprefix('orders').".deleted as deleted, sale_time, date(sale_time) as sale_date, 
 		".$this->db->dbprefix('detail_orders_tickets').".orderID as ID, comment,payment_type, customer_id, employee_id, commisioner_id,
 		".$this->db->dbprefix('tickets').".ticket_id, ".$this->db->dbprefix('tickets').".supplierID, quantity_purchased, item_cost_price, item_unit_price, 
-		discount_percent, (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100) as subtotal,
+		discount_percent, (item_unit_price*quantity_purchased - discount_percent) as subtotal,
 		".$this->db->dbprefix('detail_orders_tickets').".line as line, ".$this->db->dbprefix('detail_orders_tickets').".description as description,
 		commision_price, NULL as item_kit_id, item_number, time_departure, date_departure, seat_number, hotel_name, room_number, company_name, ".$this->db->dbprefix('detail_orders_tickets').".issue_date,  
 
-		ROUND( (item_unit_price*quantity_purchased - item_unit_price*quantity_purchased*discount_percent/100),2) as total,
+		ROUND( (item_unit_price*quantity_purchased - discount_percent),2) as total,
 
-		(item_unit_price*quantity_purchased - item_unit_price*quantity_purchased*discount_percent/100) - (item_cost_price*quantity_purchased) as profit
+		(item_unit_price*quantity_purchased - discount_percent) - (item_cost_price*quantity_purchased) as profit,
+        (item_unit_price * quantity_purchased - discount_percent) - (item_cost_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price
 		FROM ".$this->db->dbprefix('detail_orders_tickets')."
 		INNER JOIN ".$this->db->dbprefix('orders')." ON  ".$this->db->dbprefix('detail_orders_tickets').'.orderID='.$this->db->dbprefix('orders').'.order_id'."
 		INNER JOIN ".$this->db->dbprefix('tickets')." ON  ".$this->db->dbprefix('detail_orders_tickets').'.ticketID='.$this->db->dbprefix('tickets').'.ticket_id'."
@@ -437,15 +427,15 @@ class Sale_ticket extends CI_Model
 		(SELECT ".$this->db->dbprefix('orders').".deposit, ".$this->db->dbprefix('orders').".category, ".$this->db->dbprefix('orders').".deleted as deleted, sale_time, date(sale_time) as sale_date, 
 		".$this->db->dbprefix('orders_item_kits').".sale_id as ID, comment,payment_type, customer_id, employee_id, commisioner_id,
 		".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplierID, quantity_purchased, item_kit_cost_price, item_kit_unit_price, 
-		discount_percent, (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100) as subtotal,
+		discount_percent, (item_kit_unit_price*quantity_purchased - discount_percent) as subtotal,
 		".$this->db->dbprefix('orders_item_kits').".line as line, ".$this->db->dbprefix('orders_item_kits').".description as description,
 		
 		commision_price, ".$this->db->dbprefix('orders_item_kits').".item_kitID as item_kit_id, NULL as item_number, NULL as time_departure, NULL as date_departure, NULL as seat_number, NULL as hotel_name, NULL as room_number, 
 		NULL as company_name, NULL as issue_date, 
 		
-		ROUND((item_kit_unit_price*quantity_purchased - item_kit_unit_price*quantity_purchased*discount_percent/100),2) as total,
-
-		(item_kit_unit_price*quantity_purchased - item_kit_unit_price*quantity_purchased*discount_percent/100) - (item_kit_cost_price*quantity_purchased) as profit
+		ROUND((item_kit_unit_price*quantity_purchased - discount_percent),2) as total,
+		(item_kit_unit_price*quantity_purchased - discount_percent) - (item_kit_cost_price*quantity_purchased) as profit,
+        (item_kit_unit_price * quantity_purchased - discount_percent) - (item_kit_cost_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price
 		FROM ".$this->db->dbprefix('orders_item_kits')."
 		INNER JOIN ".$this->db->dbprefix('orders')." ON  ".$this->db->dbprefix('orders_item_kits').'.sale_id='.$this->db->dbprefix('orders').'.order_id'."
 		INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('orders_item_kits').'.item_kitID='.$this->db->dbprefix('item_kits').'.item_kit_id'."
@@ -455,7 +445,8 @@ class Sale_ticket extends CI_Model
 
 	function undelete($category, $sale_id)
 	{
-		$employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
+		$employee_id = $this->Employee->get_logged_in_employee_info()->employee_id;
+		$office_name = $this->session->userdata("office_number");
 		
 		$this->db->select('ticketID, quantity_purchased');
 		$this->db->from('detail_orders_tickets');
@@ -467,7 +458,7 @@ class Sale_ticket extends CI_Model
 			// // $item_data = array('quantity'=>$cur_item_info->quantity - $sale_item_row['quantity_purchased']);
 			// $this->ticket->save($item_data,$sale_item_row['ticketID']);
 		
-			$sale_remarks ='CGATE '.$sale_id;
+			$sale_remarks = strtoupper($office_name).' '.$sale_id;
 			$inv_data = array
 			(
 				'trans_date'=>date('Y-m-d H:i:s'),
@@ -489,7 +480,7 @@ class Sale_ticket extends CI_Model
 			foreach($this->item_kit_ticket->get_info($sale_item_kit_row['item_kitID']) as $item_kit_item)
 			{
 
-				$sale_remarks ='CGATE '.$sale_id;
+				$sale_remarks = strtoupper($office_name).' '.$sale_id;
 				$inv_data = array
 				(
 					'trans_date'=>date('Y-m-d H:i:s'),
@@ -504,6 +495,37 @@ class Sale_ticket extends CI_Model
 		}	
 		$this->db->where('order_id', $sale_id);
 		return $this->db->update('orders', array('deleted' => 0));
+	}
+
+	// Add new supplier when add new from sale item each of them
+	function add_new_hotel_supplier($company_name) {
+		$person_data = array(
+			'first_name'=>$this->input->post('first_name'),
+			'last_name'=>$this->input->post('last_name'),
+			'email'=>$this->input->post('email'),
+			'phone_number'=>$this->input->post('phone_number'),
+			'address_1'=>$this->input->post('address_1'),
+			'address_2'=>$this->input->post('address_2'),
+			'city'=>$this->input->post('city'),
+			'state'=>$this->input->post('state'),
+			'zip'=>$this->input->post('zip'),
+			'country'=>$this->input->post('country'),
+			'comments'=>$this->input->post('comments')
+		);
+
+		if ($this->input->post('new_supplier_type')) {
+            $supplier_types = array(
+                'supplier_type_name' => $this->input->post('new_supplier_type')
+            );
+            $this->Supplier->add_new_supplier_type($supplier_types);
+            $supplier_typeID = $supplier_types['supplier_type_id'];
+        }
+		$supplier_data=array(
+			'company_name'=>$company_name,
+			'account_number'=>$this->input->post('account_number')=='' ? null:$this->input->post('account_number'),
+			'supplier_typeID' => $this->input->post('supplier_type') != 0 ? $this->input->post('supplier_type') : $supplier_typeID
+		);
+		$this->Supplier->save($person_data,$supplier_data);
 	}
 
 }

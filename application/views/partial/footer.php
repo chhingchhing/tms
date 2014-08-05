@@ -2,10 +2,10 @@
 if ($this->uri->segment(1) == "dashboard" OR $this->uri->segment(2)) { ?>
 
 <div class="panel panel-info">
-    <div class="panel-heading">
-    <table id="footer_info">
+    <div class="panel-heading" id="footer_heading">
+    <table id="footer_info" class="table table-register">
 		<tr>
-			<td id="menubar_footer" class="col-md-10">
+			<td id="menubar_footer" class="col-md-9">
 			<?php echo lang('common_welcome')." <b> $user_info->first_name $user_info->last_name! | </b>"; ?>
 			<?php
 			if ($this->config->item('track_cash') && $this->Sale->is_register_log_open()) {
@@ -48,15 +48,15 @@ if ($this->uri->segment(1) == "dashboard" OR $this->uri->segment(2)) { ?>
 	<table id="footer">
 		<tr>
 			<td id="footer_cred">
-				<?php echo lang('common_please_visit_my'); ?> 
+			<?php echo lang('common_powered_by'); ?> 
 					<a href="http://www.codingate.com" target="_blank">
-						<?php echo lang('common_website'); ?>
+						<img src="<?php echo base_url() . 'images/logo.png'; ?>" border="0" alt="logo Image" />
 					</a> 
-				<?php echo lang('common_learn_about_project'); ?>.
+			
 			</td>
-			<td id="footer_version">
-                          <?php echo lang('common_you_are_using_tms')?> <?php echo APPLICATION_VERSION; ?>.
-			</td>
+			<!-- <td id="footer_version">
+                          <?php// echo lang('common_you_are_using_tms')?> <?php //echo APPLICATION_VERSION; ?>
+			</td> -->
 		</tr>
 	</table>
   </div>
@@ -81,7 +81,6 @@ if ($this->uri->segment(1) == "dashboard" OR $this->uri->segment(2)) { ?>
 	'assets/js/jquery_form.js', 'assets/js/massage.js', 'assets/js/bike.js','assets/js/tour.js'
 	,'assets/timepicker/js/bootstrap-formhelpers.js'
 	,'assets/timepicker/js/bootstrap-formhelpers-timepicker.js'
-	,'assets/timepicker/js/bootstrap-formhelpers-datepicker.js'
 	,'js/jquery.datePicker-2.1.2.js'
 	,'js/datepicker.js','js/date.js'
 	,'assets/js/generic.js','assets/js/ticket.js','assets/js/transport.js','assets/js/commis.js'

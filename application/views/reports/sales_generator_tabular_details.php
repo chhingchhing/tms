@@ -20,10 +20,10 @@
     <div class="panel-body">
         <!-- Panel content -->
         <div class="table-responsive">
-            <table id="contents">
+            <table id="contents" class="table table-register">
                     <tr>
                             <td id="item_table">
-                                    <div id="table_holder" style="width: 960px;">
+                                    <div id="table_holder">
                                             <table class="tablesorter report table" id="sortable_table">
                                                     <thead>
                                                             <tr>
@@ -70,11 +70,16 @@
                                             </table>
                                     </div>
 
-                                    <div id="report_summary" class="tablesorter report" style="margin-right: 10px;">
-                                    <?php foreach($overall_summary_data as $name=>$value) { ?>
-                                            <div class="summary_row"><?php echo "<strong>".lang('reports_'.$name). '</strong>: '.to_currency($value); ?></div>
-                                    <?php }?>
-                                    </div>
+                                    <?php 
+                                    if ($this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id)) { ?>
+                                        <div id="report_summary" class="tablesorter report" style="margin-right: 10px;">
+                                        <?php foreach($overall_summary_data as $name=>$value) { ?>
+                                                <div class="summary_row"><?php echo "<strong>".lang('reports_'.$name). '</strong>: '.to_currency($value); ?></div>
+                                        <?php }?>
+                                        </div>
+                                    <?php }
+                                    ?>
+                                    
                             </td>
                     </tr>
             </table>

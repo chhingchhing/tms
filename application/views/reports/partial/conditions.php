@@ -62,37 +62,121 @@
 </style>
 
 <script type="text/javascript">
-// (function($) 
-// {
-//   	$.fn.tokenize = function(options)
-// 	{
-// 		alert("tokenize");
-// 		var settings = $.extend({}, {prePopulate: false}, options);
-//     	return this.each(function() 
-// 		{
-//       		$(this).tokenInput('<?php echo site_url("reports/sales_generator"); ?>?act=autocomplete',
-// 			{
-// 				theme: "facebook",
-// 				queryParam: "term",
-// 				extraParam: "w",
-// 				hintText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_hintText"));?>,
-// 				noResultsText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_noResultsText"));?>,
-// 				searchingText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_searchingText"));?>,
-// 				preventDuplicates: true,
-// 				prePopulate: settings.prePopulate
-// 			});
-//     	});
-//  	}
-// })(jQuery);
+
+/*jQuery("body").on("keypress", "td.value input", function() {
+    var fullUrl = window.location.pathname;
+    var path = fullUrl.split("/");
+    var w = jQuery("td.value input.w").attr("w");
+    var url = baseURL + "reports/"+path[3]+"?act=autocomplete&w="+w+"&term="+this.value;
+    // var settings = $.extend({}, {prePopulate: false}, '');
+    if (w != "") {
+        jQuery.ajax({
+            type: "get",
+            url: url,
+            dataType: "json",
+            success: function(response) {
+            	// jQuery("td.value input").tokenize();
+                jQuery("td.value input").tokenInput(response, 
+                    {
+                    theme: "facebook",
+                    queryParam: "term",
+                    extraParam: "w",
+                    hintText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_hintText"));?>,
+                    noResultsText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_noResultsText"));?>,
+                    searchingText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_searchingText"));?>,
+                    preventDuplicates: true,
+                    // prePopulate: settings.prePopulate
+                });
+            }
+        });
+    };
+});*/
+
+// **************************************
+$('body').on("change", "select.selectField", function() {
+	var term = $(this).nextAll('td.value input.w').val();
+	 var w = $(this).nextAll("td.value input.w").attr("w");
+	 var test = $(this).next("td.value input.w").attr("w");
+    var url = $("form[name='salesReportGenerator']").attr("action")+"?act=autocomplete&w="+w+"&term="+term;
+	if (w != "") {
+        $(this).nextAll('td.value input.w').tokenInput(url,{
+            theme: "facebook",
+            queryParam: "term",
+            extraParam: "w",
+            hintText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_hintText"));?>,
+            noResultsText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_noResultsText"));?>,
+            searchingText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_searchingText"));?>,
+            preventDuplicates: true,
+            prePopulate: term
+        });
+    };
+});
+
+jQuery("body").on("change", "td.value input.w", function() {
+	var term = $(this).val();
+    var w = $(this).attr("w");
+    var url = $("form[name='salesReportGenerator']").attr("action")+"?act=autocomplete&w="+w+"&term="+term;
+
+    if (w != "") {
+        $(this).tokenInput(url,{
+            theme: "facebook",
+            queryParam: "term",
+            extraParam: "w",
+            hintText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_hintText"));?>,
+            noResultsText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_noResultsText"));?>,
+            searchingText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_searchingText"));?>,
+            preventDuplicates: true,
+            prePopulate: term
+        });
+    };
+});
+// **************************************
+
+// jQuery("body").on("change", "td.value input", function() {
+// 	var term = $(this).val();
+//     var fullUrl = window.location.pathname;
+//     var path = fullUrl.split("/");
+//     var w = jQuery("td.value input.w").attr("w");
+//     var url = baseURL + "reports/"+path[3]+"?act=autocomplete&w="+w+"&term="+this.value;
+//     if (w != "") {
+//         jQuery.ajax({
+//             type: "get",
+//             url: url,
+//             dataType: "json",
+//             success: function(response) {
+//             	console.log(response);
+//                 jQuery("td.value input").tokenInput(response, 
+//                     {
+//                     theme: "facebook",
+//                     queryParam: "term",
+//                     extraParam: "w",
+//                     hintText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_hintText"));?>,
+//                     noResultsText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_noResultsText"));?>,
+//                     searchingText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_searchingText"));?>,
+//                     preventDuplicates: true,
+//                     prePopulate: term
+//                 });
+//             }
+//         });
+//     };
+// });
+
+
+
 
 jQuery(function($) 
 {
   	$.fn.tokenize = function(options)
 	{
+    var fullUrl = window.location.pathname;
+    var path = fullUrl.split("/");
+    var w = jQuery("td.value input.w").attr("w");
+    var url = baseURL + "reports/"+path[3]+"?act=autocomplete&w="+w+"&term="+this.value;
 		var settings = $.extend({}, {prePopulate: false}, options);
     	return this.each(function() 
 		{
-      		$(this).tokenInput('<?php echo site_url("reports/sales_generator"); ?>?act=autocomplete',
+      		// $(this).tokenInput('<?php echo site_url("reports/sales_generator_".$this->uri->segment(4)); ?>?act=autocomplete',
+      		$(this).tokenInput(url,
 			{
 				theme: "facebook",
 				queryParam: "term",
@@ -123,7 +207,7 @@ jQuery("body").on("change", "select#matchType", function() {
 
 jQuery("body").on("click", "a.AddCondition", function(event) {
 	event.preventDefault();
-	var sInput = $("<input />").attr({"type": "text", "name": "value[]", "w":"", "value":""});
+	var sInput = $("<input />").attr({"type": "text", "name": "value[]", "w":"", "value":"", "class":"w"});
 	$('.conditions tr.duplicate:last').clone().insertAfter($('.conditions tr.duplicate:last'));
 	$("input", $('.conditions tr.duplicate:last')).parent().html("").append(sInput).children("input").tokenize();
 	$("option", $('.conditions tr.duplicate:last select')).removeAttr("disabled").removeAttr("selected").first().attr("selected", "selected");
@@ -141,7 +225,7 @@ jQuery("body").on("click", "a.DelCondition", function(e) {
 
 // $(".selectField").on("change", function() {
 jQuery("body").on("change", ".selectField", function() {
-	var sInput = $("<input />").attr({"type": "text", "name": "value[]", "w":"", "value":""});
+	var sInput = $("<input />").attr({"type": "text", "name": "value[]", "w":"", "value":"", "class":"w"});
 	var field = $(this);
 	// alert(field.toSource())
 	// Remove Value Field
@@ -162,7 +246,7 @@ jQuery("body").on("change", ".selectField", function() {
 		{
 			if ($(this).val() == 6) 
 			{
-				field.parent().parent().children("td.value").append($("<input />").attr({"type": "hidden", "name": "value[]", "value":""}));		
+				field.parent().parent().children("td.value").append($("<input />").attr({"type": "hidden", "name": "value[]", "value":"", "class":"w"}));		
 			} 
 			else 
 			{
@@ -180,18 +264,18 @@ jQuery(function() {
 			echo "var prepopulate = $.parseJSON('".json_encode($prepopulate)."');";
 		}
 	?>
-	var sInput = $("<input />").attr({"type": "text", "name": "value[]", "w":"", "value":""});
+	var sInput = $("<input />").attr({"type": "text", "name": "value[]", "w":"", "value":"", "class":"w"});
 	$(".selectField").each(function(i) {
 		if ($(this).val() == 0) {
 			$(this).parent().parent().children("td.condition").children(".selectCondition").attr("disabled", "disabled");
 			$(this).parent().parent().children("td.value").html("").append(sInput.attr("disabled", "disabled"));	
 		} else {
 			if ($(this).val() != 2 && $(this).val() != 6 && $(this).val() != 7 && $(this).val() != 10) {
-				// $(this).parent().parent().children("td.value").children("input").attr("w", $("option:selected", $(this)).attr('rel')).tokenize({prePopulate: prepopulate.field[i][$(this).val()] });	
 				$(this).parent().parent().children("td.value").children("input").attr("w", $("option:selected", $(this)).attr('rel')).tokenize({prePopulate: prepopulate.field[i][$(this).val()] });	
+				// $(this).parent().parent().children("td.value").children("input").attr("w", $("option:selected", $(this)).attr('rel')).tokenize({prePopulate: prepopulate.field[i][$(this).val()] });	
 			}
 			if ($(this).val() == 6) {
-				$(this).parent().parent().children("td.value").html("").append($("<input />").attr({"type": "hidden", "name": "value[]", "value":""}));	
+				$(this).parent().parent().children("td.value").html("").append($("<input />").attr({"type": "hidden", "name": "value[]", "value":"", "class":"w"}));	
 			}
 			disableConditions($(this), false);
 		}

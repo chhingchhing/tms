@@ -5,7 +5,7 @@ class Sale_tour extends CI_Model
 	function get_cash_sales_total_for_shift($shift_start, $shift_end)
     {
 		$sales_totals = $this->get_sales_totaled_by_id($shift_start, $shift_end);
-        $employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
+        $employee_id=$this->Employee->get_logged_in_employee_info()->employee_id;
         
 		$this->db->select('sales_payments.sale_id, sales_payments.payment_type, payment_amount', false);
         $this->db->from('sales_payments');
@@ -155,9 +155,8 @@ class Sale_tour extends CI_Model
 	}
 	
 
-	function save ($category,$items,$guide_id, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false)
+	function save ($office_name,$category,$items,$guide_id, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$times_departure,$dates_departure,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false)
 	{
-
 		if(count($items)==0)
 			return -1;
 
@@ -178,7 +177,8 @@ class Sale_tour extends CI_Model
 				'cc_ref_no' => $cc_ref_no,
 				'commision_price' => $commissioner_price,
 				'commisioner_id' => $this->commissioner->exists($commissioner_id) ? $commissioner_id : null,
-				'guide_id' => $this->guide->exists($guide_id) ? $guide_id : null
+				'guide_id' => $this->guide->exists($guide_id) ? $guide_id : null,
+				'office' => $office_name
 			);
 
 		if($sale_id)
@@ -248,8 +248,8 @@ class Sale_tour extends CI_Model
 						'room_number' => $customer->room_number,
 						'hotel_name' => $customer->hotel_name,
 						'issue_date'=>date('Y-m-d H:i:s'),
-						'departure_date' => $item['departure_date'],
-						'departure_time'=>$item['departure_time'],
+						'departure_date' => $dates_departure ? $dates_departure[$item['line']-1] : '0000-00-00',
+						'departure_time'=>$times_departure ? $times_departure[$item['line']-1] : '00:00:00',
 						'quantity_purchased'=>$item['quantity'],
 						'discount_percent'=>$item['discount'],
 						'item_cost_price' => $cur_item_info->actual_price,
@@ -265,8 +265,8 @@ class Sale_tour extends CI_Model
 						'line'=>$item['line'],
 						'description'=>$item['description'],
 						'issue_date'=>date('Y-m-d H:i:s'),
-						'departure_date' => $item['departure_date'],
-						'departure_time'=>$item['departure_time'],
+						'departure_date' => $dates_departure ? $dates_departure[$item['line']-1] : '0000-00-00',
+						'departure_time'=>$times_departure ? $times_departure[$item['line']-1] : '00:00:00',
 						'quantity_purchased'=>$item['quantity'],
 						'discount_percent'=>$item['discount'],
 						'item_cost_price' => $cur_item_info->actual_price,
@@ -285,7 +285,7 @@ class Sale_tour extends CI_Model
 				//Ramel Inventory Tracking
 				//Inventory Count Details
 				$qty_buy = -$item['quantity'];
-				$sale_remarks ='CGATE '.$sale_id;
+				$sale_remarks = strtoupper($office_name).' '.$sale_id;
 				$inv_data = array
 				(
 					'trans_date'=>date('Y-m-d H:i:s'),
@@ -322,7 +322,7 @@ class Sale_tour extends CI_Model
 					//Ramel Inventory Tracking
 					//Inventory Count Details
 					$qty_buy = -$item['quantity'] * $item_kit_item->quantity;
-					$sale_remarks ='CGATE '.$sale_id;
+					$sale_remarks = strtoupper($office_name).' '.$sale_id;
 					$inv_data = array
 					(
 						'trans_date'=>date('Y-m-d H:i:s'),
@@ -344,6 +344,7 @@ class Sale_tour extends CI_Model
 			return -1;
 		}
 
+		$sale_id = str_pad($sale_id, 6, '0',STR_PAD_LEFT);
 		return $sale_id;
 	}
 	
@@ -378,7 +379,7 @@ class Sale_tour extends CI_Model
 	
 	function delete($sale_id, $all_data = false)
 	{
-		$employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
+		$employee_id=$this->Employee->get_logged_in_employee_info()->employee_id;
 		
 		$this->db->select('tour_id, quantity_purchased');
 		$this->db->from('detail_orders_tours');
@@ -390,7 +391,7 @@ class Sale_tour extends CI_Model
 			// $item_data = array('quantity'=>$cur_item_info->quantity + $sale_item_row['quantity_purchased']);
 			// $this->tour->save($item_data,$sale_item_row['tour_id']);
 		
-			$sale_remarks ='CGATE '.$sale_id;
+			$sale_remarks = strtoupper($this->session->userdata("office_number")).' '.$sale_id;
 			$inv_data = array
 			(
 				'trans_date'=>date('Y-m-d H:i:s'),
@@ -414,7 +415,7 @@ class Sale_tour extends CI_Model
 				// $item_data = array('quantity'=>$cur_item_info->quantity + ($sale_item_kit_row['quantity_purchased'] * $item_kit_item->quantity));
 				// $this->tour->save($item_data,$item_kit_item->tour_id);
 
-				$sale_remarks ='CGATE '.$sale_id;
+				$sale_remarks = strtoupper($this->session->userdata("office_number")).' '.$sale_id;
 				$inv_data = array
 				(
 					'trans_date'=>date('Y-m-d H:i:s'),
@@ -445,7 +446,7 @@ class Sale_tour extends CI_Model
 	
 	function undelete($sale_id)
 	{
-		$employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
+		$employee_id=$this->Employee->get_logged_in_employee_info()->employee_id;
 		
 		$this->db->select('item_id, quantity_purchased');
 		$this->db->from('sales_items');
@@ -569,13 +570,13 @@ class Sale_tour extends CI_Model
 	
 
 	//We create a temp table that allows us to do easy report/sales queries
-	public function create_sales_items_temp_table($params)
+	public function create_sales_tours_temp_table($params)
 	{
 		$where = '';
 		
 		if (isset($params['start_date']) && isset($params['end_date']))
 		{
-			$where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'"';
+			$where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'" and office ="'.$params['office'].'"';
 			
 			if ($this->config->item('hide_suspended_sales_in_reports'))
 			{
@@ -587,54 +588,41 @@ class Sale_tour extends CI_Model
 			$where .='WHERE suspended = 0';
 		}
 		
-		$this->_create_sales_items_temp_table_query($where);
+		$this->_create_sales_tours_temp_table_query($where);
 	}
-	
-	function _create_sales_items_temp_table_query($where)
+	function _create_sales_tours_temp_table_query($where) 
 	{
-		$this->db->query("CREATE TEMPORARY TABLE ".$this->db->dbprefix('sales_items_temp')."
-		(SELECT ".$this->db->dbprefix('sales').".deleted as deleted, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('sales_items').".sale_id, comment,payment_type, customer_id, employee_id, 
-		".$this->db->dbprefix('items').".item_id, NULL as item_kit_id, supplier_id, quantity_purchased, item_cost_price, item_unit_price, category, 
-		discount_percent, (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100) as subtotal,
-		".$this->db->dbprefix('sales_items').".line as line, serialnumber, ".$this->db->dbprefix('sales_items').".description as description,
-		ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)+ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) 
-		+((ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) + (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100))
-		*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100),2) as total,
-		ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) 
-		+((ROUND((item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) + (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100))
-		*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as tax,
-		(item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100) - (item_cost_price*quantity_purchased) as profit
-		FROM ".$this->db->dbprefix('sales_items')."
-		INNER JOIN ".$this->db->dbprefix('sales')." ON  ".$this->db->dbprefix('sales_items').'.sale_id='.$this->db->dbprefix('sales').'.sale_id'."
-		INNER JOIN ".$this->db->dbprefix('items')." ON  ".$this->db->dbprefix('sales_items').'.item_id='.$this->db->dbprefix('items').'.item_id'."
-		LEFT OUTER JOIN ".$this->db->dbprefix('suppliers')." ON  ".$this->db->dbprefix('items').'.supplier_id='.$this->db->dbprefix('suppliers').'.person_id'."
-		LEFT OUTER JOIN ".$this->db->dbprefix('sales_items_taxes')." ON  "
-		.$this->db->dbprefix('sales_items').'.sale_id='.$this->db->dbprefix('sales_items_taxes').'.sale_id'." and "
-		.$this->db->dbprefix('sales_items').'.item_id='.$this->db->dbprefix('sales_items_taxes').'.item_id'." and "
-		.$this->db->dbprefix('sales_items').'.line='.$this->db->dbprefix('sales_items_taxes').'.line'. "
+		 $this->db->query("CREATE TEMPORARY TABLE " . $this->db->dbprefix('sales_tours_temp') . "
+		(SELECT " . $this->db->dbprefix('orders') . ".order_id as ID, " . $this->db->dbprefix('orders') . ".deleted, sale_time, date(sale_time) as sale_date, 
+		" . $this->db->dbprefix('detail_orders_tours') . ".orderID, comment,payment_type, customer_id,destination, employee_id,category, commisioner_id,
+		" . $this->db->dbprefix('tours') . ".tour_id, " . $this->db->dbprefix('tours') . ".supplier_id, quantity_purchased, item_cost_price, item_unit_price, 
+		commision_price,company_name, discount_percent, (item_unit_price * quantity_purchased - discount_percent) as subtotal,
+		" .$this->db->dbprefix('detail_orders_tours').".deposit as tour_deposit,". $this->db->dbprefix('detail_orders_tours') . ".line as line, ". $this->db->dbprefix('detail_orders_tours') . ".by as tour_by, ". $this->db->dbprefix('detail_orders_tours') . ".	
+            departure_date, ".  $this->db->dbprefix('tours').".tour_name as item_name, ".$this->db->dbprefix('detail_orders_tours').".description as tour_descr, ". $this->db->dbprefix('detail_orders_tours') . ".departure_time," . $this->db->dbprefix('detail_orders_tours') . ".issue_date,  
+		ROUND( (item_unit_price * quantity_purchased -  discount_percent),2) as total,
+		(item_unit_price * quantity_purchased - discount_percent) - (item_cost_price * quantity_purchased) as profit,
+        (item_unit_price * quantity_purchased - discount_percent) - (item_cost_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price
+		FROM " . $this->db->dbprefix('detail_orders_tours') . "
+		INNER JOIN " . $this->db->dbprefix('orders') . " ON  " . $this->db->dbprefix('detail_orders_tours') . '.orderID=' . $this->db->dbprefix('orders') . '.order_id' . "
+		INNER JOIN " . $this->db->dbprefix('tours') . " ON  " . $this->db->dbprefix('detail_orders_tours') . '.tour_id=' . $this->db->dbprefix('tours') . '.tour_id' . "
+		LEFT OUTER JOIN " . $this->db->dbprefix('suppliers') . " ON  " . $this->db->dbprefix('tours') . '.supplier_id=' . $this->db->dbprefix('suppliers') . '.supplier_id' . "
 		$where
-		GROUP BY sale_id, item_id, line) 
+        GROUP BY ID, tour_id, line) 
 		UNION ALL
-		(SELECT ".$this->db->dbprefix('sales').".deleted as deleted, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('sales_item_kits').".sale_id, comment,payment_type, customer_id, employee_id, 
-		NULL as item_id, ".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplier_id, quantity_purchased, item_kit_cost_price, item_kit_unit_price, category, 
-		discount_percent, (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100) as subtotal,
-		".$this->db->dbprefix('sales_item_kits').".line as line, '' as serialnumber, ".$this->db->dbprefix('sales_item_kits').".description as description,
-		ROUND((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)+ROUND((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) 
-		+((ROUND((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) + (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100))
-		*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100),2) as total,
-		ROUND((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) 
-		+((ROUND((item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100)*(SUM(CASE WHEN cumulative != 1 THEN percent ELSE 0 END)/100),2) + (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100))
-		*(SUM(CASE WHEN cumulative = 1 THEN percent ELSE 0 END))/100) as tax,
-		(item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100) - (item_kit_cost_price*quantity_purchased) as profit
-		FROM ".$this->db->dbprefix('sales_item_kits')."
-		INNER JOIN ".$this->db->dbprefix('sales')." ON  ".$this->db->dbprefix('sales_item_kits').'.sale_id='.$this->db->dbprefix('sales').'.sale_id'."
-		INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('sales_item_kits').'.item_kit_id='.$this->db->dbprefix('item_kits').'.item_kit_id'."
-		LEFT OUTER JOIN ".$this->db->dbprefix('sales_item_kits_taxes')." ON  "
-		.$this->db->dbprefix('sales_item_kits').'.sale_id='.$this->db->dbprefix('sales_item_kits_taxes').'.sale_id'." and "
-		.$this->db->dbprefix('sales_item_kits').'.item_kit_id='.$this->db->dbprefix('sales_item_kits_taxes').'.item_kit_id'." and "
-		.$this->db->dbprefix('sales_item_kits').'.line='.$this->db->dbprefix('sales_item_kits_taxes').'.line'. "
+		(SELECT ".$this->db->dbprefix('orders').".order_id as ID, ".$this->db->dbprefix('orders').".deleted, sale_time, date(sale_time) as sale_date, 
+		".$this->db->dbprefix('orders_item_kits').".sale_id as orderID, comment,payment_type, customer_id, NULL as destination, employee_id, NULL as category, commisioner_id,
+		".$this->db->dbprefix('item_kits').".item_kit_id as tour_id, '' as supplier_id, quantity_purchased, item_kit_cost_price as item_cost_price, item_kit_unit_price as item_unit_price, 		
+		commision_price, NULL as company_name, discount_percent, (item_kit_unit_price*quantity_purchased - discount_percent) as subtotal,
+		NULL as tour_deposit, ".$this->db->dbprefix('orders_item_kits').".line as line, NULL as tour_by, NULL as departure_date, name as item_name, ".$this->db->dbprefix('orders_item_kits').".description as tour_descr, NULL as departure_time, NULL as issue_date,
+		ROUND((item_kit_unit_price*quantity_purchased - discount_percent),2) as total,
+		(item_kit_unit_price*quantity_purchased - discount_percent) - (item_kit_cost_price*quantity_purchased) as profit,
+		(item_kit_unit_price * quantity_purchased - discount_percent) - (item_kit_cost_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price		
+        
+		FROM ".$this->db->dbprefix('orders_item_kits')."
+		INNER JOIN ".$this->db->dbprefix('orders')." ON  ".$this->db->dbprefix('orders_item_kits').'.sale_id='.$this->db->dbprefix('orders').'.order_id'."
+		INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('orders_item_kits').'.item_kitID='.$this->db->dbprefix('item_kits').'.item_kit_id'."
 		$where
-		GROUP BY sale_id, item_kit_id, line) ORDER BY sale_id, line");
+		GROUP BY ID, line) ORDER BY ID, line");
 	}
 	
 	public function get_giftcard_value( $giftcardNumber )

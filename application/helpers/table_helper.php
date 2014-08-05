@@ -1,7 +1,147 @@
 <?php
 
 /**
-  Gets the html table to manage ticket.
+*Gets the html table to manage offices
+*/
+function get_offices_table($offices, $controller) {
+    $CI = & get_instance();
+
+    $table = '<table class="tablesorter table table-hover" id="data_table" >';//id="sortable_table"
+
+    $headers = array('<input type="checkbox" id="select_all" />',
+        $CI->lang->line('offices_name'),
+        $CI->lang->line('offices_address'),
+        $CI->lang->line('common_email'),
+        $CI->lang->line('common_phone_number'),
+        $CI->lang->line('common_website'),
+        $CI->lang->line('tickets_ticket_action'),
+    );
+
+    $table.='<thead><tr>';
+    $count = 0;
+    foreach ($headers as $header) {
+        $count++;
+
+        if ($count == 1) {
+            $table.="<th class='leftmost'>$header</th>";
+        } elseif ($count == count($headers)) {
+            $table.="<th class='rightmost'>$header</th>";
+        } else {
+            $table.="<th>$header</th>";
+        }
+    }
+    $table.='</tr></thead><tbody>';
+    $table.=get_offices_manage_table_data_rows($offices, $controller);
+    $table.='</tbody></table>';
+    return $table;
+}
+
+/*
+  Gets the html data rows for the offices.
+ */
+function get_offices_manage_table_data_rows($offices, $controller) {
+    $CI = & get_instance();
+    $table_data_rows = '';
+    foreach ($offices->result() as $item) {
+        $table_data_rows.=get_offices_data_row($item, $controller);
+    }
+
+    if ($offices->num_rows() == 0) {
+        $table_data_rows.="<tr><td colspan='11'><div class='warning_message' style='padding:7px;'>" . lang('offices_no_offices_display') . "</div></tr></tr>";
+    }
+
+    return $table_data_rows;
+}
+
+function get_offices_data_row($item, $controller) {
+    $CI = & get_instance();
+    $controller_name = strtolower(get_class($CI));
+    // $width = $controller->get_form_width();
+
+    $table_data_row = '<tr>';
+    $table_data_row.="<td><input type='checkbox' class='check_value' name='ids[]' id='item_$item->office_id' value='" . $item->office_id . "'/></td>";
+    $table_data_row.='<td>' . $item->office_name . '</td>';
+    $table_data_row.='<td>' . $item->ofc_address . '</td>';
+    $table_data_row.='<td>' . $item->ofc_email . '</td>';
+    $table_data_row.='<td>' . $item->ofc_phone . '</td>';
+    $table_data_row.='<td>' . $item->ofc_website . '</td>';
+    
+    $table_data_row.='<td width="4%" class="rightmost">' . anchor("$controller_name/view/$item->office_id", lang('common_edit'), array('class' => 'thickbox glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_offices')) . '</td>';
+    $table_data_row.='</tr>';
+    return $table_data_row;
+}
+
+/**
+*Gets the html table to manage currency
+*/
+function get_currency_table($currency, $controller) {
+    $CI = & get_instance();
+    // $has_cost_price_permission = $CI->Employee->has_module_action_permission('currency', 'see_cost_price', $CI->Employee->get_logged_in_employee_info()->employee_id);
+
+    $table = '<table class="tablesorter table table-hover" id="data_table" >';//id="sortable_table"
+
+    $headers = array('<input type="checkbox" id="select_all" />',
+        // $CI->lang->line('currency_id'),
+        $CI->lang->line('currency_type_name'),
+        $CI->lang->line('currency_value'),
+        $CI->lang->line('tickets_ticket_action'),
+    );
+
+    $table.='<thead><tr>';
+    $count = 0;
+    foreach ($headers as $header) {
+        $count++;
+
+        if ($count == 1) {
+            $table.="<th class='leftmost'>$header</th>";
+        } elseif ($count == count($headers)) {
+            $table.="<th class='rightmost'>$header</th>";
+        } else {
+            $table.="<th>$header</th>";
+        }
+    }
+    $table.='</tr></thead><tbody>';
+    $table.=get_currency_manage_table_data_rows($currency, $controller);
+    $table.='</tbody></table>';
+    return $table;
+}
+
+/*
+  Gets the html data rows for the currency.
+ */
+function get_currency_manage_table_data_rows($currency, $controller) {
+    $CI = & get_instance();
+    $table_data_rows = '';
+
+    foreach ($currency->result() as $item) {
+        $table_data_rows.=get_currency_data_row($item, $controller);
+    }
+
+    if ($currency->num_rows() == 0) {
+        $table_data_rows.="<tr><td colspan='11'><div class='warning_message' style='padding:7px;'>" . lang('currency_no_currency_display') . "</div></tr></tr>";
+    }
+
+    return $table_data_rows;
+}
+
+function get_currency_data_row($item, $controller) {
+    $CI = & get_instance();
+    $controller_name = strtolower(get_class($CI));
+    $width = $controller->get_form_width();
+
+    $table_data_row = '<tr>';
+    $table_data_row.="<td><input type='checkbox' class='check_value' name='ids[]' id='item_$item->currency_id' value='" . $item->currency_id . "'/></td>";
+    // $table_data_row.='<td width="10%">' . $item->currency_id . '</td>';
+    $table_data_row.='<td>' . $item->currency_type_name . '</td>';
+    $table_data_row.='<td>' . $item->currency_value . '</td>';
+    
+    $table_data_row.='<td class="rightmost">' . anchor("#$controller_name/view/$item->currency_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_currency', 'modals' => 'currency')) . '</td>';
+    $table_data_row.='</tr>';
+    return $table_data_row;
+}
+
+/**
+ * Gets the html table to manage ticket.
  */
 function get_tickets_table($ticket, $controller) {
     $CI = & get_instance();
@@ -92,7 +232,7 @@ function get_ticket_data_row($item, $controller) {
         $table_data_row.='<td width="10%" style="padding-right:20px; text-align:right;">' . to_currency($item->actual_price) . '</td>';
     }
     $table_data_row.='<td width="10%" style="padding-right:20px; text-align:right;">' . to_currency($item->sale_price) . '</td>';
-    $table_data_row.='<td width="4%" class="rightmost">' . anchor("#$controller_name/viewJSON/$item->ticket_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_ticket', 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
+    $table_data_row.='<td width="4%" class="rightmost">' . anchor("#$controller_name/viewJSON/$item->ticket_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_ticket', 'modals' => 'tickets')) . '</td>';
     // $table_data_row.= "<td>Edit Edit</td>";
     $table_data_row.='</tr>';
     return $table_data_row;
@@ -180,7 +320,7 @@ function get_guide_data_row($item, $controller) {
     $table_data_row.='<td width="11%">' . $item->tel . '</td>';
     $table_data_row.='<td width="11%">' . $item->email . '</td>';
     $table_data_row.='<td width="11%">' . $item->guide_type . '</td>';
-    $table_data_row.='<td width="4%" class="rightmost">' . anchor("#$controller_name/viewJSON/$item->guide_id", lang('common_edit'), array('class' => 'thickbox glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_guide', 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
+    $table_data_row.='<td width="4%" class="rightmost">' . anchor("#$controller_name/view/$item->guide_id/$controller_name", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_guide', 'modals'=>'guides')) . '</td>';
     $table_data_row.='</tr>';
     return $table_data_row;
 }
@@ -202,6 +342,7 @@ function get_guide_data_row($item, $controller) {
             $CI->lang->line('transports_taxi_fname'),
             $CI->lang->line('transports_taxi_lname'),
             $CI->lang->line('transports_phone'),
+            $CI->lang->line('transports_vehicle'),
             $CI->lang->line('transports_mark'),
             $CI->lang->line('transports_action'),
         );
@@ -212,6 +353,7 @@ function get_guide_data_row($item, $controller) {
             $CI->lang->line('transports_taxi_fname'),
             $CI->lang->line('transports_taxi_lname'),
             $CI->lang->line('transports_phone'),
+            $CI->lang->line('transports_vehicle'),
             $CI->lang->line('transports_mark'),
             $CI->lang->line('transports_action'),
         );
@@ -269,6 +411,7 @@ function get_transportation_data_row($item, $controller) {
     $table_data_row.='<td width="20%">' . $item->taxi_fname . '</td>';
     $table_data_row.='<td width="20%">' . $item->taxi_lname . '</td>';
     $table_data_row.='<td width="11%">' . $item->phone . '</td>';
+    $table_data_row.='<td width="20%">' . $item->vehicle . '</td>';
     $table_data_row.='<td width="11%">' . $item->mark . '</td>';
     $table_data_row.='<td width="4%" class="rightmost">' . anchor("#$controller_name/viewJSON/$item->transport_id", lang('common_edit'), array('class' => 'thickbox glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_transport', 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
     $table_data_row.='</tr>';
@@ -463,9 +606,9 @@ function get_person_data_row($person, $controller) {
     $table_data_row.='<td width="15%">' . $person->phone_number . '</td>';
     $table_data_row.='<td width="15%">' . $person->state . '</td>';
     if ($controller_name == "employees") {
-        $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/view/$person->person_id", lang('common_edit'), array('class' => 'thickbox edit_emp glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'))) . '</td>';
+        $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/view/$person->person_id/$controller_name", lang('common_edit'), array('class' => 'thickbox edit_emp glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'modals' => $controller_name )) . '</td>';
     } else {
-        $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/view/$person->customer_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
+        $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/view/$person->customer_id/$controller_name", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'modals' => $controller_name )) . '</td>';
     }
     $table_data_row.='</tr>';
 
@@ -478,7 +621,6 @@ function get_person_data_row($person, $controller) {
 
 function get_supplier_manage_table($suppliers, $controller) {
     $CI = & get_instance();
-    // $table='<table class="tablesorter" id="sortable_table">';
     $table = '<table class="table" id="data_table">';
     $headers = array('<input type="checkbox" id="select_all" />',
         lang('suppliers_company_name'),
@@ -610,7 +752,7 @@ function get_supplier_data_row($supplier, $controller) {
     $table_data_row.='<td width="17%">' . $supplier->first_name . '</td>';
     $table_data_row.='<td width="22%">' . mailto($supplier->email, $supplier->email) . '</td>';
     $table_data_row.='<td width="17%">' . $supplier->phone_number . '</td>';
-    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$supplier->person_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'id' => 'edit', 'title' => lang($controller_name . '_update'), 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
+    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$supplier->person_id", lang('common_edit'), array('class' => 'thickbox edit_supplier glyphicon glyphicon-edit', 'id' => 'edit', 'title' => lang($controller_name . '_update') )) . '</td>';
     $table_data_row.='</tr>';
     return $table_data_row;
 }
@@ -796,14 +938,14 @@ function get_giftcard_data_row($giftcard, $controller) {
 function get_item_kits_manage_table($item_kits, $controller) {
     $CI = & get_instance();
 
-    $table = '<table class="tablesorter" id="sortable_table">';
+    $table = '<table class="tablesorter table" id="data_table">';
 
     $headers = array('<input type="checkbox" id="select_all" />',
         lang('items_item_number'),
         lang('item_kits_name'),
         lang('item_kits_description'),
         lang('items_unit_price'),
-        lang('items_tax_percents'),
+        // lang('items_tax_percents'),
         '&nbsp',
     );
 
@@ -846,27 +988,25 @@ function get_item_kits_manage_table_data_rows($item_kits, $controller) {
 }
 
 function get_item_kit_data_row($item_kit, $controller) {
-
     $CI = & get_instance();
-
-    $item_kit_tax_info = $CI->Item_kit_taxes->get_info($item_kit->item_kit_id);
+    /*$item_kit_tax_info = $CI->Item_kit_taxes->get_info($item_kit->item_kit_id);
     $tax_percents = '';
     foreach ($item_kit_tax_info as $tax_info) {
         $tax_percents.=$tax_info['percent'] . '%, ';
     }
-    $tax_percents = substr($tax_percents, 0, -2);
+    $tax_percents = substr($tax_percents, 0, -2);*/
 
     $controller_name = strtolower(get_class($CI));
     $width = $controller->get_form_width();
 
     $table_data_row = '<tr>';
-    $table_data_row.="<td width='3%'><input type='checkbox' id='item_kit_$item_kit->item_kit_id' value='" . $item_kit->item_kit_id . "'/></td>";
-    $table_data_row.='<td width="15%">' . $item_kit->item_kit_number . '</td>';
-    $table_data_row.='<td width="15%">' . $item_kit->name . '</td>';
-    $table_data_row.='<td width="20%">' . $item_kit->description . '</td>';
-    $table_data_row.='<td width="20%" align="right">' . (!is_null($item_kit->unit_price) ? to_currency($item_kit->unit_price) : '') . '</td>';
-    $table_data_row.='<td width="20%">' . $tax_percents . '</td>';
-    $table_data_row.='<td width="5%" class="rightmost">' . anchor($controller_name . "/view/$item_kit->item_kit_id/width~$width", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'))) . '</td>';
+    $table_data_row.="<td><input type='checkbox' name='ids[]' class='check_value' id='item_kit_$item_kit->item_kit_id' value='" . $item_kit->item_kit_id . "'/></td>";
+    $table_data_row.='<td>' . $item_kit->item_kit_number . '</td>';
+    $table_data_row.='<td>' . $item_kit->name . '</td>';
+    $table_data_row.='<td>' . $item_kit->description . '</td>';
+    $table_data_row.='<td>' . (!is_null($item_kit->unit_price) ? to_currency($item_kit->unit_price) : 'j') . '</td>';
+    // $table_data_row.='<td width="20%">' . $tax_percents . '</td>';
+    $table_data_row.='<td class="rightmost">' . anchor($controller_name . "/view_package/$item_kit->item_kit_id/$item_kit->category", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_tour_package', 'modals' => 'tours_package')) . '</td>';
     $table_data_row.='</tr>';
     return $table_data_row;
 }
@@ -875,9 +1015,11 @@ function get_item_kit_data_row($item_kit, $controller) {
 /* START WITH NAME */
 function get_bike_manage_table($people, $controller) {
     $CI = & get_instance();
-    // $table='<table class="tablesorter" id="sortable_tyable">';
-    $table = '<table class="table table-hover" id="data_table">';
+    $has_cost_price_permission = $CI->Employee->has_module_action_permission('bikes', 'see_cost_price', $CI->Employee->get_logged_in_employee_info()->person_id);
 
+$table = '<table class="tablesorter table table-hover" id="data_table" >';//id="sortable_table"
+
+    if ($has_cost_price_permission) {    
     $controller_name = strtolower(get_class($CI));
     $headers = array('<input type="checkbox" id="select_all" />',
         lang('bikes_bike_code'),
@@ -887,6 +1029,17 @@ function get_bike_manage_table($people, $controller) {
         lang('bikes_bike_types'),
         lang('bikes_action'),
        );
+    }else{
+         $controller_name = strtolower(get_class($CI));
+        $headers = array('<input type="checkbox" id="select_all" />',
+        lang('bikes_bike_code'),
+        lang('bikes_available'),
+        lang('bikes_unit_price'),
+        lang('bikes_actual_price'),
+        lang('bikes_bike_types'),
+        lang('bikes_action'),
+       );
+    }
     $table.='<thead><tr>';
 
     $count = 0;
@@ -930,18 +1083,25 @@ function get_bike_data_row($bike, $controller) {
     $CI = & get_instance();
     $controller_name = strtolower(get_class($CI));
     $width = $controller->get_form_width();
-
+    if($bike->available == 1){
+        $avail = 'Available';
+    }
+    else
+    {  
+        $avail = 'Unavailable';
+    }
+    
     $start_of_time = date('Y-m-d', 0);
     $today = date('Y-m-d') . ' 23:59:59';
 //  $link = site_url('reports/specific_'.($controller_name == 'customers' ? 'customer' : 'employee').'/'.$start_of_time.'/'.$today.'/'.$person->person_id.'/all/0');
     $table_data_row = '<tr>';
     $table_data_row.="<td width='5%'><input type='checkbox' class='check_value' name='ids[]' id='massage_$bike->item_bike_id ' value='" . $bike->item_bike_id . "'/></td>";
     $table_data_row.='<td width="10%">' . $bike->bike_code . '</td>';
-    $table_data_row.='<td width="10%">' . $bike->available . '</td>';
+    $table_data_row.='<td width="10%">' . $avail . '</td>';
     $table_data_row.='<td width="10%">' . $bike->unit_price . '</td>';
     $table_data_row.='<td width="10%">' . $bike->actual_price . '</td>';
     $table_data_row.='<td width="10%">' . $bike->bike_types . '</td>';
-    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$bike->item_bike_id", lang('common_edit'), array('class' => 'thickbox edit_bike glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
+    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$bike->item_bike_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'modals' => 'bikes')) . '</td>';
 
     $table_data_row.='</tr>';
 
@@ -960,8 +1120,6 @@ function get_tour_manage_table($people, $controller) {
     $controller_name = strtolower(get_class($CI));
     $headers = array('<input type="checkbox" id="select_all" />',
         lang('tours_tour_name'),
-        lang('tours_departure_date'),
-        lang('tours_departure_time'),
         lang('tours_by'),
         lang('tours_price'),
         lang('tours_destination_name'),
@@ -1015,15 +1173,13 @@ function get_tour_data_row($tour, $controller) {
     $table_data_row = '<tr>';
     $table_data_row.="<td width='5%'><input type='checkbox' class='check_value' name='ids[]' id='tour_$tour->tour_id ' value='" . $tour->tour_id . "'/></td>";
     $table_data_row.='<td width="10%">' . $tour->tour_name . '</td>';
-    $table_data_row.='<td width="10%">' . $tour->departure_date . '</td>';
-    $table_data_row.='<td width="10%">' . $tour->departure_time . '</td>';
     $table_data_row.='<td width="10%">' . $tour->by . '</td>';
     $table_data_row.='<td width="10%">' . $tour->sale_price . '</td>';
     $table_data_row.='<td width="10%">' . $tour->destination_name . '</td>';
     $table_data_row.='<td width="10%">' . $tour->company_name . '</td>';
     $table_data_row.='<td width="10%">' . $tour->description . '</td>';
-    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$tour->tour_id", lang('common_edit'), array('class' => 'thickbox edit_tour glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
-
+    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$tour->tour_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'id' => 'edit_tour', 'modals' => "tours")) . '</td>';
+    
     $table_data_row.='</tr>';
 
     return $table_data_row;
@@ -1094,7 +1250,7 @@ function get_massage_data_row($massage, $controller) {
     $table_data_row.='<td width="10%">' . $massage->massage_desc . '</td>';
     $table_data_row.='<td width="10%">' . $massage->price_one . '</td>';
     $table_data_row.='<td width="10%">' . $massage->actual_price. '</td>';
-    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$massage->item_massage_id", lang('common_edit'), array('class' => 'thickbox edit_sms glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'data-toggle' => 'modal', 'data-target' => "#$controller_name")) . '</td>';
+    $table_data_row.='<td width="5%" class="rightmost">' . anchor("#$controller_name/viewJSON/$massage->item_massage_id", lang('common_edit'), array('class' => 'thickbox edit glyphicon glyphicon-edit', 'title' => lang($controller_name . '_update'), 'modals' => 'massages')) . '</td>';
 //    $table_data_row.='<td width="5%" class="rightmost">'.$pagination.'</td>';
     $table_data_row.='</tr>';
 

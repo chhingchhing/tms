@@ -8,8 +8,8 @@ class Ticket_kit extends CI_Model
 	function exists($item_kit_id)
 	{
 		// echo $item_kit_id;
-		$query = $this->db->where("category", "tickets")
-				->where('item_kit_id',$item_kit_id)
+		$query = $this->db->where('item_kit_id',$item_kit_id)
+				// ->where("category", "tickets")
 				->get("item_kits");
 
 		return ($query->num_rows() == 1);
@@ -22,7 +22,7 @@ class Ticket_kit extends CI_Model
 	function get_item_kit_id($item_kit_id)
 	{
 		$query = $this->db->where('item_kit_id',$item_kit_id)
-				->where("category", "tickets")
+				// ->where("category", "tickets")
 				->get("item_kits");
 
 		if($query->num_rows()==1)

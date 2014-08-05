@@ -9,7 +9,6 @@ class Detailed_sales_sms extends Report
 	
 	public function getDataColumns()
 	{
-            
 		return array(
 			'summary' => array(
 				array('data'=>lang('reports_sale_id'), 'align'=> 'left'), 
@@ -23,38 +22,31 @@ class Detailed_sales_sms extends Report
 				array('data'=>lang('reports_total'), 'align'=> 'right'), 
 				array('data'=>lang('reports_profit'), 'align'=> 'right'), 
 				array('data'=>lang('reports_payment_type'), 'align'=> 'right'), 
-				array('data'=>lang('reports_comments'), 'align'=> 'right')
+				array('data'=>lang('reports_comments'), 'align'=> 'right'),
+				array('data'=>lang('summary_reports_massage_massager'), 'align'=> 'right')
 				),
 			'details' => array(
-//				array('data'=>lang('reports_item_number'), 'align'=> 'left'), 
 				array('data'=>lang('reports_name'), 'align'=> 'left'),  
-                            array('data'=>lang('reports_date'), 'align'=> 'left'),
-//				array('data'=>lang('reports_description'), 'align'=> 'left'), 
-                                array('data'=>lang('summary_reports_massage_time_in'), 'align'=> 'left'),
-                                array('data'=>lang('summary_reports_massage_time_out'), 'align'=> 'left'),
+                array('data'=>lang('reports_date'), 'align'=> 'left'),
+                array('data'=>lang('summary_reports_massage_time_in'), 'align'=> 'left'),
+                array('data'=>lang('summary_reports_massage_time_out'), 'align'=> 'left'),
 				array('data'=>lang('summary_reports_massage_qty'), 'align'=> 'left'),
 				array('data'=>lang('reports_subtotal'), 'align'=> 'right'), 
 				array('data'=>lang('reports_total'), 'align'=> 'right'), 
 				array('data'=>lang('reports_profit'), 'align'=> 'right'),
-				array('data'=>lang('reports_discount'), 'align'=> 'right')
+				array('data'=>lang('reports_discount'), 'align'=> 'right'),
+				array('data'=>lang('summary_reports_massage_massager'), 'align'=> 'right')
 				)
 		);		
 	}
 	
 	public function getData()
 	{
-		/*$this->db->select('ID, deposit, issue_date, time_departure, date_departure, ticket_typeID, destinationID, seat_number, time_departure, hotel_name, 
-         room_number, company_name,tickets.quantity, item_number, commisioner_id, employee_id, item_unit_price, sum(quantity_purchased) as quantity_purchased, 
-         sum(subtotal) as subtotal, sum(total) as total, sum(profit) as profit, descriptions, 
-         ticket_name, sale_date, '.$this->db->dbprefix('sales_tickets_temp').'.deleted '
-         );*/
-		$this->db->select('ID, sale_date, issue_date, sum(quantity_purchased) as items_purchased, CONCAT(employee.first_name," ",employee.last_name) as employee_name, time_in, time_out, issue_date,
+		$this->db->select('ID, sale_date, issue_date, sum(quantity_purchased) as items_purchased, CONCAT(employee.first_name," ",employee.last_name) as employee_name, time_in, time_out, issue_date, massager_id, 
 			customer.person_id as customer_id, CONCAT(customer.first_name," ",customer.last_name) as customer_name, sum(subtotal) as subtotal, sum(profit_inclod_com_price),sum(unit_price) as cost_price, sum(commision_price) as total_com_price, 
 			sum(total) as total, sum(profit) as profit, payment_type, comment, CONCAT(commissioner.first_name," ",commissioner.last_name) as commissioner_name, commision_price', false);
-		$this->db->from('sales_massages_temp');
-              
-		$this->db->join('people as employee', 'sales_massages_temp.employee_id = employee.person_id');
-           
+		$this->db->from('sales_massages_temp');          
+		$this->db->join('people as employee', 'sales_massages_temp.employee_id = employee.person_id');        
 		$this->db->join('people as customer', 'sales_massages_temp.customer_id = customer.person_id', 'left');
 		$this->db->join('commissioners as commissioner', 'sales_massages_temp.commisioner_id = commissioner.commisioner_id', 'left');
         

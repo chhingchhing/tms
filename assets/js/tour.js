@@ -3,18 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-/*jQuery("div#success").hide();
-jQuery("div#error").hide();
-jQuery("div#feedback_bar").hide();
-jQuery("div#feedback_bar_error").hide();*/
-
-/*$(document).ready(function() {  
-    $('.printMe').click(function() {  
-    window.print();  
-    return false;  
-    });
-});*/
-
 
 // Print receipt
 jQuery("body").on("click","#print_button", function(){
@@ -32,6 +20,7 @@ jQuery("body").on("click", "input[name='submitTour']", function(event) {
     var tour_id = jQuery("input[name='tour_id']").val();
     var checkExistURL = baseURL + "tours/check_duplicate";
     var addURL = jQuery("form#tour_form").attr("action")+"/"+tour_id;
+
     var selectURL = baseURL + "tours/add";
     var tour_name = jQuery("input[name='tour_name']").val();
     if (tour_name == "") {
@@ -102,8 +91,8 @@ jQuery('body').on('click', 'input#submit_guide', function(event){
         url: url,
         dataType: 'json',
         data: jQuery("form#guides_form").serialize(),
-        success: function(respons) {
-            selectGuide(respons.guide_id);
+        success: function(response) {
+            selectGuide(response.guide_id);
         }
     });
 });
@@ -115,10 +104,10 @@ function selectGuide(guide_id) {
             type: "POST",
             url: url,
             dataType: "html",
-            data: { "guide" : guide_id },
-            success: function(respons) {
+            data: { "term" : guide_id },
+            success: function(response) {
                 jQuery("#guides").modal('hide');
-                window.location.reload(true); 
+                // window.location.reload(true); 
             }
         });
     } else {
@@ -126,9 +115,9 @@ function selectGuide(guide_id) {
             type: "POST",
             url: url,
             dataType: "html",
-            data: { "guide" : guide_id },
-            success: function(respons) {
-                $("div#register_container").html(respons);
+            data: { "term" : guide_id },
+            success: function(response) {
+                $("div#register_container").html(response);
                 jQuery("#guides").modal('hide');
             }
         });
@@ -136,27 +125,27 @@ function selectGuide(guide_id) {
 }
     
     /* Click edit link and retrieve data into form for edit */
-  $('body').on('click','a#edit_guide',function(){ 
-     var url = jQuery(this).attr("href").replace("#", ""); //catch url when click on edit_guide
-     var uid = url.substr(url.lastIndexOf('/') + 1);
-    $.ajax({
-        url: url,
-        dataType: "json",        
-        success: function(data){
-        var action = jQuery("form.form-horizontal").attr("action");
-        jQuery("form.form-horizontal").attr("action", action+"/"+uid);
+  // $('body').on('click','a#edit_guide',function(){ 
+  //    var url = jQuery(this).attr("href").replace("#", ""); //catch url when click on edit_guide
+  //    var uid = url.substr(url.lastIndexOf('/') + 1);
+  //   $.ajax({
+  //       url: url,
+  //       dataType: "json",        
+  //       success: function(data){
+  //       var action = jQuery("form.form-horizontal").attr("action");
+  //       jQuery("form.form-horizontal").attr("action", action+"/"+uid);
                 
-            jQuery("input[name='guide_id']").val(data.guide_id);
-            jQuery("input[name='first_name']").val(data.guide_fname);
-            jQuery("input[name='last_name']").val(data.guide_lname);
-            jQuery("select[name='gender']").val(data.gender);
-            jQuery("input[name='phone_number']").val(data.tel);
-            jQuery("input[name='email']").val(data.email);
-            jQuery("input[name='guide_type']").val(data.guide_type);
+  //           jQuery("input[name='guide_id']").val(data.guide_id);
+  //           jQuery("input[name='first_name']").val(data.guide_fname);
+  //           jQuery("input[name='last_name']").val(data.guide_lname);
+  //           jQuery("select[name='gender']").val(data.gender);
+  //           jQuery("input[name='phone_number']").val(data.tel);
+  //           jQuery("input[name='email']").val(data.email);
+  //           jQuery("input[name='guide_type']").val(data.guide_type);
            
-        }
-    }); 
-  });
+  //       }
+  //   }); 
+  // });
 
     
 //end chen action guide
@@ -199,13 +188,11 @@ function getData(term, url) {
 }
 
 //add new tour on module of tour management
-
 jQuery("body").on("click", "input[name='btn_submit_tours']", function(event) {
     event.preventDefault();
     var tour_id = jQuery("input[name='tour_id']").val();
     var checkExistURL = baseURL + "tours/check_duplicate";
-    var addURL = jQuery("form#tour_form").attr("action")+"/"+tour_id;
-    var selectURL = baseURL + "tours/add";
+    var addURL = jQuery("form#tour_form").attr("action");
     var tour_name = jQuery("input[name='tour_name']").val();
     
     if (tour_name == "") {
@@ -213,7 +200,40 @@ jQuery("body").on("click", "input[name='btn_submit_tours']", function(event) {
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
         return false;
     }
-    if (!tour_id) {
+
+    var data = jQuery('form#tour_form').serialize();
+    if (tour_id == "") {
+        check_duplicate_destination(function(result) {
+            if (result.duplicate) {
+                    jQuery('div#getSmsError').text('This destination has duplicate!');
+                    jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                    return false;
+            } else {
+                jQuery.ajax({
+                    type: "POST",
+                    url: checkExistURL,
+                    dataType: "json",
+                    data: jQuery('form#tour_form').serialize(),
+                    success: function(msg) {
+                        if (msg.duplicate) {
+                            jQuery('div#getSmsError').text('This record has duplicate, please check your enter input!');
+                            jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                            return false;
+                        } else {
+                            addTicketManage(data, addURL, 'tours')
+                            // saveTicket(saveAction, addAction);
+                        }
+                    }
+                });
+            }
+        });
+    } else {
+        addTicketManage(data, addURL, 'tours')
+        // saveTicket(saveAction, addAction);
+    }
+
+
+    /*if (!tour_id) {
         jQuery.ajax({
             type: "POST",
             url: checkExistURL,
@@ -225,16 +245,16 @@ jQuery("body").on("click", "input[name='btn_submit_tours']", function(event) {
                     jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
                     return false;
                 }
-                save(addURL, selectURL);
+                saveNewTour(addURL);
             }
         });
     } else {
-        save(addURL, selectURL);
-    }
+        saveNewTour(addURL);
+    }*/
 });
 
 /* Save new tour on Module tour management */
-function save(addURL, selectURL) {
+function saveNewTour(addURL) {
     $.ajax({
         type: "POST",
         url: addURL,
@@ -261,14 +281,11 @@ function save(addURL, selectURL) {
 }
 
 //chen add new guide
-
 jQuery("body").on("click", "input#btnSubmitGuide", function(event) {
     event.preventDefault();
     var guide_id = jQuery("input[name='guide_id']").val();
     var checkExistURL = baseURL + "guides/check_duplicate";
-    var addURL = jQuery("form#guides_form").attr("action")+"/"+guide_id;
-
-//    var selectURL = baseURL + "transportations/add";
+    var addURL = jQuery("form#guides_form").attr("action");
     var first_name = jQuery("input[name='first_name']").val();
     
     if (first_name == "") {
@@ -330,7 +347,7 @@ function saveGuide(addURL) {
     });
 }
 
-function getDataSearch(term, url){
+/*function getDataSearch(term, url){
     jQuery.ajax({
         type: "POST",
         url: url,
@@ -346,4 +363,36 @@ function getDataSearch(term, url){
             };
         }
     });
-}
+}*/
+
+jQuery("body").on("click", "input#submitMassager", function(event) { 
+    event.preventDefault();
+    var person_id = jQuery("input[name='person_id']").val();
+    var first_name = jQuery("input[name='first_name']").val();
+    var last_name = jQuery("input#last_name").val();
+    var position = jQuery("select[name='position']").val();
+
+    var url = jQuery(this).parents("form#massager_form").attr("action");
+    var datas = jQuery("form#massager_form").serialize();
+    var check_duplicate_url = baseURL + "employees/check_duplicate";
+    var url_select = url.replace("save_massager", "select_massager");
+    if (person_id == "") {
+        $.ajax({
+            type: "POST",
+            url: check_duplicate_url,
+            dataType: "json",
+            data: datas,
+            success: function(json) {
+                if (json.duplicate) {
+                    jQuery('div#getSmsError').text("This record is duplicated!");
+                    jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
+                    return false;
+                }
+                addPeople(url, url_select, datas, 'add_massager');
+            }
+        });    
+    } else {
+        addPeople(url, url_select, datas, 'add_massager');
+    }
+
+});

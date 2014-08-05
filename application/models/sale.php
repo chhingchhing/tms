@@ -159,164 +159,6 @@ class Sale extends CI_Model
 		
 		return $success;
 	}
-	
-	// function update_giftcard_balance($sale_id,$undelete=0)
-	// {
-	// 	//if gift card payment exists add the amount to giftcard balance
-	// 		$this->db->from('sales_payments');
-	// 		$this->db->like('payment_type',lang('sales_giftcard'));
-	// 		$this->db->where('sale_id',$sale_id);
-	// 		$sales_payment = $this->db->get();
-			
-	// 		if($sales_payment->num_rows>=1)
-	// 		{
-	// 			foreach($sales_payment->result() as $row)
-	// 			{
-	// 				$giftcard_number=str_ireplace(lang('sales_giftcard').':','',$row->payment_type);
-	// 				$value=$row->payment_amount;
-	// 				if($undelete==0)
-	// 				{
-	// 					$this->db->set('value','value+'.$value,false);			
-	// 				}
-	// 				else
-	// 				{
-	// 					$this->db->set('value','value-'.$value,false);
-	// 				}
-	// 				$this->db->where('giftcard_number', $giftcard_number);
-	// 				$this->db->update('giftcards'); 
-	// 			}
-	// 		}
-	
-	// }
-	
-	// function delete($sale_id, $all_data = false)
-	// {
-	// 	$employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
-		
-	// 	$this->db->select('item_id, quantity_purchased');
-	// 	$this->db->from('sales_items');
-	// 	$this->db->where('sale_id', $sale_id);
-		
-	// 	foreach($this->db->get()->result_array() as $sale_item_row)
-	// 	{
-	// 		$cur_item_info = $this->Item->get_info($sale_item_row['item_id']);	
-	// 		$item_data = array('quantity'=>$cur_item_info->quantity + $sale_item_row['quantity_purchased']);
-	// 		$this->Item->save($item_data,$sale_item_row['item_id']);
-		
-	// 		$sale_remarks ='POS '.$sale_id;
-	// 		$inv_data = array
-	// 		(
-	// 			'trans_date'=>date('Y-m-d H:i:s'),
-	// 			'trans_items'=>$sale_item_row['item_id'],
-	// 			'trans_user'=>$employee_id,
-	// 			'trans_comment'=>$sale_remarks,
-	// 			'trans_inventory'=>$sale_item_row['quantity_purchased']
-	// 			);
-	// 		$this->Inventory->insert($inv_data);
-	// 	}
-		
-	// 	$this->db->select('item_kit_id, quantity_purchased');
-	// 	$this->db->from('sales_item_kits');
-	// 	$this->db->where('sale_id', $sale_id);
-		
-	// 	foreach($this->db->get()->result_array() as $sale_item_kit_row)
-	// 	{
-	// 		foreach($this->Item_kit_items->get_info($sale_item_kit_row['item_kit_id']) as $item_kit_item)
-	// 		{
-	// 			$cur_item_info = $this->Item->get_info($item_kit_item->item_id);
-				
-	// 			$item_data = array('quantity'=>$cur_item_info->quantity + ($sale_item_kit_row['quantity_purchased'] * $item_kit_item->quantity));
-	// 			$this->Item->save($item_data,$item_kit_item->item_id);
-
-	// 			$sale_remarks ='POS '.$sale_id;
-	// 			$inv_data = array
-	// 			(
-	// 				'trans_date'=>date('Y-m-d H:i:s'),
-	// 				'trans_items'=>$item_kit_item->item_id,
-	// 				'trans_user'=>$employee_id,
-	// 				'trans_comment'=>$sale_remarks,
-	// 				'trans_inventory'=>$sale_item_kit_row['quantity_purchased'] * $item_kit_item->quantity
-	// 			);
-	// 			$this->Inventory->insert($inv_data);					
-	// 		}
-	// 	}
-		
-		
-	// 	$this->update_giftcard_balance($sale_id);
-		
-		
-	// 	if ($all_data)
-	// 	{
-	// 		//Run these queries as a transaction, we want to make sure we do all or nothing
-	// 		$this->db->trans_start();
-	// 		$this->db->delete('sales_payments', array('sale_id' => $sale_id)); 
-	// 		$this->db->delete('sales_items_taxes', array('sale_id' => $sale_id)); 
-	// 		$this->db->delete('sales_items', array('sale_id' => $sale_id)); 
-	// 		$this->db->delete('sales_item_kits_taxes', array('sale_id' => $sale_id)); 
-	// 		$this->db->delete('sales_item_kits', array('sale_id' => $sale_id)); 
-	// 		$this->db->trans_complete();			
-	// 	}
-
-	// 	$this->db->where('sale_id', $sale_id);
-	// 	return $this->db->update('sales', array('deleted' => 1));
-	// }
-	
-	// function undelete($sale_id)
-	// {
-	// 	$employee_id=$this->Employee->get_logged_in_employee_info()->person_id;
-		
-	// 	$this->db->select('item_id, quantity_purchased');
-	// 	$this->db->from('sales_items');
-	// 	$this->db->where('sale_id', $sale_id);
-		
-	// 	foreach($this->db->get()->result_array() as $sale_item_row)
-	// 	{
-	// 		$cur_item_info = $this->Item->get_info($sale_item_row['item_id']);	
-	// 		$item_data = array('quantity'=>$cur_item_info->quantity - $sale_item_row['quantity_purchased']);
-	// 		$this->Item->save($item_data,$sale_item_row['item_id']);
-		
-	// 		$sale_remarks ='POS '.$sale_id;
-	// 		$inv_data = array
-	// 		(
-	// 			'trans_date'=>date('Y-m-d H:i:s'),
-	// 			'trans_items'=>$sale_item_row['item_id'],
-	// 			'trans_user'=>$employee_id,
-	// 			'trans_comment'=>$sale_remarks,
-	// 			'trans_inventory'=>-$sale_item_row['quantity_purchased']
-	// 			);
-	// 		$this->Inventory->insert($inv_data);
-	// 	}
-		
-	// 	$this->update_giftcard_balance($sale_id,1);
-		
-	// 	$this->db->select('item_kit_id, quantity_purchased');
-	// 	$this->db->from('sales_item_kits');
-	// 	$this->db->where('sale_id', $sale_id);
-		
-	// 	foreach($this->db->get()->result_array() as $sale_item_kit_row)
-	// 	{
-	// 		foreach($this->Item_kit_items->get_info($sale_item_kit_row['item_kit_id']) as $item_kit_item)
-	// 		{
-	// 			$cur_item_info = $this->Item->get_info($item_kit_item->item_id);
-				
-	// 			$item_data = array('quantity'=>$cur_item_info->quantity - ($sale_item_kit_row['quantity_purchased'] * $item_kit_item->quantity));
-	// 			$this->Item->save($item_data,$item_kit_item->item_id);
-
-	// 			$sale_remarks ='POS '.$sale_id;
-	// 			$inv_data = array
-	// 			(
-	// 				'trans_date'=>date('Y-m-d H:i:s'),
-	// 				'trans_items'=>$item_kit_item->item_id,
-	// 				'trans_user'=>$employee_id,
-	// 				'trans_comment'=>$sale_remarks,
-	// 				'trans_inventory'=>-$sale_item_kit_row['quantity_purchased'] * $item_kit_item->quantity
-	// 			);
-	// 			$this->Inventory->insert($inv_data);					
-	// 		}
-	// 	}	
-	// 	$this->db->where('sale_id', $sale_id);
-	// 	return $this->db->update('sales', array('deleted' => 0));
-	// }
 
 	function get_sale_item_kits($sale_id)
 	{
@@ -324,22 +166,6 @@ class Sale extends CI_Model
 				->get("orders_item_kits");
 		return $query;
 	}
-	
-	// function get_sale_items_taxes($sale_id)
-	// {
-	// 	$query = $this->db->query('SELECT name, percent, cumulative, item_unit_price as price, quantity_purchased as quantity, discount_percent as discount '.
-	// 	'FROM '. $this->db->dbprefix('sales_items_taxes'). ' JOIN '.
-	// 	$this->db->dbprefix('sales_items'). ' USING (sale_id, item_id, line) WHERE '.$this->db->dbprefix('sales_items_taxes').".sale_id = $sale_id");
-	// 	return $query->result_array();
-	// }
-	
-	// function get_sale_item_kits_taxes($sale_id)
-	// {
-	// 	$query = $this->db->query('SELECT name, percent, cumulative, item_kit_unit_price as price, quantity_purchased as quantity, discount_percent as discount '.
-	// 	'FROM '. $this->db->dbprefix('sales_item_kits_taxes'). ' JOIN '.
-	// 	$this->db->dbprefix('sales_item_kits'). ' USING (sale_id, item_kit_id, line) WHERE '.$this->db->dbprefix('sales_item_kits_taxes').".sale_id = $sale_id");
-	// 	return $query->result_array();		
-	// }
 
 	function get_sale_payments($sale_id)
 	{
@@ -360,6 +186,13 @@ class Sale extends CI_Model
 		$this->db->from('orders');
 		$this->db->where('order_id',$order_id);
 		return $this->commissioner->get_information($this->db->get()->row()->commisioner_id);
+	}
+
+	function get_massager($order_id)
+	{
+		$this->db->from('orders');
+		$this->db->where('order_id',$order_id);
+		return $this->Employee->get_info($this->db->get()->row()->massager_id);
 	}
 
 	function get_commission_price($sale_id)
@@ -396,72 +229,6 @@ class Sale extends CI_Model
 		$this->db->where('order_id',$sale_id);
 		return $this->db->get()->row()->deposit;
 	}
-	
-
-	//We create a temp table that allows us to do easy report/sales queries
-	// public function create_sales_items_temp_table($params)
-	// {
-	// 	$where = '';
-		
-	// 	if (isset($params['start_date']) && isset($params['end_date']))
-	// 	{
-	// 		$where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'"';
-			
-	// 		if ($this->config->item('hide_suspended_sales_in_reports'))
-	// 		{
-	// 			$where .=' and suspended = 0';
-	// 		}
-	// 	}
-	// 	elseif ($this->config->item('hide_suspended_sales_in_reports'))
-	// 	{
-	// 		$where .='WHERE suspended = 0';
-	// 	}
-		
-	// 	$this->_create_sales_items_temp_table_query($where);
-	// }
-	
-	// function _create_sales_items_temp_table_query($where)
-	// {
-	// 	$this->db->query("CREATE TEMPORARY TABLE ".$this->db->dbprefix('sales_tickets_temp')."
-	// 	(SELECT ".$this->db->dbprefix('orders').".deleted as deleted, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('detail_orders_tickets').".orderID, comment,payment_type, customer_id, employee_id, 
-	// 	".$this->db->dbprefix('tickets').".ticket_id, ".$this->db->dbprefix('tickets').".supplierID, quantity_purchased, item_cost_price, item_unit_price, 
-	// 	discount_percent, (item_unit_price*quantity_purchased-item_unit_price*quantity_purchased*discount_percent/100) as subtotal,
-	// 	".$this->db->dbprefix('detail_orders_tickets').".line as line, ".$this->db->dbprefix('detail_orders_tickets').".description as description,
-	// 	".$this->db->dbprefix('detail_orders_tickets').".item_number,
-	// 	ROUND( (item_unit_price*quantity_purchased - item_unit_price*quantity_purchased*discount_percent/100),2) as total,
-
-	// 	(item_unit_price*quantity_purchased - item_unit_price*quantity_purchased*discount_percent/100) - (item_cost_price*quantity_purchased) as profit
-	// 	FROM ".$this->db->dbprefix('detail_orders_tickets')."
-	// 	INNER JOIN ".$this->db->dbprefix('orders')." ON  ".$this->db->dbprefix('detail_orders_tickets').'.orderID='.$this->db->dbprefix('orders').'.order_id'."
-	// 	INNER JOIN ".$this->db->dbprefix('tickets')." ON  ".$this->db->dbprefix('detail_orders_tickets').'.ticketID='.$this->db->dbprefix('tickets').'.ticket_id'."
-	// 	LEFT OUTER JOIN ".$this->db->dbprefix('suppliers')." ON  ".$this->db->dbprefix('tickets').'.supplierID='.$this->db->dbprefix('suppliers').'.supplier_id'."
-	// 	$where
-	// 	GROUP BY order_id, ticket_id, line) 
-	// 	UNION ALL
-	// 	(SELECT ".$this->db->dbprefix('orders').".deleted as deleted, sale_time, date(sale_time) as sale_date, ".$this->db->dbprefix('orders_item_kits').".sale_id, comment,payment_type, customer_id, employee_id, 
-	// 	 ".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplierID, quantity_purchased, item_kit_cost_price, item_kit_unit_price, 
-	// 	discount_percent, (item_kit_unit_price*quantity_purchased-item_kit_unit_price*quantity_purchased*discount_percent/100) as subtotal,
-	// 	".$this->db->dbprefix('orders_item_kits').".line as line, ".$this->db->dbprefix('orders_item_kits').".description as description,
-	// 	NULL as item_number,
-	// 	ROUND((item_kit_unit_price*quantity_purchased - item_kit_unit_price*quantity_purchased*discount_percent/100),2) as total,
-
-	// 	(item_kit_unit_price*quantity_purchased - item_kit_unit_price*quantity_purchased*discount_percent/100) - (item_kit_cost_price*quantity_purchased) as profit
-	// 	FROM ".$this->db->dbprefix('orders_item_kits')."
-	// 	INNER JOIN ".$this->db->dbprefix('orders')." ON  ".$this->db->dbprefix('orders_item_kits').'.sale_id='.$this->db->dbprefix('orders').'.order_id'."
-	// 	INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('orders_item_kits').'.item_kitID='.$this->db->dbprefix('item_kits').'.item_kit_id'."
-	// 	$where
-	// 	GROUP BY sale_id, item_kit_id, line) ORDER BY orderID, line");
-	// }
-	
-	// public function get_giftcard_value( $giftcardNumber )
-	// {
-	// 	if ( !$this->Giftcard->exists( $this->Giftcard->get_giftcard_id($giftcardNumber)))
-	// 		return 0;
-		
-	// 	$this->db->from('giftcards');
-	// 	$this->db->where('giftcard_number',$giftcardNumber);
-	// 	return $this->db->get()->row()->value;
-	// }
 	
 	function get_all_suspended($category)
 	{

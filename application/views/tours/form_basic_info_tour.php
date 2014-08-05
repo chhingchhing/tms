@@ -7,6 +7,7 @@
         echo form_input(array(
             'name' => 'tour_id',
             'id' => 'tour_id',
+            'class'=>'form-control',
             'value' => $tour_info->tour_id)
         );
         ?>
@@ -16,6 +17,7 @@
         echo form_input(array(
             'name' => 'tour_name',
             'id' => 'tour_name',
+            'class'=>'form-control',
             'value' => $tour_info->tour_name)
         );
         ?>
@@ -27,12 +29,13 @@
     </label>
     <div class="col-sm-8">
         <?php
-        echo form_dropdown('destinationID', $destination_id, $tour_info->destinationID);
+        echo form_dropdown('destinationID', $destination_id, $tour_info->destinationID,'class= "form-control"');
         ?>
         or
         <?php echo form_input(array(
             'name'=>'newDes',
             'id'=>'newDes',
+            'class'=>'form-control',
             'value'=>'')
              );?>
     </div>
@@ -43,68 +46,24 @@
     </label>
 	<div class="col-sm-8">
             <?php 
-            echo form_dropdown("supplier_id", $supplierId, $tour_info->supplier_id);
+            echo form_dropdown("supplier_id", $supplierId, $tour_info->supplier_id, 'class = "form-control"');
             ?>
             
 	</div>
 </div>
 <div class="form-group">
     <label for="by" class="col-sm-4 control-label">
-        <?php echo form_label(lang('tour_by') . ':', 'by'); ?>
+        <?php echo form_label(lang('tours_by') . ':', 'by'); ?>
     </label>
     <div class="col-sm-8">
         <?php
         echo form_input(array(
             'name' => 'by',
             'id' => 'by_tour',
+            'class'=>'form-control',
             'value' => $tour_info->by)
         );
         ?>
-    </div>
-</div>
-
-<div class="form-group">
-    <label for="departure_date" class="col-sm-4 control-label">
-        <?php echo form_label(lang('tour_departure_date') . ':', 'departure_date'); ?>
-    </label>
-    <div class="col-sm-8">
-        <div class="bfh-datepicker" data-format="d-m-y" data-date="<?php echo (isset($tour_info->departure_date) && $tour_info->departure_date) ? date('d-m-Y', strtotime($tour_info->departure_date)) : 'today'; ?>">
-        </div>
-    </div>
-</div>
-
-<div class="form-group">
-    <label for="departure_time" class="col-sm-4 control-label">
-        <?php echo form_label(lang('sales_time_departure') . ':', 'departure_time'); ?>
-    </label>
-    <div class="col-sm-8">
-
-        <div class="bfh-timepicker" data-time="<?php echo $tour_info->departure_time ? $tour_info->departure_time : "00:00" ?>">
-            <div class="input-prepend bfh-timepicker-toggle" data-toggle="bfh-timepicker">
-                <span class="add-on"><i class="icon-time"></i></span>
-                <input type="text" class="input-medium" readonly>
-            </div>
-            <div class="bfh-timepicker-popover">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <td class="hour">
-                                <a class="next" href="#"><i class="icon-chevron-up"></i></a><br>
-                                <input type="text" class="input-mini" readonly><br>
-                                <a class="previous" href="#"><i class="icon-chevron-down"></i></a>
-                            </td>
-                            <td class="separator">:</td>
-                            <td class="minute">
-                                <a class="next" href="#"><i class="icon-chevron-up"></i></a><br>
-                                <input type="text" class="input-mini" readonly><br>
-                                <a class="previous" href="#"><i class="icon-chevron-down"></i></a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 </div>
 
@@ -117,6 +76,7 @@
         echo form_input(array(
             'name' => 'actual_price',
             'id' => 'actual_price',
+            'class'=>'form-control',
             'value' => $tour_info->actual_price)
         );
         ?>
@@ -131,6 +91,7 @@
         echo form_input(array(
             'name' => 'sale_price',
             'id' => 'sale_price',
+            'class'=>'form-control',
             'value' => $tour_info->sale_price)
         );
         ?>
@@ -145,6 +106,7 @@
         echo form_textarea(array(
             'name' => 'description',
             'id' => 'description',
+            'class'=>'form-control',
             'value' => $tour_info->description)
         );
         ?>

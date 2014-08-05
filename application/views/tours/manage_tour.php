@@ -8,8 +8,8 @@
 
             </div>
             <div class="col-md-3" id="title_search">
-                <?php echo form_open("$controller_name/search", array('id' => 'search_form')); ?>
-                <input type="text" name ='search' id='search'class="form-control"/>
+                <?php echo form_open($this->uri->segment(2)=='list_package' ? "$controller_name/search_package" : "$controller_name/search", array('id' => 'search_form')); ?>
+                <input type="text" name ='search' id='<?php echo $this->uri->segment(2)=="list_package" ? "search_package" : "search" ?>' class="form-control"/>
                 <span class="glyphicon glyphicon-search"></span>
                 </form>
             </div>
@@ -21,11 +21,9 @@
             <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
 
                 <div class="list-group">
-
+                    <?php echo anchor($controller_name, lang('tours_list_view'), array('class' => 'list-group-item none glyphicon glyphicon-list-alt')); ?>
                     <?php
-                    echo anchor("#tours", lang('common_tour'),
-                            array('class' => 'list-group-item glyphicon glyphicon-plus-sign', 'title' => lang($controller_name . '_new'), 'data-toggle' => 'modal', 'data-target' => '#tours'));
-
+                    echo anchor("#$controller_name/viewJSON/", lang('common_tour'), array('class' => 'list-group-item edit glyphicon glyphicon-plus-sign', 'id' => 'add_tour', 'modals' => "tours"));
                     $this->load->view('tours/form.php');
                     
                     echo anchor("$controller_name/sales/".$this->uri->segment(3), lang('tour_sale'), array('class' => 'list-group-item none import glyphicon glyphicon-shopping-cart'));
@@ -34,8 +32,24 @@
                     echo anchor("$controller_name/excel_export", lang('common_excel_export'), array('class' => 'list-group-item none import glyphicon glyphicon-circle-arrow-left'));
                     ?>
                     <?php echo anchor("$controller_name/delete", $this->lang->line("common_delete"), array('id' => 'delete', 'class' => 'list-group-item delete_inactive glyphicon glyphicon-trash')); ?>
-
                 </div>
+
+                <div class="list-group">
+                    <?php echo anchor($controller_name."/list_package", lang('tours_list_view_package'), array('class' => 'list-group-item none glyphicon glyphicon-list-alt')); ?>
+                    <?php
+                    echo anchor("tours/view_package", lang('tours_new_tour_package'),
+                            array('class' => 'new list-group-item glyphicon glyphicon-plus-sign', 'title' => lang($controller_name . '_new'), 'modals' => 'tours_package'));
+
+                    $this->load->view('tours/form_package.php');
+                    
+                    // echo anchor("$controller_name/sales/".$this->uri->segment(3), lang('tour_sale'), array('class' => 'list-group-item none import glyphicon glyphicon-shopping-cart'));
+                    ?>
+                    <?php
+                    echo anchor("$controller_name/excel_export_package", lang('tours_package_excel_export'), array('class' => 'list-group-item none import glyphicon glyphicon-circle-arrow-left'));
+                    ?>
+                    <?php echo anchor("$controller_name/delete_package", $this->lang->line("common_delete"), array('id' => 'delete', 'class' => 'list-group-item delete_inactive glyphicon glyphicon-trash')); ?>
+                </div>
+
             </div>
             <div class="col-xs-12 col-sm-9">
                 <div id="item_table" class="row">

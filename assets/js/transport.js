@@ -62,6 +62,7 @@ var controller = jQuery('input[name="controller_name"]').val();
             jQuery("input[name='taxi_fname']").val(data.taxi_fname);
             jQuery("input[name='taxi_lname']").val(data.taxi_lname);
             jQuery("input[name='phone']").val(data.phone);
+            jQuery("select[name='vehicle_type']").val(data.vehicle);
             jQuery("textarea[name='mark']").val(data.mark);
            
         }

@@ -7,8 +7,8 @@ class tour_item extends CI_Model
     { 
         $suggestions = array();
 
-        $by_name = $this->db->join('destinations','tours.destinationID = destinations.destinate_id')
-        		->join('suppliers','tours.supplier_id = suppliers.supplier_id')
+        $by_name = $this->db->join('destinations','tours.destinationID = destinations.destinate_id', 'left')
+        		->join('suppliers','tours.supplier_id = suppliers.supplier_id', 'left')
         		->where('tours.deleted',0)
         		->like('tour_name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
         		->order_by("tour_name", "asc")
@@ -18,8 +18,8 @@ class tour_item extends CI_Model
             $suggestions[]=array('value' => $row->tour_id, 'label' => $row->tour_name);
         }
 
-        $by_destination = $this->db->join('destinations','tours.destinationID = destinations.destinate_id')
-    			->join('suppliers','tours.supplier_id = suppliers.supplier_id')
+        $by_destination = $this->db->join('destinations','tours.destinationID = destinations.destinate_id', 'left')
+    			->join('suppliers','tours.supplier_id = suppliers.supplier_id', 'left')
     			->where('tours.deleted',0)
    				->like('destination_name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
     			->order_by("destination_name", "asc")
@@ -29,8 +29,8 @@ class tour_item extends CI_Model
             $suggestions[]=array('value' => $row->tour_id, 'label' => $row->destination_name);
         }
 
-        $by_supplier = $this->db->join('destinations','tours.destinationID = destinations.destinate_id')
-                ->join('suppliers','tours.supplier_id = suppliers.supplier_id')
+        $by_supplier = $this->db->join('destinations','tours.destinationID = destinations.destinate_id', 'left')
+                ->join('suppliers','tours.supplier_id = suppliers.supplier_id', 'left')
                 ->where('tours.deleted',0)
                 ->like('company_name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both')
                 ->order_by("company_name", "asc")

@@ -141,7 +141,7 @@ class Sale_massage extends CI_Model {
         return $success;
     }
 
-    function save($items, $customer_id, $employee_id, $commissioner_id, $commissioner_price, $controller_name, $time_in, $time_out, $comment, $show_comment_on_receipt, $payments, $sale_id = false, $suspended = 0, $cc_ref_no = '', $change_sale_date = false) {
+    function save($office_name,$items, $tip_price, $customer_id, $employee_id, $massager_id, $commissioner_id, $commissioner_price, $controller_name, $time_in, $time_out, $comment, $show_comment_on_receipt, $payments, $sale_id = false, $suspended = 0, $cc_ref_no = '', $change_sale_date = false) {
 
         if (count($items) == 0)
             return -1;
@@ -160,9 +160,12 @@ class Sale_massage extends CI_Model {
             'suspended' => $suspended,
             'deleted' => 0,
             'cc_ref_no' => $cc_ref_no,
+            'tip_price' => $tip_price,
             'commision_price' => $commissioner_price,
             'commisioner_id' => $this->commissioner->exists($commissioner_id) ? $commissioner_id : null,
-            'category' => $controller_name
+            'massager_id' => $this->Employee->exists($massager_id) ? $massager_id : null,
+            'category' => $controller_name,
+            'office' => $office_name
         );
         if ($sale_id) {
             $old_date = $this->get_info($sale_id)->row_array();
@@ -207,6 +210,11 @@ class Sale_massage extends CI_Model {
             if (isset($item['item_massage_id'])) {
                 $cur_item_info = $this->massage->get_info($item['item_massage_id']);
 
+                $commission_price_receptionist = $item['commission_receptionist'];
+                if ($item['discount'] != 0) {
+                    $commission_price_receptionist = 0;
+                }
+
                 $sales_items_data = array
                     (
                     'id_order_massage' => $sale_id,
@@ -220,7 +228,9 @@ class Sale_massage extends CI_Model {
                     'sale_price' => $item['price'],
                     'deposite' => $item['deposite'],
                     'discount_percent' => $item['discount'],
-                    'quantity_purchased' => $item['quantity']
+                    'quantity_purchased' => $item['quantity'],
+                    'commission_massager' => $item['commission_massager'],
+                    'commission_receptionist' => $commission_price_receptionist
                 );
                 // insret sale information data into detial_orders_massages table
                 $this->db->insert('detial_orders_massages', $sales_items_data);
@@ -229,7 +239,7 @@ class Sale_massage extends CI_Model {
                 //Inventory Count Details
                 $qty_buy = -$item['quantity'];
                 // $sale_remarks ='POS '.$sale_id;
-                $sale_remarks = 'CGATE ' . $sale_id;
+                $sale_remarks = strtoupper($office_name).' ' . $sale_id;
                 $inv_data = array
                     (
                     'trans_date' => date('Y-m-d H:i:s'),
@@ -283,7 +293,7 @@ class Sale_massage extends CI_Model {
         $query = $this->db->get();
         foreach ($query->result_array() as $sale_item_row) {
 
-            $sale_remarks = 'CGATE ' . $sale_id;
+            $sale_remarks = strtoupper($this->session->userdata("office_number")).' ' . $sale_id;
             $inv_data = array
                 (
                 'trans_date' => date('Y-m-d H:i:s'),
@@ -424,7 +434,7 @@ class Sale_massage extends CI_Model {
         $where = '';
 
         if (isset($params['start_date']) && isset($params['end_date'])) {
-            $where = 'WHERE sale_time BETWEEN "' . $params['start_date'] . '" and "' . $params['end_date'] . '"';
+            $where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'" and office ="'.$params['office'].'"';
             if ($this->config->item('hide_suspended_sales_in_reports')) {
                 $where .=' and suspended = 0';
             }
@@ -437,24 +447,37 @@ class Sale_massage extends CI_Model {
     function _create_sales_massages_temp_table_query($where) {
 
         $this->db->query("CREATE TEMPORARY TABLE " . $this->db->dbprefix('sales_massages_temp') . "
-		(SELECT " . $this->db->dbprefix('orders') . ".order_id as ID, " . $this->db->dbprefix('orders') . ".deleted as deleted, sale_time, date(sale_time) as sale_date, " . $this->db->dbprefix('detial_orders_massages') . ".id_order_massage, comment,payment_type, customer_id, employee_id,category, commisioner_id,
-		" . $this->db->dbprefix('items_massages') . ".item_massage_id, " . $this->db->dbprefix('items_massages') . ".supplierID, quantity_purchased, unit_price, sale_price, commision_price,
-		discount_percent, (sale_price * quantity_purchased - sale_price * quantity_purchased * discount_percent / 100) as subtotal,
-		" . $this->db->dbprefix('detial_orders_massages') . ".line as line, " . $this->db->dbprefix('detial_orders_massages') . ".
-		
+		(SELECT ".$this->db->dbprefix('orders').".deposit, " . $this->db->dbprefix('orders') . ".order_id as ID, " . $this->db->dbprefix('orders') . ".deleted, sale_time, date(sale_time) as sale_date, 
+        " . $this->db->dbprefix('detial_orders_massages') . ".id_order_massage, comment,payment_type, customer_id, employee_id,category, commisioner_id,
+		" . $this->db->dbprefix('items_massages') . ".item_massage_id, NULL as item_kit_id, " . $this->db->dbprefix('items_massages') . ".supplierID, quantity_purchased, unit_price, sale_price, commision_price, massager_id,
+		discount_percent, (sale_price * quantity_purchased - discount_percent) as subtotal,
+		" . $this->db->dbprefix('detial_orders_massages') . ".line as line, " . $this->db->dbprefix('detial_orders_massages') . ".	
 		massage_name as name_of_massage, time_in, time_out, " . $this->db->dbprefix('detial_orders_massages') . ".issue_date,  
-
-		ROUND( (sale_price * quantity_purchased - sale_price * quantity_purchased * discount_percent / 100),2) as total,
-
-		(sale_price * quantity_purchased - sale_price * quantity_purchased * discount_percent / 100) - (unit_price * quantity_purchased) as profit,
-                (sale_price * quantity_purchased - sale_price * quantity_purchased * discount_percent / 100) - (unit_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price
+		ROUND( (sale_price * quantity_purchased - discount_percent),2) as total,
+		(sale_price * quantity_purchased - discount_percent) - (unit_price * quantity_purchased) as profit,
+                (sale_price * quantity_purchased - discount_percent) - (unit_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price
 		FROM " . $this->db->dbprefix('detial_orders_massages') . "
 		INNER JOIN " . $this->db->dbprefix('orders') . " ON  " . $this->db->dbprefix('detial_orders_massages') . '.id_order_massage=' . $this->db->dbprefix('orders') . '.order_id' . "
 		INNER JOIN " . $this->db->dbprefix('items_massages') . " ON  " . $this->db->dbprefix('detial_orders_massages') . '.item_massage_id=' . $this->db->dbprefix('items_massages') . '.item_massage_id' . "
-		LEFT OUTER JOIN " . $this->db->dbprefix('suppliers') . " ON  " . $this->db->dbprefix('items_massages') . '.supplierID=' . $this->db->dbprefix('suppliers') . '.supplier_id' . "
-
+        LEFT OUTER JOIN " . $this->db->dbprefix('suppliers') . " ON  " . $this->db->dbprefix('items_massages') . '.supplierID=' . $this->db->dbprefix('suppliers') . '.supplier_id' . "
 		$where
-                    GROUP BY ID, item_massage_id, line) ORDER BY ID");
+        GROUP BY ID, item_massage_id, line) 
+        UNION ALL
+        (SELECT ".$this->db->dbprefix('orders').".deposit, ".$this->db->dbprefix('orders').".order_id as ID, ".$this->db->dbprefix('orders').".deleted, sale_time, date(sale_time) as sale_date, 
+        NULL as id_order_massage, comment,payment_type, customer_id, employee_id, NULL as category, commisioner_id,
+        NULL as item_massage_id, 
+        ".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplierID, quantity_purchased, item_kit_cost_price as unit_price, item_kit_unit_price as sale_price, commision_price, massager_id,       
+        discount_percent, (item_kit_unit_price*quantity_purchased - discount_percent) as subtotal,
+        ".$this->db->dbprefix('orders_item_kits').".line as line, NULL as name_of_massage, NULL as time_in, NULL as time_out, NULL as issue_date,
+        ROUND((item_kit_unit_price*quantity_purchased - discount_percent),2) as total,
+        (item_kit_unit_price*quantity_purchased - discount_percent) - (item_kit_cost_price*quantity_purchased) as profit,
+        (item_kit_unit_price * quantity_purchased - discount_percent) - (item_kit_cost_price * quantity_purchased) - (commision_price)  as profit_inclod_com_price      
+        
+        FROM ".$this->db->dbprefix('orders_item_kits')."
+        INNER JOIN ".$this->db->dbprefix('orders')." ON  ".$this->db->dbprefix('orders_item_kits').'.sale_id='.$this->db->dbprefix('orders').'.order_id'."
+        INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('orders_item_kits').'.item_kitID='.$this->db->dbprefix('item_kits').'.item_kit_id'."
+        $where
+        GROUP BY ID, item_massage_id, line) ORDER BY ID");
     }
 }
 

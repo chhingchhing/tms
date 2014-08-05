@@ -41,9 +41,17 @@ class Secure_area extends CI_Controller
 	// Check the module that allow for each user login
     public function check_module_accessable(){
         $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
+        // $office = substr($this->uri->segment(3), -1);
+        $office = substr($this->session->userdata("office_number"), -1);
         return $this->Module->get_allowed_modules($office, $logged_in_employee_info->employee_id); //get officle allowed
     }
+
+    /*
+    * For redirection of page
+    */
+    function redirection($url){
+		redirect($url);
+	}
 
 }
 

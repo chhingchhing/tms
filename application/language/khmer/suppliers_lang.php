@@ -14,4 +14,5 @@ $lang['suppliers_basic_information']='ពត៍មានអក្នផ្កត
 $lang['suppliers_account_number']='លេខគណនី #';
 $lang['suppliers_company_name']='ឈ្មោះក្រុមហ៊ុន';
 $lang['suppliers_company_name_required'] = 'សូមបំពេញឈ្មោះក្រុមហ៊ុន';
+$lang['suppliers_supplier_type'] = 'ប្រភេទនៃអក្នផ្កត់ផ្គង';
 ?>

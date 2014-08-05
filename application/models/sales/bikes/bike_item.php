@@ -62,8 +62,7 @@ class Bike_item extends CI_Model {
 
     function get_info($item_id) {
         $query = $this->db->where('item_bike_id', $item_id)->get("items_bikes");
-        // echo 'get_info ***************';
-        // var_dump($query->row());
+        
         if ($query->num_rows() == 1) {
             return $query->row();
         } else {

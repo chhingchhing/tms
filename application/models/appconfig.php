@@ -61,9 +61,12 @@ class Appconfig extends CI_Model
 		
 	function get_logo_image()
 	{
-		if ($this->config->item('company_logo'))
+		if ($this->session->userdata('office_number'))
 		{
-			return site_url('app_files/view/'.$this->get('company_logo'));
+			$office = $this->Office->get_office_id($this->session->userdata("office_number"));
+			return site_url('app_files/view/'.$office);
+		// } elseif ($this->config->item('company_logo')) {
+		// 	return site_url('app_files/view/'.$this->get('company_logo'));
 		}
 		return 'images/header/header_logo.png';
 	}
@@ -72,10 +75,22 @@ class Appconfig extends CI_Model
 	{
 		$return = array();
 		$payment_types = $this->get('additional_payment_types');
-		
 		if ($payment_types)
 		{
 			$return = array_map('trim', explode(',',$payment_types));
+		}
+		
+		return $return;
+	}
+
+	
+	function get_default_currency()
+	{
+		$return = array();
+		$default_currency = $this->get('default_currency');
+		if ($default_currency)
+		{
+			$return = array_map('trim', explode(',',$default_currency));
 		}
 		
 		return $return;

@@ -76,7 +76,6 @@ $lang['reports_reorder_level'] = 'Reorder Level';
 $lang['reports_low_inventory_report'] = 'Low Inventory Report';
 $lang['reports_item_name'] = 'Item Name';
 $lang['reports_inventory_summary_report'] = 'Inventory Summary Report';
-$lang['reports_payment_type'] = 'Payment Type';
 $lang['reports_payments_summary_report'] = 'Payments Summary Report';
 $lang['reports_payments'] = 'Payments';
 $lang['reports_receivings'] = 'Receivings';
@@ -106,8 +105,6 @@ $lang['reports_month_11'] = 'November';
 $lang['reports_month_12'] = 'December';
 $lang['reports_giftcards'] = 'Giftcards';
 $lang['reports_giftcard_summary_report'] = 'Giftcard Summary Report';
-
-
 $lang['reports_register_log_title'] = 'Register Logs';
 $lang['reports_register_log_open'] = 'Register Still Open';
 $lang['reports_employee'] = 'Employee';
@@ -117,7 +114,6 @@ $lang['reports_open_amount'] = 'Open Amount';
 $lang['reports_close_amount'] = 'Close Amount';
 $lang['reports_cash_sales'] = 'Cash Sales';
 $lang['reports_difference'] = 'Difference';
-
 $lang['reports_total_cash_sales'] = 'Total Cash Sales';
 $lang['reports_total_shortages'] = 'Total Shortages';
 $lang['reports_total_overages'] = 'Total Overages';
@@ -125,7 +121,6 @@ $lang['reports_total_difference'] = 'Total Difference';
 $lang['reports_inventory_total'] = 'Total Inventory Value';
 $lang['reports_inventory_sale_total'] = 'Total Inventory Value By Unit Price';
 $lang['reports_no_customer'] = 'No Customer';
-
 $lang['reports_sales_generator'] = 'Custom Report'; 
 $lang['reports_sales_search'] = 'Detailed Search Report';
 $lang['reports_sales_report_generator'] = 'Report Generator';
@@ -135,14 +130,11 @@ $lang['reports_sales_generator_matchType_Or'] = 'Match any rule (OR condition)';
 $lang['reports_sales_generator_matchType_Help'] = 'Help: How do you want the sales report rules you create below to be applied? Choose \'Match all rules\' to only see the sales who match every rule you create. Choose \'Match any rule\' to see the sales who match one or more rules.';
 $lang['reports_sales_generator_matchType_All_TEXT'] = 'AND';
 $lang['reports_sales_generator_matchType_Or_TEXT'] = 'OR';
-
 $lang['reports_sales_generator_addCondition'] = 'Add Condition';
 $lang['reports_sales_generator_delCondition'] = 'Remove Condition';
-
 $lang['reports_sales_generator_autocomplete_hintText'] = 'Type in a search term';
 $lang['reports_sales_generator_autocomplete_noResultsText'] = 'No results';
 $lang['reports_sales_generator_autocomplete_searchingText'] = 'Searching...';
-
 $lang['reports_sales_generator_selectField_0'] = 'Please Select';
 $lang['reports_sales_generator_selectField_1'] = 'Customer Name';
 $lang['reports_sales_generator_selectField_2'] = 'Ticket number';
@@ -154,7 +146,6 @@ $lang['reports_sales_generator_selectField_7'] = 'Sale Amount';
 $lang['reports_sales_generator_selectField_8'] = 'Item Kit Name';
 $lang['reports_sales_generator_selectField_9'] = 'Item Name';
 $lang['reports_sales_generator_selectField_10'] = 'Sale ID';
-
 $lang['reports_sales_generator_selectCondition_1'] = 'is';
 $lang['reports_sales_generator_selectCondition_2'] = 'is not';
 $lang['reports_sales_generator_selectCondition_5'] = 'is IN';
@@ -164,13 +155,13 @@ $lang['reports_sales_generator_selectCondition_8'] = 'Less Than (<)';
 $lang['reports_sales_generator_selectCondition_9'] = 'Equal To (=)';
 $lang['reports_sales_generator_selectCondition_10'] = 'Sale';
 $lang['reports_sales_generator_selectCondition_11'] = 'Return';
-
 $lang['reports_sales_report_generator_results_found'] = 'results found';
 $lang['reports_quantity'] = 'Quantity';
 $lang['reports_sales_generator_selectField_11'] = 'Payment Type';
+$lang['reports_sales_generator_selectField_12'] = 'Massager Name';
 $lang['reports_id'] = 'ID';
 $lang['reports_sales_generator_show_only_matched_items'] = 'Show Only Matched Items In Sale';
-
 $lang['reports_tickets_summary_report'] = 'Tickets Summary Report';
+$lang['reports_deposit'] = 'Deposite';
 
 ?>

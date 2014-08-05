@@ -81,6 +81,9 @@ class Commissioner extends CI_Model {
         }
     }
 
+    /**
+    check the gave commissioner_id is really commissioner
+    */
     function exists($commissioner_id) {
         $this->db->from('commissioners');
         $this->db->where('commisioner_id', $commissioner_id);
@@ -128,10 +131,9 @@ class Commissioner extends CI_Model {
         return $this->db->update('commissioners', $commissioner_data);
     }
 
-    /*
+    /**
       Get search suggestions to find commissioner
      */
-
     function get_search_suggestions($search, $limit = 25) {
         $suggestions = array();
 
@@ -202,7 +204,6 @@ class Commissioner extends CI_Model {
         if (count($suggestions > $limit)) {
             $suggestions = array_slice($suggestions, 0, $limit);
         }
-//        var_dump($suggestions).'suggest data';
         return $suggestions;
     }
 

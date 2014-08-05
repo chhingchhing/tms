@@ -51,7 +51,7 @@ $lang['reports_employees'] = 'បុគ្គលិក';
 $lang['reports_taxes'] = 'ពន្ធ័';
 $lang['reports_customer'] = 'អតិថិជន';
 $lang['reports_employee'] = 'បុគ្គលិក';
-$lang['reports_tax_percent'] = 'Tax Percent';
+$lang['reports_tax_percent'] = 'ពន្ធ័(%)';
 $lang['reports_quantity_purchased'] = 'ចំនួនទិញ';
 $lang['reports_serial_number'] = 'សៀរៀល #';
 $lang['reports_description'] = 'ការពិពណ៍នា';
@@ -73,7 +73,6 @@ $lang['reports_reorder_level'] = 'Reorder Level';
 $lang['reports_low_inventory_report'] = 'របាយការណ៍​អស់​សារពើភ័ណ្ឌ';
 $lang['reports_item_name'] = 'ឈ្មោះទំនិញ';
 $lang['reports_inventory_summary_report'] = 'របាយការណ៍​សារពើភ័ណ្ឌ';
-$lang['reports_payment_type'] = 'ប្រភេទនៃការចំណាយ';
 $lang['reports_payments_summary_report'] = 'របាយការណ៍នៃការចំណាយសរុប';
 $lang['reports_payments'] = 'ការចំណាយ';
 $lang['reports_receivings'] = 'ការទទួល';
@@ -103,8 +102,6 @@ $lang['reports_month_11'] = 'វិច្ឆិកា';
 $lang['reports_month_12'] = 'ធ្នូ';
 $lang['reports_giftcards'] = 'Giftcards';
 $lang['reports_giftcard_summary_report'] = 'Giftcard Summary Report';
-
-
 $lang['reports_register_log_title'] = 'ចុះឈ្មោះកំណត់';
 $lang['reports_register_log_open'] = 'ចុះឈ្មោះកំណត់ នៅតែបើក';
 $lang['reports_employee'] = 'បុគ្គលិក';
@@ -114,7 +111,6 @@ $lang['reports_open_amount'] = 'បើកគណនីយ';
 $lang['reports_close_amount'] = 'បិទគណនីយ';
 $lang['reports_cash_sales'] = 'ការលក់ជា​សាច់ប្រាក់សុទ្ធ';
 $lang['reports_difference'] = 'ភាពខុសគ្នា';
-
 $lang['reports_total_cash_sales'] = 'សរុបការ​លក់​ជា​​សាច់​ប្រាក់​សុទ្ធ';
 $lang['reports_total_shortages'] = 'សរុប​កង្វះខាត';
 $lang['reports_total_overages'] = 'សរុប​ មធ្យម';
@@ -122,7 +118,6 @@ $lang['reports_total_difference'] = 'សរុប ភាពខុសគ្នា
 $lang['reports_inventory_total'] = 'សរុប​ តម្លៃសារពើភ័ណ្ឌ';
 $lang['reports_inventory_sale_total'] = 'សរុប​ តម្លៃសារពើភ័ណ្ឌ ដោយតម្លៃមួយៗ';
 $lang['reports_no_customer'] = 'អត់មានអតិថិជន';
-
 $lang['reports_sales_generator'] = 'របាយការណ៍អតិថិជន'; 
 $lang['reports_sales_search'] = 'របាយ​ការណ៍​ស្វែងរក​ដោយលំ​អិត';
 $lang['reports_sales_report_generator'] = 'បង្កើតរបាយការណ៍';
@@ -132,14 +127,11 @@ $lang['reports_sales_generator_matchType_Or'] = 'ផ្គូផ្គងទា�
 $lang['reports_sales_generator_matchType_Help'] = 'ជំនួយ: តើអ្នកចង់ដឹងពីរបៀបនៃការធ្វើរបាយការណ៍នៃការលក់របស់អ្នកខាងក្រោមនេះទេ? រើស \'ផ្គូផ្គងទាំងអស់ (និងលក្ខខណ្ឌ)\' ដើម្បីមើលថានរណាជាអ្នកលក់. រើស \'ផ្គូផ្គងទាំងអស់ (ឬ​លក្ខខណ្ឌ)\' ដើម្បីមើលថានរណាជានាក់លក់មួយឬច្រើនលក្ខ័ខណ.';
 $lang['reports_sales_generator_matchType_All_TEXT'] = 'និង';
 $lang['reports_sales_generator_matchType_Or_TEXT'] = 'ឫ';
-
 $lang['reports_sales_generator_addCondition'] = 'បន្ថែមលក្ខ័ខណ';
 $lang['reports_sales_generator_delCondition'] = 'លុប​លក្ខ័ខណ';
-
 $lang['reports_sales_generator_autocomplete_hintText'] = 'ប្រភេទនៃការស្វែងរក';
 $lang['reports_sales_generator_autocomplete_noResultsText'] = 'ពុំមានទេ';
 $lang['reports_sales_generator_autocomplete_searchingText'] = 'កុំពុងស្វែងរក...';
-
 $lang['reports_sales_generator_selectField_0'] = 'សូមជ្រើសរើស';
 $lang['reports_sales_generator_selectField_1'] = 'ឈ្មោះអតិថិជន';
 $lang['reports_sales_generator_selectField_2'] = 'លេខសើរៀលទំនិញ';
@@ -151,7 +143,6 @@ $lang['reports_sales_generator_selectField_7'] = 'ចំនួនការលក
 $lang['reports_sales_generator_selectField_8'] = 'Item Kit Name';
 $lang['reports_sales_generator_selectField_9'] = 'ឈ្មោះទំនិញ';
 $lang['reports_sales_generator_selectField_10'] = 'ID​ លក់';
-
 $lang['reports_sales_generator_selectCondition_1'] = 'ជា';
 $lang['reports_sales_generator_selectCondition_2'] = 'មិនមែនជា';
 $lang['reports_sales_generator_selectCondition_5'] = 'គឺក្នុង';
@@ -161,10 +152,16 @@ $lang['reports_sales_generator_selectCondition_8'] = 'តិចជាង(<)';
 $lang['reports_sales_generator_selectCondition_9'] = 'ស្មើរ (=)';
 $lang['reports_sales_generator_selectCondition_10'] = 'លក់';
 $lang['reports_sales_generator_selectCondition_11'] = 'សង';
-
 $lang['reports_sales_report_generator_results_found'] = 'លទ្ធផលនៃការរកឃើញ';
 $lang['reports_quantity'] = 'ចំនួន';
 $lang['reports_sales_generator_selectField_11'] = 'ប្រភេទនៃការចំនាញ';
+$lang['reports_sales_generator_selectField_12'] = 'ឈ្មោះអ្នកម៉ាស្សា';
 $lang['reports_id'] = 'ID';
 $lang['reports_sales_generator_show_only_matched_items'] = 'Show Only Matched Items In Sale';
+$lang['reports_total_com_price'] = 'សរុបតម្លៃអ្នកនាំភ្ញៀវមក';
+$lang['reports_profit_inclod_com_price'] = 'ប្រាក់ចំនេញសរុបបន្ទាប់ពីដកតម្លៃអ្នកនាំភ្ញៀវចេញ';
+$lang['reports_cost_price'] = 'សរុបថ្លៃដើម';
+$lang['reports_tickets_summary_report'] = 'របាយការណ៍សង្ខេប នៃ សំបុត្រ';
+$lang['reports_deposit'] = 'ប្រាក់កក់';
+
 ?>

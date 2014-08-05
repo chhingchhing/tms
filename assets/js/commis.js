@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 
-
-
 var baseURL = jQuery('input[name="baseURL"]').val();
 var controller = jQuery('input[name="controller_name"]').val();
 
@@ -109,7 +107,7 @@ jQuery("body").on("click", "input#btnSubmitCommissioner", function(event) {
   
 });
 
-/* Save new transportation */
+/* Save new commis */
 function save(data, url, modal_id) {
     var search = url.replace("save", "search");
     $.ajax({
@@ -151,5 +149,140 @@ function getDataSearch(term, url){
     });
 }
 
+function set_feedback(text, classname, keep_displayed)
+{
+    if(text!='')
+    {
+        $('#feedback_bar').removeClass();
+        $('#feedback_bar').addClass(classname);
+        $('#feedback_bar').html(text + '<div id="feedback_bar_close"><img src="images/close.png" /></div>');
+        $('#feedback_bar').slideDown(250);
+        var text_length = text.length;
+        var text_lengthx = text_length*125;
+
+        if(!keep_displayed)
+        {
+            $('#feedback_bar').show();
+            
+            setTimeout(function()
+            {
+                $('#feedback_bar').slideUp(250, function()
+                {
+                    $('#feedback_bar').removeClass();
+                });
+            },text_lengthx);
+        }
+    }
+    else
+    {
+        $('#feedback_bar').hide();
+    }
+
+    $('#feedback_bar_close').click(function()
+    {
+        $('#feedback_bar').slideUp(250, function()
+        {
+            $('#feedback_bar').removeClass();
+        });
+    });
+    
+}
+
+// Check duplicate destination
+function check_duplicate_destination(callback) {
+    if (controller == "tours") {
+        var term = $("input#newDes").val();
+    } 
+    if(controller == "tickets") {
+        var term = $("input#destinationID").val();
+    }
+    var url = baseURL + "tickets/check_duplicate_destination";
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: {"term" : term},
+        success: function(response) {
+            if (callback) {
+                callback(response);
+            };
+        }
+    });
+}
+
+function addTicketManage(data, url, modals) {
+    jQuery.ajax({
+        type: "POST",
+        dataType: "json",
+        url: url,
+        data: data,
+        success: function(msg) {
+            if (msg.success) {
+                set_feedback(msg.message,'success_message',false);
+                jQuery("#"+modals).modal('hide');
+                // Reset form
+                $('.modal').on('hidden.bs.modal', function(){
+                    $(this).find('form')[0].reset();
+                });
+                var search = url.replace("save", "search");
+                getDataSearch("", search);
+                return true;
+            } else {
+                jQuery('div#getSmsError').text(msg.message);
+                jQuery("div#error").hide();
+                return false;
+            }
+        }
+    });
+}
 
 
+function save_package(data, url, modal_id) {
+    var search = url.replace("save_package", "search_package");
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: data,
+        success: function(response) {
+            if (response.success) {
+                $("#"+modal_id).modal('hide');
+                $('.modal').on('hidden.bs.modal', function(){
+                    $(this).find('form')[0].reset();
+                });
+                set_feedback(response.message,'success_message',false);
+                getDataSearch("", search);
+            } else {
+                set_feedback(response.message,'error_message',false);
+                return false;
+            }
+        }
+    });
+}
+
+
+
+function addPeople(url, url_select, datas, modals) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: 'json',
+        data: datas,
+        success: function(response) {
+            selectPeople(url, url_select, response.person_id, modals);
+        }
+    });
+}
+
+function selectPeople(url, url_select, person_id, modals) {
+    jQuery.ajax({
+        type: "POST",
+        url: url_select,
+        dataType: "html",
+        data: { "term" : person_id },
+        success: function(response) {
+            $("div#register_container").html(response);
+            jQuery("#"+modals).modal('hide');
+        }
+    });
+}

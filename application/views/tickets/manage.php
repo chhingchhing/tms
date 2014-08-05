@@ -12,7 +12,7 @@
                 <input type="text" id="search" name ='search' class="form-control"/>
                 <span class="glyphicon glyphicon-search"></span>
 
-                </form>
+                <?php echo form_close(); ?>
             </div>
         </div>
     </div>

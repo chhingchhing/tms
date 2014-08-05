@@ -27,6 +27,7 @@ class Login extends CI_Controller
 		}
 		else
 		{
+			// Check before redirect to page dashboard, callback to login_check()
 			$this->form_validation->set_rules('username', 'lang:login_undername', 'callback_login_check');
     	    $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
 			

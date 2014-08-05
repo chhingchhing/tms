@@ -26,6 +26,7 @@ $lang['customers_full_path_to_excel_required'] = 'តម្រូវឲ្យម
 $lang['customers_import_customers_from_excel'] = 'បញ្ចូលអតិថិជនតាម Excel';
 $lang['customers_duplicate_account_id'] = 'ការបញ្ចូលទិន្នន័យមិនបានសំរាច់ទេព្រោះជាន់លេខរៀងអតិថិជន ឫ ទិន្នន័យមិនត្រូវ។សូមពិនិត្រហើយព្យាយាមម្តងទៀត';
 $lang['customers_cleanup_old_customers'] = ' សំអាតអតិថិជនចាស់ៗ';
+$lang['customers_cleanup_sucessful'] = 'អ្នកសម្អាតអតិថិជនដែលបានលុបដោយជោគជយ័';
 $lang['customers_confirm_cleanup'] = 'តើអ្នកប្រាកដជាចង់សំអាតអតិថិជនដែលបានលុបហើយទាំងអស់ឫ?(វាក្រានតែលុបលេខគណនីពីអតិថិជនបចាសស់ៗដែលអក្នបានលុប​ ប៉ុន្នែអក្នអាចយកមកវិញបាន) ';
 $lang['customers_duplicate_exists'] = 'ឈ្មោះអតិថិជនមានរួចហើយ។ តើអ្នកចង់បន្តទេ? ';
 $lang['customers_payamount_required']='សូមបញ្ចូលចំនួន';

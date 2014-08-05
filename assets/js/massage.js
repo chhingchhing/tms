@@ -14,7 +14,7 @@ jQuery("div#feedback_bar_error").hide();
 jQuery("body").on("click", "input[name='submit_sms']", function(event) {
     event.preventDefault();
     var url = jQuery("form#massage_form").attr("action");
-    var checkExistURL = url.replace("get_massage", "check_duplicate_data");
+    var checkExistURL = url.replace("save", "check_duplicate_data");
     var data = jQuery("form#massage_form").serialize();
     var baseURL = jQuery('input[name="baseURL"]').val();
     var massage_name = jQuery("input[name='massage_name']").val();
@@ -38,8 +38,8 @@ jQuery("body").on("click", "input[name='submit_sms']", function(event) {
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
     }
-    else if (supplier_idd == 0) {
-        jQuery('div#getSmsError').text("Please Seletct Supplier Typesss!");
+    /*else if (supplier_idd == 0) {
+        jQuery('div#getSmsError').text("Please Seletct Supplier Type!");
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
     }
@@ -47,8 +47,7 @@ jQuery("body").on("click", "input[name='submit_sms']", function(event) {
         jQuery('div#getSmsError').text("Please Input Massage type!");
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
-    }
-
+    }*/
     if (!item_massage_id) {
         jQuery.ajax({
             type: "POST",
@@ -69,7 +68,7 @@ jQuery("body").on("click", "input[name='submit_sms']", function(event) {
     }
 });
 
-function save(data, url, modal_id) {
+/*function save(data, url, modal_id) {
     var search = url.replace("saved", "search");
     $.ajax({
         type: "POST",
@@ -90,9 +89,9 @@ function save(data, url, modal_id) {
             }
         }
     });
-}
+}*/
 
-function getDataSearch(term, url){
+/*function getDataSearch(term, url){
     jQuery.ajax({
         type: "POST",
         url: url,
@@ -108,7 +107,7 @@ function getDataSearch(term, url){
             };
         }
     });
-}
+}*/
 
 // add payment of sale massage 
 $('body').on('click', 'div#add_payment_button', function(event) {

@@ -8,7 +8,7 @@ class Item_kit extends CI_Model
 	{
 		$this->db->from('item_kits');
 		$this->db->where('item_kit_id',$item_kit_id);
-		$this->db->where('category',$category);
+		// $this->db->where('category',$category);
 		$query = $this->db->get();
 
 		return ($query->num_rows()==1);
@@ -41,7 +41,7 @@ class Item_kit extends CI_Model
 	{ 
 		$this->db->from('item_kits');
 		$this->db->where('item_kit_id',$item_kit_id);
-		$this->db->where('category',$category);
+		// $this->db->where('category',$category);
 		
 		$query = $this->db->get();
 
@@ -88,7 +88,7 @@ class Item_kit extends CI_Model
 	{
 		$this->db->from('item_kits');
 		$this->db->where('item_kit_number',$item_kit_number);
-		$this->db->where('category',$category);
+		// $this->db->where('category',$category);
 
 		$query = $this->db->get();
 

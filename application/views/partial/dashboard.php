@@ -9,8 +9,9 @@
             foreach ($allowed_offices->result() as $office) {
                 ?>
                 <div id="dash_img" class="col-2 col-sm-2 col-lg-2 office-img">
-                    <a href="<?php echo site_url("$controller/world/$office->alias_name"); ?>">
-                        <img src="<?php echo base_url() . 'assets/images/offices/office_' . $office->office_id . '.png'; ?>" border="0" alt="Menubar Image" class="img-rounded" />
+                    <a href="<?php echo site_url("$controller/world/$office->alias_name/$office->office_id"); ?>">
+                        <!-- <img src="<?php //echo base_url() . 'assets/images/offices/office_' . $office->office_id . '.png'; ?>" border="0" alt="Menubar Image" class="img-rounded" /> -->
+                        <img src="<?php echo base_url() . 'images/menubar/' .'home_offices.png'; ?>" border="0" alt="Menubar Image" class="img-rounded" />
                     </a>
                     <div class="row" id="office"><?php echo '<p>' . $office->office_name . '</p>'; ?></div></a>
                 </div>

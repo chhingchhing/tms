@@ -1,9 +1,9 @@
 <?php
 class Appfile extends CI_Model 
 {		
-	function get($file_id)
+	function get($office_id)
 	{
-		$query = $this->db->get_where('app_files', array('file_id' => $file_id), 1);
+		$query = $this->db->get_where('app_files', array('officeID' => $office_id), 1);
 		
 		if($query->num_rows()==1)
 		{
@@ -14,14 +14,15 @@ class Appfile extends CI_Model
 		
 	}
 	
-	function save($file_name,$file_data, $file_id = false)
+	function save($file_name,$file_data, $office_id = false)
 	{
 		$file_data=array(
 		'file_name'=>$file_name,
-		'file_data'=>$file_data
+		'file_data'=>$file_data,
+		'officeID' => $office_id
 		);
-				
-		if (!$file_id)
+
+		if (!$office_id or !$this->exists($office_id))
 		{
 			if ($this->db->insert('app_files',$file_data))
 			{
@@ -30,20 +31,29 @@ class Appfile extends CI_Model
 			
 			return false;
 		}
-		
-		$this->db->where('file_id', $file_id);
+
+		$this->db->where('officeID', $office_id);
 		if ($this->db->update('app_files',$file_data))
 		{
-			return $file_id;
+			return $office_id;
 		}
 		
 		return false;
 	}
 		
-	function delete($file_id)
+	function delete($office_id)
 	{
-		return $this->db->delete('app_files', array('file_id' => $file_id)); 
+		return $this->db->delete('app_files', array('officeID' => $office_id)); 
 	}
+
+	function exists($office_id) {
+        $this->db->from('app_files');
+        $this->db->where('officeID', $office_id);
+        $query = $this->db->get();
+
+        return ($query->num_rows() == 1);
+    }
+
 }
 
 ?>

@@ -25,14 +25,6 @@ $(document).ready(function()
 		<?php if (isset($subscription_cancelled_within_30_days) && $subscription_cancelled_within_30_days === true) { ?>
 			<div class="top_message_error"><?php echo lang('login_subscription_cancelled_within_30_days'); ?></div>
 		<?php } ?>
-		<?php
-		if ($_SERVER['HTTP_HOST'] == 'demo.phppointofsale.com' || $_SERVER['HTTP_HOST'] == 'demo.phppointofsalestaging.com')
-		{
-		?>
-			<h2>Press login to continue</h2>
-		<?php
-		}
-		?>
 	</div>
 	<?php if ($application_mismatch) {?>
 		<div id="welcome_message" class="top_message_error">
@@ -58,7 +50,8 @@ $(document).ready(function()
 			<?php echo form_input(array(
 			'name'=>'username', 
 			'value'=> $_SERVER['HTTP_HOST'] == 'demo.phppointofsale.com' || $_SERVER['HTTP_HOST'] == 'demo.phppointofsalestaging.com' ? 'admin' : '',
-			'size'=>'25')); ?>
+			'size'=>'25',
+			'class'=>'form-control')); ?>
 			</td>
 		</tr>
 	
@@ -68,7 +61,8 @@ $(document).ready(function()
 			<?php echo form_password(array(
 			'name'=>'password', 
 			'value'=>$_SERVER['HTTP_HOST'] == 'demo.phppointofsale.com' || $_SERVER['HTTP_HOST'] == 'demo.phppointofsalestaging.com' ? 'pointofsale' : '',
-			'size'=>'25')); ?>
+			'size'=>'25',
+			'class'=>'form-control')); ?>
 			</td>
 		</tr>
 		
@@ -80,8 +74,8 @@ $(document).ready(function()
 	</table>
 	<table id="bottom">
 		<tr>
-                    <td id="left">
-                           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php //echo date("Y")?> <?php //echo lang('login_version'); ?> <?php// echo APPLICATION_VERSION; ?> 
+            <td id="left">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php //echo date("Y")?> <?php //echo lang('login_version'); ?> <?php// echo APPLICATION_VERSION; ?> 
 			</td>
 			<td id="right">
 				<?php echo anchor('login/reset_password', lang('login_reset_password')); ?> 

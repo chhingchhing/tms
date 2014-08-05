@@ -13,6 +13,17 @@ class Supplier extends Person
 		
 		return ($query->num_rows()==1);
 	}
+
+	// Determines if a given name of company is a supplier
+	// function exists_by_company_name($company_name)
+	// {
+	// 	$this->db->from('suppliers');	
+	// 	$this->db->join('people', 'people.person_id = suppliers.supplier_id');
+	// 	$this->db->where('suppliers.supplier_id',$person_id);
+	// 	$query = $this->db->get();
+		
+	// 	return ($query->num_rows()==1);
+	// }
 	
 	/*
 	Returns all the suppliers
@@ -63,8 +74,10 @@ class Supplier extends Person
 	*/
 	function get_info($supplier_id)
 	{
+           
 		$this->db->from('suppliers');	
 		$this->db->join('people', 'people.person_id = suppliers.supplier_id');
+		$this->db->join("suppliers_types", 'suppliers_types.supplier_type_id = suppliers.supplier_typeID', 'left');
 		$this->db->where('suppliers.supplier_id',$supplier_id);
 		$query = $this->db->get();
 		if($query->num_rows()==1)
@@ -114,7 +127,6 @@ class Supplier extends Person
 		{
 			if (!$supplier_id or !$this->exists($supplier_id))
 			{
-				// $supplier_data['person_id'] = $person_data['person_id'];
 				$supplier_data['supplier_id'] = $person_data['person_id'];
 				$success = $this->db->insert('suppliers',$supplier_data);
 			}
@@ -454,6 +466,7 @@ class Supplier extends Person
 	// Get supplier for select dropdown
 	function get_suppliers() {
 		$query = $this->db->select('*')
+				->where("deleted", 0)
                 ->get('suppliers');
         $option[] = "--Select Supplier--";
         if ($query->num_rows() > 0) {
@@ -463,6 +476,105 @@ class Supplier extends Person
         }
         return $option;
 	}
+
+	function filter_hotels($search,$limit=25)
+	{
+		$suggestions = array();
+		
+		$this->db->from('suppliers');
+		$this->db->join('people','suppliers.supplier_id=people.person_id');	
+		$this->db->where('deleted', 0);
+		$this->db->like("company_name",$search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+		$this->db->order_by("company_name", "asc");		
+		$by_company_name = $this->db->get();
+		foreach($by_company_name->result() as $row)
+		{
+			$suggestions[]=array('value' => $row->company_name, 'label' => $row->company_name);		
+		}
+		
+		//only return $limit suggestions
+		if(count($suggestions > $limit))
+		{
+			$suggestions = array_slice($suggestions, 0,$limit);
+		}
+		return $suggestions;
+	
+	}
+
+    function check_duplicate_hotel($term)
+	{
+		$query = $this->db
+			->join('people', 'people.person_id = suppliers.supplier_id')
+			->where('deleted',0)
+			->where("company_name = ".$this->db->escape($term))
+			->get('suppliers');
+		if($query->num_rows()>0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	function select_supplier_by_type($type = false){
+        $this->db->select("*");
+        $this->db->where("deleted", 0);
+        $data = $this->db->get("suppliers_types");
+        $option[] = "Please select one";
+        if($data->num_rows() > 0){
+            foreach($data->result() as $item){
+                $option[$item->supplier_type_id] = $item->supplier_type_name;
+            }
+        }
+        return $option;
+    }
+
+	/*function select_supplier_by_type($type = false){
+        $this->db->select("*");
+        $this->db->join('people', 'people.person_id = suppliers.supplier_id');
+        $this->db->join("suppliers_types", 'suppliers_types.supplier_type_id = suppliers.supplier_typeID', 'left');
+ 		if ($type) {
+ 			$supplier_type_id = $this->get_supplier_type_id($type);
+ 			$this->db->where("supplier_typeID", $supplier_type_id);
+ 		}
+         		
+        $data = $this->db->get("suppliers");
+        $option[] = "Please select one";
+        if($data->num_rows() > 0){
+            foreach($data->result() as $item){
+                $option[$item->supplier_id] = $item->company_name;
+            }
+        }
+        return $option;
+    }
+
+    function get_supplier_type_id($search)
+	{
+		if ($search)
+		{
+			$this->db->select("supplier_type_id");
+			$this->db->from('suppliers_types');
+			$this->db->where("(supplier_type_name LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");		
+			$this->db->order_by("supplier_type_name", "asc");
+			$query = $this->db->get();
+		
+			if ($query->num_rows() > 0)
+			{
+				return $query->row()->supplier_type_id;
+			}
+		}
+		
+		return null;
+	}*/
+
+	function add_new_supplier_type(&$supplier_types, $item_id = false) {
+        if (!$item_id) {
+            if ($this->db->insert('suppliers_types', $supplier_types)) {
+                $supplier_types['supplier_type_id'] = $this->db->insert_id();
+                return true;
+            }
+            return false;
+        }
+    }
 
 }
 ?>

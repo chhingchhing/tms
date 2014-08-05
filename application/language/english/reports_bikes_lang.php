@@ -27,4 +27,11 @@ $lang['summary_reports_extra_pay'] = 'Extra pay';
 $lang['summary_reports_time_receive'] = 'Time received';
 $lang['summary_reports_receiver'] = 'Receiver';
 
+//-------------------language on report---------------------
+$lang['summary_reports_bike_id'] = 'Bike ID';
+$lang['summary_reports_bike_date_rent'] = 'Rent Date';
+$lang['summary_reports_bike_date_return'] = 'Return Date';
+$lang['summary_reports_bike_qty_rent'] = 'Qty Bike';
+$lang['summary_reports_bike_qty_day'] = 'Qty Day';
+
 ?>

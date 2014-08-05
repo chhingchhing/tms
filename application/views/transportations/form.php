@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo lang("transport_info"); ?></h4>
+                <h4 class="modal-title" id="myModalLabel"><?php echo lang("transport_infor"); ?></h4>
                 <h4 class="modal-title" id="myModalLabel"><?php echo validation_errors(); ?></h4>
             </div>
 
@@ -34,7 +34,7 @@
 
                 <div class="form-group">
                     <label for="company_name" class="col-sm-4 control-label">
-                        <?php echo form_label(lang('transport_company_name') . ':', 'company_name', array('class' => 'required')); ?>
+                        <?php echo form_label(lang('transport_company_names') . ':', 'company_name', array('class' => 'required')); ?>
                     </label>
                     <div class="col-sm-8">
 
@@ -82,7 +82,7 @@
                 </div>
                 <div class="form-group">
                     <label for="phone" class="col-sm-4 control-label">
-                        <?php echo form_label(lang('transport_phone') . ':', 'phone'); ?>
+                        <?php echo form_label(lang('transport_phones') . ':', 'phone'); ?>
                     </label>
                     <div class="col-sm-8">
 
@@ -95,10 +95,21 @@
                         ?>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="bike_types" class="col-sm-4 control-label">
+                        <?php echo form_label(lang('transports_vehicle') . ':', 'vehicle'); ?>
+                    </label>
+                    <div class="col-sm-8">
+                        <?php $vehicle = array("Please select one" => "Please select one", "bus" => "Bus", "ven" => "Ven", "tuk tuk" => "Tuk Tuk", "taxi" => "Taxi", "car" => "Car"); ?>
+                        <?php echo form_dropdown("vehicle_type", $vehicle); ?>
+                       
+                    </div>
+                </div>
               
                 <div class="form-group">
                     <label for="mark" class="col-sm-4 control-label">
-                        <?php echo form_label(lang('transport_mark') . ':', 'mark'); ?>
+                        <?php echo form_label(lang('transport_marks') . ':', 'mark'); ?>
                     </label>
                     <div class="col-sm-8">
 

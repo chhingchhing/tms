@@ -70,4 +70,5 @@ $lang['config_round_cash_on_sales'] = 'Round to nearest .05 on receipt';
 
 $lang['config_hotel']='Hotel Name';
 $lang['config_room_number']='Room Number';
+$lang['config_default_currency_type'] = 'Currency Type';
 ?>

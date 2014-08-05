@@ -23,6 +23,7 @@ $lang['employees_basic_information']='ពត៍មានមូលដ្ឋាន
 $lang['employees_login_info']='ពត៍មានក្នុងការចូលប្រើប្រាស់ស៊ីស្តេម(system)របស់បុគ្គលិក';
 $lang['employees_permission_info']='សិទ្ធិនិយោជិតនិងការចូលដំណើរការ';
 $lang['employees_permission_desc']='ផ្តល់សិទិ្ជដល់បុគ្គលិក';
+$lang['employees_permission_desc_office']='ផ្តល់សិទិ្ជដល់បុគ្គលិក ការិយាលយ័';
 $lang['employees_error_updating_demo_admin'] = 'អក្នមិនមានសិទិ្ជផ្លាស់ផ្តូលការបង្ហាញនេះបានទេ';
 $lang['employees_error_deleting_demo_admin'] = 'អក្នមិនមានសិទិ្ជលុនការបង្ហាញនេះបានទេ';
 $lang['employees_duplicate_exists'] = 'ឈ្មោះបុគ្គលិកមានរួចហើយ។ តើអ្នកចង់បន្តទេ?';

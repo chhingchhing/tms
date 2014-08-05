@@ -19,17 +19,6 @@
             <div id="required_fields_message"><b>*</b><?php echo lang('common_fields_required_message'); ?></div>
             <ul id="error_message_box"> </ul>
             <?php $this->load->view("people/form_basic_info_massage"); ?>
-
-            <?php if ($massage_info->cc_token && $massage_info->cc_preview) { ?>
-                <div class="field_row clearfix">	
-                    <label for="account_number" class="col-sm-4 control-label">
-                        <?php echo form_label(lang('customers_delete_cc_info') . ':', 'delete_cc_info'); ?>
-                    </label>
-                    <div class="form_field">
-                        <?php echo form_checkbox('delete_cc_info', '1'); ?>
-                    </div>
-                </div>
-            <?php } ?>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo lang('common_close'); ?></button>

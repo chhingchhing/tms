@@ -5,26 +5,16 @@ jQuery(document).ready(function(){
     var office_number = jQuery('input[name="office_number"]').val();
     var controller = jQuery('input[name="controller_name"]').val();
 
-    /* check all */
-    if (jQuery('input#select_all')) {
-        jQuery('input#select_all').click(function() {
-            if (this.checked === false) {
-                jQuery('input.check_value:checked').attr('checked', false);
-            } else {
-                jQuery('input.check_value:not(:checked)').attr('checked', true);
-            }
-        });
-    }
-
     /* Adding new supplier and edit supplier */
     jQuery("div#success").hide();
     jQuery("div#error").hide();
     jQuery("div#feedback_bar").hide();
     jQuery("div#feedback_bar_error").hide();
 
-    jQuery("input[name='btnSubmitSupplier']").on("click", function(){
+    // jQuery("input[name='btnSubmitSupplier']").on("click", function(){
+    $("body").on("click", "input[name='btnSubmitSupplier']", function(event) {
+        event.preventDefault();
         var data = jQuery('form.supplier_frm').serialize();
-        // var saveAction = baseURL + "suppliers/saved";
         var url = jQuery("form#supplier_frm").attr("action");
         var account_number = jQuery("input#account_number").val();
         var company_name = jQuery("input#company_name_input").val();
@@ -40,6 +30,8 @@ jQuery(document).ready(function(){
         var country = jQuery("input#country").val();
         var comments = jQuery("input#comments").val();
         var mailing_lists = jQuery("input#mailing_lists").val();
+        var supplier_type_id = jQuery("select[name='supplier_type']").val();
+        var new_supplier = jQuery("input[name='new_supplier_type']").val();
         if (company_name=="" || first_name=="" || last_name=="") {
             jQuery('div#getSmsError').text('Please fill all the fields!');
             jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
@@ -50,7 +42,7 @@ jQuery(document).ready(function(){
             type: "POST",
             url: url,
             dataType: " json",
-            data: {"account_number":account_number, "company_name":company_name, "first_name":first_name, "last_name":last_name,
+            data: {"new_supplier_type":new_supplier,"supplier_type":supplier_type_id,"account_number":account_number, "company_name":company_name, "first_name":first_name, "last_name":last_name,
             "email":email, "phone_number":phone_number, "address_1":address_1, "address_2":address_2,
             "city":city, "state":state, "zip":zip, "country":country, "comments":comments, "mailing_lists": mailing_lists},
             success: function(response) {
@@ -71,8 +63,8 @@ jQuery(document).ready(function(){
         });
     });
 
-    /* Add new and edit customer */
-    jQuery("body").on("click", "input[name='btncustomersCustomer']", function(event){
+    /* Add new and edit customer for module customer management */ 
+    jQuery("body").on("click", "input#btnSubmitClient", function(event){
         event.preventDefault();
         var customer_id = jQuery('input[name="customer_id"]').val();
         var saveAction = jQuery("#customer_frm").attr("action");
@@ -113,6 +105,7 @@ jQuery(document).ready(function(){
         var confirming = "Are you sure you want to clean ALL deleted "+controller+"? (This will remove account numbers from deleted "+controller+" so they can be reused)";
         if (!confirm(confirming)) {
             return false;
+            
         };
         jQuery.ajax({
             type: "POST",
@@ -175,76 +168,32 @@ jQuery(document).ready(function(){
     });
 
     /* Click edit link and retrieve data into form for edit */
-    $('body').on('click','a.edit',function(){
-         var url = jQuery(this).attr("href").replace("#", "");
-            var uid = url.substr(url.lastIndexOf('/') + 1);
-            $.ajax({
-                url: url,
-                dataType: "json",
-                success: function(data){
-                    var action = jQuery("form.form-horizontal").attr("action");
-                    jQuery("form.form-horizontal").attr("action", action+"/"+uid);
-
-                    jQuery("input[name='customer_id']").val(data.customer_id);
-                    jQuery("input[name='company_name']").val(data.company_name);
-                    jQuery("input[name='account_number']").val(data.account_number);
-                    jQuery("input[name='first_name']").val(data.first_name);
-                    jQuery("input[name='last_name']").val(data.last_name);
-                    jQuery("input[name='email']").val(data.email);
-                    jQuery("input[name='phone_number']").val(data.phone_number);
-                    jQuery("input[name='address_1']").val(data.address_1);
-                    jQuery("input[name='address_2']").val(data.address_2);
-                    jQuery("input[name='city']").val(data.city);
-                    jQuery("input[name='state']").val(data.state);
-                    jQuery("input[name='zip']").val(data.zip);
-                    jQuery("input[name='country']").val(data.country);
-                    jQuery("textarea[name='comments']").val(data.comments);
-                    jQuery("input[name='hotel_name']").val(data.hotel_name);
-                    jQuery("input[name='room_number']").val(data.room_number);
-                }
-            });
-    }); 
-
-    /* Click edit link and retrieve data into form for edit massages */
-    $('body').on('click','a.edit_sms',function(event){
+    $('body').on('click','a.edit',function(event){
         event.preventDefault();
-        var url = jQuery(this).attr('href').replace("#", "");
+        var modals = jQuery(this).attr("modals");
+        var url = jQuery(this).attr("href").replace("#", "");
+        var uid = url.substr(url.lastIndexOf('/') + 1);
         $.ajax({
             url: url,
             dataType: "html",
             success: function(data){
-                $("#massages").html(data);
-                $("#massages").modal("show");
+                $("#"+modals).html(data);
+                $("#"+modals).modal("show");
             }
         });
     });
-    
-    
-    /* Click edit link and retrieve data into form for edit bike */
-    $('body').on('click','a.edit_bike',function(){    
-        var url = jQuery(this).attr('href').replace("#", ""); 
-        $.ajax({
-            url: url,
-            dataType: "json",
-            success: function(data) {
-                jQuery("input[name='item_bike_id']").val(data.item_bike_id);
-                jQuery("input[name='bike_code']").val(data.bike_code);
-                jQuery("input[name='unit_price']").val(data.unit_price);
-                jQuery("input[name='actual_price']").val(data.actual_price);
-                jQuery("select[name='bike_types']").val(data.bike_types);
-            }
-        });
-    });
-    
-     /* Click edit link and retrieve data into form for edit tours */
-    $('body').on('click','a.edit_tour',function(){ 
-        var url = jQuery(this).attr('href').replace("#", ""); 
+
+    /* Click edit link and retrieve data into form for edit */
+    $('body').on('click','a.edit_supplier',function(event){
+        event.preventDefault();
+        var url = jQuery(this).attr("href").replace("#", "");
+        var uid = url.substr(url.lastIndexOf('/') + 1);
         $.ajax({
             url: url,
             dataType: "html",
-            success: function(data) {
-                $("#tours").html(data);
-                $("#tours").modal("show");
+            success: function(data){
+                $("#suppliers").html(data);
+                $("#suppliers").modal("show");
             }
         });
     });
@@ -268,10 +217,11 @@ jQuery("body").on("keypress","input#search", function(event){
     if (event.keyCode === $.ui.keyCode.ENTER) {
         return false;
     }
+
     var term = jQuery(this).val();
     var url = jQuery("form#search_form").attr("action");
-//    alert(url);
     var suggest = url.replace("search", "suggest");
+
     jQuery.ajax({
         type: "POST",
         url: suggest,
@@ -288,23 +238,16 @@ jQuery("body").on("keypress","input#search", function(event){
     });
 });
 
-function getDataSearch(term, url){
-    jQuery.ajax({
-        type: "POST",
-        url: url,
-        dataType: "json",
-        data: {"search" : term},
-        success: function(data){
-            if (data) {
-                var txt = data.manage_table;
-                if(txt != ""){
-                    $("table#data_table tbody").html(txt);
-                    $("div#pagination").html(data.pagination);
-                }
-            };
-        }
-    });
-}
+jQuery("body").on("change","input#search", function(event){
+    event.preventDefault();
+
+    var term = jQuery(this).val();
+    var url = jQuery("form#search_form").attr("action");
+    var suggest = url.replace("search", "suggest");
+    if (term == "") {
+        getDataSearch('', url);
+    };
+});
 
 //validation and submit handling
 function check_enable_credit_card_processing() {
@@ -337,51 +280,11 @@ jQuery('body').on("click", "input[name='submitSaleEditForm']", function(event){
             }
             else
             {
-                set_feedback(response.message,'error_message',false);    
-                
+                set_feedback(response.message,'error_message',false);      
             }
         }
     });
 });
-
-function set_feedback(text, classname, keep_displayed)
-{
-    if(text!='')
-    {
-        $('#feedback_bar').removeClass();
-        $('#feedback_bar').addClass(classname);
-        $('#feedback_bar').html(text + '<div id="feedback_bar_close"><img src="images/close.png" /></div>');
-        $('#feedback_bar').slideDown(250);
-        var text_length = text.length;
-        var text_lengthx = text_length*125;
-
-        if(!keep_displayed)
-        {
-            $('#feedback_bar').show();
-            
-            setTimeout(function()
-            {
-                $('#feedback_bar').slideUp(250, function()
-                {
-                    $('#feedback_bar').removeClass();
-                });
-            },text_lengthx);
-        }
-    }
-    else
-    {
-        $('#feedback_bar').hide();
-    }
-
-    $('#feedback_bar_close').click(function()
-    {
-        $('#feedback_bar').slideUp(250, function()
-        {
-            $('#feedback_bar').removeClass();
-        });
-    });
-    
-}
 
 jQuery("body").on("click", "input[name='submitDeleteEntireSale']", function(){
     var delete_entire_sale = "Are you sure you want to delete this sale, this action cannot be undone.";
@@ -410,10 +313,10 @@ jQuery("body").on("click", "button#print", function() {
 });
 
 // Search on sale (Sale)
-jQuery("body").on("keypress", "td.value input", function() {
+/*jQuery("body").on("keypress", "td.value input", function() {
     var fullUrl = window.location.pathname;
     var path = fullUrl.split("/");
-    var w = jQuery("td.value input").attr("w");
+    var w = jQuery("td.value input.w").attr("w");
     var url = baseURL + "reports/"+path[3]+"?act=autocomplete&w="+w+"&term="+this.value;
     if (w != "") {
         jQuery.ajax({
@@ -421,11 +324,21 @@ jQuery("body").on("keypress", "td.value input", function() {
             url: url,
             dataType: "json",
             success: function(response) {
-                jQuery("td.value input").tokenInput(response);
+                jQuery("td.value input").tokenInput(response, 
+                    {
+                    theme: "facebook",
+                    queryParam: "term",
+                    extraParam: "w",
+                    hintText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_hintText"));?>,
+                    noResultsText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_noResultsText"));?>,
+                    searchingText: <?php echo json_encode(lang("reports_sales_generator_autocomplete_searchingText"));?>,
+                    preventDuplicates: true,
+                    prePopulate: settings.prePopulate
+                });
             }
         });
     };
-});
+});*/
 
 // Employee Add
 jQuery("body").on("click", "input#submitEmployee", function(event) {
@@ -443,7 +356,6 @@ jQuery("body").on("click", "input#submitEmployee", function(event) {
     // }
     if (person_id == "") {
         if (password.length < 8) {
-            alert("hi");
             set_messages_error("Passwords must be at least 8 characters.");
             document.getElementById("password").style.borderColor = "#E34234";
             return false;
@@ -481,7 +393,7 @@ jQuery("body").on("click", "input#submitEmployee", function(event) {
     event.preventDefault();
 });
 
-function save(data, url, modal_id) {
+/*function save(data, url, modal_id) {
         var search = url.replace("save", "search");
         $.ajax({
             type: "POST",
@@ -502,7 +414,7 @@ function save(data, url, modal_id) {
                 }
             }
         });
-    }
+    }*/
 
 // Check parents checkbox for auto checked for children checkbox
 jQuery("body").on("change", "input.module_checkboxes", function() {
@@ -601,3 +513,330 @@ function set_messages_error(message) {
 //         }
 //     });
 // });
+
+
+// Initailize the form of search sale of tokenInput js
+/*$('body').on("change", "select.selectField", function() {
+    if ($('td.value input').attr('w')) {
+        $('td.value input').tokenInput();
+    };
+});*/
+
+// Config
+/*$("body").on("click", "input[name='submitf']", function(event) {
+    var url = $("form#config_form").attr("action");
+    event.preventDefault();
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: $("form#config_form").serialize(),
+        success: function(response) {
+            console.log(response);
+            if (response.success) {
+                set_feedback(response.message,'success_message',false);
+            } else {
+                set_feedback(response.message,'error_message',false);
+            }
+        }
+    });
+});*/
+
+/* For create new currency rate */
+    $('body').on('click','a#_new',function(event){
+        var modals = jQuery(this).attr("modals");
+        var url = jQuery(this).attr("href").replace("#", "");
+        $.ajax({
+            url: url,
+            dataType: "html",
+            success: function(data){
+                $("#"+modals).html(data);
+                $("#"+modals).modal("show");
+            }
+        });
+        event.preventDefault();
+    });
+
+/* Create currency on Currency management */
+ $("body").on("click", "input[name='submit_currency']", function(event){
+        event.preventDefault();
+        var currency_id = jQuery('input[name="currency_id"]').val();
+        var url = jQuery("#currency_form").attr("action");
+        var currency_value = jQuery("input#currency_value").val();
+        var currency_type_name = jQuery("input#currency_type_name").val();
+        if (currency_value=="" || currency_type_name=="") {
+            jQuery('div#getSmsError').text('Please fill all the fields!');
+            jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+            return false;
+        };
+        var urlCheckDuplicate = url.replace("save", "check_duplicate");
+        var data = jQuery('form#currency_form').serialize();
+        if (currency_id == '') {
+            jQuery.ajax({
+                type: "POST",
+                url: urlCheckDuplicate,
+                dataType: "json",
+                data: data,
+                success: function(msg) {
+                    if (msg.duplicate) {
+                        jQuery('div#getSmsError').text("Duplicate currency data, Please check the currency name!");
+                        jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                        return false;
+                    } else {
+                        save(data, url, "currency");
+                    }
+                }
+            });
+        } else {
+            save(data, url, "currency");
+        }
+    });
+    /* End of create currency on currency management */
+
+/* Starting The Generally of Package Tour */
+/* Click create new link and display the form pop up modal */
+    $('body').on('click','a.new',function(event){
+        event.preventDefault();
+        var modals = jQuery(this).attr("modals");
+        var url = jQuery(this).attr("href").replace("#", "");
+        var uid = url.substr(url.lastIndexOf('/') + 1);
+        $.ajax({
+            url: url,
+            dataType: "html",
+            success: function(data){
+                $("#"+modals).html(data);
+                $("#"+modals).modal("show");
+            }
+        });
+    });
+
+
+
+
+    jQuery("body").on("keypress","input#item", function(event){
+        if (event.keyCode === $.ui.keyCode.ENTER) {
+            return false;
+        }
+        var term = jQuery(this).val();
+        var url = baseURL + controller + "/item_search";
+        jQuery.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: {"term" : term},
+            success: function(data){
+                $( "#item" ).autocomplete({
+                  source: data,
+                  select: function(e, ui){
+                    // getDataSearch(ui.item.label, url);
+                    $( "#item" ).val("");
+                    if ($("#item_kit_item_"+ui.item.value).length ==1)
+                    {
+                        $("#item_kit_item_"+ui.item.value).val(parseFloat($("#item_kit_item_"+ui.item.value).val()) + 1);
+                    }
+                    else
+                    {
+                        $("#item_kit_items").append("<tr><td><a href='#' onclick='return deleteItemKitRow(this);'>X</a></td><td>"+ui.item.label+"</td><td><input class='quantity' onchange='calculateSuggestedPrices();' id='item_kit_item_"+ui.item.value+"' type='text' size='3' name=item_kit_item["+ui.item.value+"] value='1'/></td></tr>");
+                    }
+                    
+                    calculateSuggestedPrices();
+                    
+                    return false;
+                  }
+                });
+            }
+        });
+    });
+
+
+$("body").on("keypress", "input#item_mine", function(event) {
+    if (event.keyCode === $.ui.keyCode.ENTER) {
+        return false;
+    }
+    // event.preventDefault();
+    var url = baseURL + controller + "/item_search";
+    var term = $(this).val();
+    jQuery.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: {"term" : term},
+        success: function(data){
+            $(this).autocomplete({
+              source: data,
+              select: function(e, ui){
+                // getDataSearch(ui.item.label, url);
+              }
+            });
+        }
+    });
+
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: {"term":term},
+        success: function(data) {
+            console.log(data);
+            $("#item").autocomplete({
+              source: data,
+              /*delay: 10,
+              autoFocus: false,
+              minLength: 0,*/
+              select: function(event, ui){
+                /*url = url.replace("item_search", "get_info")+"/"+ui.item.value;
+                alert(url);
+                addItemToPackage(url);*/
+                $( "#item" ).val("");
+                if ($("#item_kit_item_"+ui.item.value).length ==1)
+                {
+                    $("#item_kit_item_"+ui.item.value).val(parseFloat($("#item_kit_item_"+ui.item.value).val()) + 1);
+                }
+                else
+                {
+                    $("#item_kit_items").append("<tr><td><a href='#' onclick='return deleteItemKitRow(this);'>X</a></td><td>"+ui.item.label+"</td><td><input class='form-control input-sm quantity' onchange='calculateSuggestedPrices();' id='item_kit_item_"+ui.item.value+"' type='text' size='3' name=item_kit_item["+ui.item.value+"] value='1'/></td></tr>");
+                }
+                
+                calculateSuggestedPrices();
+                
+                return false;
+              }
+            });
+        }
+    });
+
+
+});
+
+function calculateSuggestedPrices()
+{
+    var items = [];
+    $("#item_kit_items").find('input').each(function(index, element)
+    {
+        var quantity = parseFloat($(element).val());
+        var item_id = $(element).attr('id').substring($(element).attr('id').lastIndexOf('_') + 1);
+        
+        items.push({
+            item_id: item_id,
+            quantity: quantity
+        });
+    });
+    calculateSuggestedPrices.totalCostOfItems = 0;
+    calculateSuggestedPrices.totalPriceOfItems = 0;
+    getPrices(items, 0);
+}
+
+function getPrices(items, index)
+{
+    if (index > items.length -1)
+    {
+        $("#unit_price").val(calculateSuggestedPrices.totalPriceOfItems);
+        $("#cost_price").val(calculateSuggestedPrices.totalCostOfItems);
+    }
+    else
+    {
+        var site_url_get_info = baseURL + controller + "/get_info";
+        // $.get('<?php echo site_url("items/get_info");?>'+'/'+items[index]['item_id'], {}, function(item_info)
+        $.get(site_url_get_info +'/'+items[index]['item_id'], {}, function(item_info)
+        {
+            calculateSuggestedPrices.totalPriceOfItems+=items[index]['quantity'] * parseFloat(item_info.sale_price);
+            calculateSuggestedPrices.totalCostOfItems+=items[index]['quantity'] * parseFloat(item_info.actual_price);
+            getPrices(items, index+1);
+        }, 'json');
+    }
+}
+
+function deleteItemKitRow(link)
+{
+    $(link).parent().parent().remove();
+    calculateSuggestedPrices();
+    return false;
+}
+
+jQuery("body").on("click", 'input#btn_tours_package', function(event) {
+    event.preventDefault();
+    var url = $("form#item_kit_form").attr("action");
+    var package_id = $("input[name='item_id']").val();
+    var urlCheckDuplicate = url.replace("save_package", "check_duplicate_package");
+    var data = jQuery('form#item_kit_form').serialize();
+    if (package_id == '') {
+        jQuery.ajax({
+            type: "POST",
+            url: urlCheckDuplicate,
+            dataType: "json",
+            data: { "term":$("input[name='name']").val() },
+            success: function(msg) {
+                if (msg.duplicate) {
+                    jQuery('div#getSmsError').text("Duplicate data");
+                    jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                    return false;
+                } else {
+                    save_package(data, url, "tours_package");
+                }
+            }
+        });
+    } else {
+        save_package(data, url, "tours_package");
+    }
+});
+
+jQuery("body").on("keypress","input#search_package", function(event){
+    if (event.keyCode === $.ui.keyCode.ENTER) {
+        return false;
+    }
+    var term = jQuery(this).val();
+    var url = jQuery("form#search_form").attr("action");
+    var suggest = url.replace("search_package", "suggest_search_package");
+    jQuery.ajax({
+        type: "POST",
+        url: suggest,
+        dataType: "json",
+        data: {"term" : term},
+        success: function(data){
+            $( "#search_package" ).autocomplete({
+              source: data,
+              select: function(e, ui){
+                getDataSearch(ui.item.label, url);
+              }
+            });
+        }
+    });
+});
+
+/*function addItemToPackage (url) {
+    // body...
+}
+
+$( "#item" ).autocomplete({
+    source: '<?php echo site_url("tours/item_search"); ?>',
+    delay: 10,
+    autoFocus: false,
+    minLength: 0,
+    select: function( event, ui ) 
+    {   
+        $( "#item" ).val("");
+        if ($("#item_kit_item_"+ui.item.value).length ==1)
+        {
+            $("#item_kit_item_"+ui.item.value).val(parseFloat($("#item_kit_item_"+ui.item.value).val()) + 1);
+        }
+        else
+        {
+            $("#item_kit_items").append("<tr><td><a href='#' onclick='return deleteItemKitRow(this);'>X</a></td><td>"+ui.item.label+"</td><td><input class='quantity' onchange='calculateSuggestedPrices();' id='item_kit_item_"+ui.item.value+"' type='text' size='3' name=item_kit_item["+ui.item.value+"] value='1'/></td></tr>");
+        }
+        
+        calculateSuggestedPrices();
+        
+        return false;
+    }
+});*/
+
+// Check all checkbox child
+$(function () {
+    $('th input[type="checkbox"]').click(function(){
+        if ( $(this).is(':checked') )
+            $('td input[type="checkbox"]').prop('checked', true);
+        else
+            $('td input[type="checkbox"]').prop('checked', false);
+    })
+});

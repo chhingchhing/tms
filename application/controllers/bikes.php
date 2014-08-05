@@ -1,18 +1,15 @@
 <?php
-
-//require_once ("person_controller.php");
 require_once 'secure_area.php';
 
-//class Bikes extends Person_controller {
 class Bikes extends Secure_area {
 
     function __construct() {
         parent::__construct('bikes');
-        $this->load->model(array('bike','sales/bikes/bike_item','sale_bike'));
+        $this->load->model(array('bike','sales/bikes/bike_item','Sale_bike'));
         $this->load->library('Sale_bike_lib');
-        $this->load->library('sale_lib');
+        $this->load->library(array('sale_lib','sale_lib_sms'));
         
-         $this->load->model(array('sale','commissioner','currency_model'));
+         $this->load->model(array('sale','commissioner','currency_model','Sale_bike','Supplier'));
     }
 
     function index() {
@@ -20,9 +17,7 @@ class Bikes extends Secure_area {
     }
 
     function manage_bike() {
-        $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $logged_in_employee_info->person_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
 
         $this->check_action_permission('search');
         $config['base_url'] = site_url('bikes/bikes/' . $this->uri->segment(3));
@@ -36,12 +31,19 @@ class Bikes extends Secure_area {
         $data['pagination'] = $this->pagination->create_links();
         $data['controller_name'] = strtolower(get_class());
         $data['per_page'] = $config['per_page'];
+        $suppliers = array('' => lang('items_none'));
+        foreach($this->Supplier->get_all()->result_array() as $row)
+        {
+            $suppliers[$row['person_id']] = $row['company_name'] .' ('.$row['first_name'] .' '. $row['last_name'].')';
+        }
+        $data['suppliers']=$suppliers;
         $data['manage_bike_data'] = $this->bike->get_all();
         if ($this->uri->segment(4)) {
             $data['manage_table'] = $this->sorting($this->uri->segment(4));
         } else {
             $data['per_page'] = $config['per_page'];
             $data['manage_table'] = get_bike_manage_table($this->bike->get_all($data['per_page']), $this);
+           
         }
         $this->load->view('bikes/manage_bike', $data);
     }
@@ -90,13 +92,19 @@ class Bikes extends Secure_area {
         $this->check_action_permission('search');
         $search = $this->input->post('search');
         $per_page = $this->config->item('number_of_items_per_page') ? (int) $this->config->item('number_of_items_per_page') : 20;
-        $search_data = $this->bike->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'bike_code', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'asc');
+        $search_data = $this->bike->search($search, $per_page, $this->input->post('offset') ? $this->input->post('offset') : 0, $this->input->post('order_col') ? $this->input->post('order_col') : 'bike_code', $this->input->post('order_dir') ? $this->input->post('order_dir') : 'desc');
+//         var_dump($search_data);die();
         $config['base_url'] = site_url('bikes/bikes' . $this->uri->segment(3));
         $config['total_rows'] = $this->bike->search_count_all($search);
+//        var_dump($config['total_rows']);die('search count all');
         $config['per_page'] = $per_page;
+        $choice = $config["total_rows"] / $config["per_page"];
+        $config["num_links"] = round($choice);
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();
+//        var_dump($data['pagination']);die('page');
         $data['manage_table'] = get_bike_manage_table_data_rows($search_data, $this);
+//        var_dump($data['manage_table']);die();
         echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
     }
 
@@ -111,8 +119,15 @@ class Bikes extends Secure_area {
 
     function viewJSON($bike_id = -1) {
         $this->check_action_permission('add_update');
-        $data['person_info'] = $this->bike->get_info($bike_id);
-        echo json_encode($data['person_info']);
+        $suppliers = array(NULL => lang('items_none'));
+        foreach($this->Supplier->get_all()->result_array() as $row)
+        {
+            $suppliers[$row['person_id']] = $row['company_name'] .' ('.$row['first_name'] .' '. $row['last_name'].')';
+        }
+        $data['suppliers']= $suppliers;
+        $data['bike_info'] = $this->bike->get_info($bike_id);
+
+        $this->load->view("bikes/_form", $data);
     }
 
     /*
@@ -126,6 +141,8 @@ class Bikes extends Secure_area {
             'unit_price' => $this->input->post("unit_price"),
             'actual_price' => $this->input->post("actual_price"),
             'bike_types' => $this->input->post("bike_types"),
+            'supplierID'=> $this->input->post("supplier") ? $this->input->post("supplier") : NULL,
+            'description'=>$this->input->post("description"),
             'available' => 1
         );
         
@@ -153,7 +170,6 @@ class Bikes extends Secure_area {
 
     function excel_export($template = 0) {
         $data = $this->bike->get_all()->result_object();
-        echo $data;
         $this->load->helper('report');
         $rows = array();
         $row = array(lang('common_item_module_id'), lang('bikes_bike_code'), lang('bikes_available'), lang('bikes_unit_price'), lang('bikes_actual_price'), lang('bikes_bike_types'));
@@ -222,42 +238,35 @@ class Bikes extends Secure_area {
 
     function _reload($data = array(), $is_ajax = true) {
         $person_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->person_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
         $data['controller_name'] = strtolower(get_class());
         $data['cart'] = $this->sale_lib->get_cart();
-        $data['date_departure']=$this->sale_lib->get_date_departures();
-//        var_dump($data['dates_departure']); //not work
+        $data['rent_dates']=$this->sale_lib->get_rent_dates();
+        $data['return_dates']=$this->sale_lib->get_return_dates();
+        $data['time_in'] = $this->sale_lib_sms->get_time_in();
+        $data['time_out'] = $this->sale_lib_sms->get_time_out();
         $data['modes'] = "Sale";
         $data['mode'] = $this->sale_lib->get_mode();
+//        $data['items_in_cart'] = $this->sale_lib->get_items_in_cart_bike();
+//        $data['subtotal'] = $this->sale_lib->get_subtotal_bike();
         $data['items_in_cart'] = $this->sale_lib->get_items_in_cart();
         $data['subtotal'] = $this->sale_lib->get_subtotal();
-//        var_dump($data['subtotal']);die('subtotal die'); // work
         $data['commissioner_price'] = $this->sale_lib->get_commissioner_price();
+//        $data['total'] = $this->sale_lib->get_total_bike();
         $data['total'] = $this->sale_lib->get_total();
-//        var_dump($data['total']);die('total die'); //work
         $data['items_module_allowed'] = $this->Employee->has_module_permission('bikes', $person_info->person_id);
-//        var_dump($data['items_module_allowed']);die('items module allowed die'); // work boolean true
         $data['comment'] = $this->sale_lib->get_comment();
-//        var_dump($data['comment']);die('comment die'); // work
         $data['show_comment_on_receipt'] = $this->sale_lib->get_comment_on_receipt();
-//        var_dump($data['show_comment_on_receipt']);die('die show comment on receipt'); //work
         $data['email_receipt'] = $this->sale_lib->get_email_receipt();
-//        var_dump($data['email_receipt']);die('remail recidpt'); //return boolen false
         $data['payments_total'] = $this->sale_lib->get_payments_totals();
-//        var_dump($data['payments_total']);die('payment total die');  //work
         $data['amount_due'] = $this->sale_lib->get_amount_due();
-//        var_dump($data['amount_due']);die('amount due die'); //work
 
         $data['payments'] = $this->sale_lib->get_payments();
-         $data['deposit_price'] = $this->sale_lib->get_deposit_price();
-//        var_dump($data['deposit']);die('deposit die'); //work
-//        var_dump($data['commissioner_price']);die('commssioner price die'); //work
+        $data['deposit_price'] = $this->sale_lib->get_deposit_price();
         $data['change_sale_date_enable'] = $this->sale_lib->get_change_sale_date_enable();
-//        var_dump($data['change_sale_date_enable']);die('change sale date enable'); //WORK
         $data['change_sale_date'] = $this->sale_lib->get_change_sale_date();
-//        var_dump($data['change_sale_date']);die('change sale');  //wrok
-        
+
+
      if ($this->config->item('enable_credit_card_processing'))
         {
             $data['payment_options']=array(
@@ -265,6 +274,7 @@ class Bikes extends Secure_area {
                 lang('sales_check') => lang('sales_check'),
                 lang('sales_credit') => lang('sales_credit'),
                 lang('sales_giftcard') => lang('sales_giftcard')
+                  
             );                
         }
         else
@@ -274,7 +284,10 @@ class Bikes extends Secure_area {
                 lang('sales_check') => lang('sales_check'),
                 lang('sales_giftcard') => lang('sales_giftcard'),
                 lang('sales_debit') => lang('sales_debit'),
-                lang('sales_credit') => lang('sales_credit')
+                lang('sales_credit') => lang('sales_credit'),
+                lang('sales_visa_card') => lang('sales_visa_card'),
+                lang('sales_master_card') => lang('sales_master_card'),
+                lang('sales_western_union') => lang('sales_western_union')
                 );            
         }
         
@@ -284,7 +297,7 @@ class Bikes extends Secure_area {
         }
         
         $customer_id = $this->sale_lib->get_customer();
-//        echo $customer_id;die('customer id show'); // $customer_id = -1
+
         if ($customer_id != -1) {
             $info = $this->Customer->get_info($customer_id);
             $data['customer'] = $info->first_name . ' ' . $info->last_name . ($info->company_name == '' ? '' : ' (' . $info->company_name . ')');
@@ -297,7 +310,7 @@ class Bikes extends Secure_area {
             $data['use_saved_cc_info'] = $this->sale_lib->get_use_saved_cc_info();
         }
 
-    
+        $data['payments_cover_total'] = $this->_payments_cover_total();
         $commissioner_id = $this->sale_lib->get_commissioner();
         $data["commissioner_id"] = $commissioner_id;
         
@@ -321,41 +334,51 @@ class Bikes extends Secure_area {
 
      function add() {
         $data = array();
-        $mode = $this->sale_bike_lib->get_mode();
-//        echo $mode;die('mode die'); //work
-//        $mode = $this->sale_lib->get_mode();
+        $mode = $this->sale_lib->get_mode();
         $item_id_or_number_or_item_kit_or_receipt = $this->input->post("item");
-
+        
         $quantity = $mode == "sale" ? 1 : -1;
-//        echo $quantity;die(); work == 1
-        if ($this->sale_bike_lib->is_valid_receipt($item_id_or_number_or_item_kit_or_receipt) && $mode == 'return') {
-            $this->sale_bike_lib->return_entire_sale($item_id_or_number_or_item_kit_or_receipt);
-       
-        } 
-//        elseif ($this->sale_bike_lib->is_valid_item_kit($item_id_or_number_or_item_kit_or_receipt)) {
-//            //As surely a Kit item , do out of stock check
-//           echo 'else';
-//            $item_kit_id = $this->sale_bike_lib->get_valid_item_kit_id($item_id_or_number_or_item_kit_or_receipt);
-//
-//            $out_of_stock_kit = $this->sale_bike_lib->out_of_stock_kit($item_kit_id);
-//
-//            if ($out_of_stock_kit) {
-//                $data['warning'] = lang('sales_quantity_less_than_zero');
-//            } else {
-//                // Store in session Cart
-//
-//                /***===arrive here===***/
-//                $this->sale_bike_lib->add_item_kit($item_id_or_number_or_item_kit_or_receipt, $quantity);
-//            }
-//        } 
-        elseif (!$this->sale_bike_lib->add_item($item_id_or_number_or_item_kit_or_receipt, $quantity)) {
-            echo 'elseif';
-            $data['error'] = lang('sales_unable_to_add_item');
+        $items = $this->sale_lib->get_cart();
+        $check_in_cart = FALSE;
+        foreach($items as $result)
+        {
+            $item_bike_id = $result['item_bike_id'];
+            if($item_bike_id == $item_id_or_number_or_item_kit_or_receipt) {
+               $check_in_cart = TRUE; 
+            }
         }
-//        if ($this->sale_massage_lib->out_of_stock($item_id_or_number_or_item_kit_or_receipt)) {
-//            $data['warning'] = lang('sales_quantity_less_than_zero');
-//        }
 
+        if(!$check_in_cart) {
+            if ($this->sale_bike_lib->is_valid_receipt($item_id_or_number_or_item_kit_or_receipt) && $mode == 'return') {
+                $this->sale_bike_lib->return_entire_sale($item_id_or_number_or_item_kit_or_receipt);
+
+            } 
+    //        elseif ($this->sale_bike_lib->is_valid_item_kit($item_id_or_number_or_item_kit_or_receipt)) {
+    //            //As surely a Kit item , do out of stock check
+    //           echo 'else';
+    //            $item_kit_id = $this->sale_bike_lib->get_valid_item_kit_id($item_id_or_number_or_item_kit_or_receipt);
+    //
+    //            $out_of_stock_kit = $this->sale_bike_lib->out_of_stock_kit($item_kit_id);
+    //
+    //            if ($out_of_stock_kit) {
+    //                $data['warning'] = lang('sales_quantity_less_than_zero');
+    //            } else {
+    //                // Store in session Cart
+    //
+    //                /***===arrive here===***/
+    //                $this->sale_bike_lib->add_item_kit($item_id_or_number_or_item_kit_or_receipt, $quantity);
+    //            }
+    //        } 
+            elseif (!$this->sale_bike_lib->add_item($item_id_or_number_or_item_kit_or_receipt, $quantity)) {
+                $data['error'] = lang('sales_unable_to_add_item');
+            }
+    //        if ($this->sale_massage_lib->out_of_stock($item_id_or_number_or_item_kit_or_receipt)) {
+    //            $data['warning'] = lang('sales_quantity_less_than_zero');
+    //        }
+        } else {
+            $data['error'] = lang('bike_code_exist');
+        }
+        
         $this->_reload($data);
     }
     
@@ -388,12 +411,12 @@ class Bikes extends Secure_area {
         }
         else
         {
-            $data['error']=lang('sales_unable_to_add_customer');
+            $data['error'] = lang('sales_unable_to_add_customer');
         }
         $this->_reload($data);
     }
     
-     function delete_customer()
+    function delete_customer()
     {
         $this->sale_lib->delete_customer();
         $this->_reload();
@@ -433,13 +456,17 @@ class Bikes extends Secure_area {
         
         $data = array();
         $this->form_validation->set_rules('amount_tendered', 'lang:sales_amount_tendered', 'required');
-        echo 'add_payment';
+       
         if ($this->form_validation->run() == FALSE) {
-            if ($this->input->post('payment_type') == lang('sales_giftcard'))
+            if ($this->input->post('payment_type') == lang('sales_giftcard')){
+               
                 $data['error'] = lang('sales_must_enter_numeric_giftcard');
-            else
-                $data['error'] = lang('sales_must_enter_numeric');
-
+            }
+            else{
+                
+                 $data['error'] = lang('sales_must_enter_numeric');
+            }
+            
             $this->_reload($data);
             return;
         }
@@ -450,7 +477,8 @@ class Bikes extends Secure_area {
         
         if( !$this->sale_lib->add_payment( $payment_type, $payment_amount, $payment_total ) )
         {
-            $data['error']=lang('sales_unable_to_add_payment');
+
+            $data['error'] = lang('sales_unable_to_add_payment');
         }
 
         $this->_reload($data);
@@ -477,7 +505,7 @@ class Bikes extends Secure_area {
     function edit_item($office, $line)
     {
        $data = array();
-
+      
         $this->form_validation->set_rules('price', 'lang:items_price', 'required');
         $this->form_validation->set_rules('quantity', 'lang:items_quantity', 'required');
 
@@ -486,18 +514,35 @@ class Bikes extends Secure_area {
         $price = $this->input->post("price");
         $quantity = $this->input->post("quantity");
         $discount = $this->input->post("discount");
-        $date_departure = $this->input->post("dates");
-
+        $rent_date = date("Y-m-d", strtotime($this->input->post("rent_date")));
+        $return_date = date("Y-m-d",strtotime($this->input->post("return_date")));
+        
+        $index = $line-1;
+       
+//        $num_day = (round(abs(strtotime($return_date[$index]) - strtotime($rent_date[$index])) / 86400)) + 1;// ort work
+//        $num_day = 3;
+//        $num_day = (round(abs(strtotime($return_date[$line - 1]) - striotime($rent_date[$line - 1]))/ 86400)) + 1;
+//                var_dump($num_day);
+//        var_dump('rent_date= '.$rent_date[$index]) ;
+//        var_dump('return_date= '.$return_date[$index]);
+        
         if ($this->form_validation->run() != FALSE) {
-            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price);
+            
+          $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price);
+           // $this->sale_lib->edit_item_bike($line, $description, $serialnumber, $quantity, $discount, $num_day, $price);
+           
         } else {
             $data['error'] = lang('sales_error_editing_item');
         }
         
-        // Set date departure 
-        $array_date_departure = $this->sale_lib->get_date_departures();
-        $new_array_date_departure = $this->insertArrayIndex($array_date_departure, $date_departure, $index);
-        $this->sale_lib->set_date_departures($new_array_date_departure);
+        // Set rent date of bike
+        $array_rent_date = $this->sale_lib->get_rent_dates();
+        $array_return_date = $this->sale_lib->get_return_dates();
+
+        $new_array_rent_date = $this->insertArrayIndex($array_rent_date, $rent_date, $index);
+        $this->sale_lib->set_rent_dates($new_array_rent_date);
+        $new_array_return_date = $this->insertArrayIndex($array_return_date, $return_date, $index);
+        $this->sale_lib->set_return_dates($new_array_return_date);
 
         $this->_reload($data);
     }
@@ -513,7 +558,370 @@ class Bikes extends Secure_area {
         $array[$index] = $new_element;
         return $array;
      }
-   
+     
+//       function suspend() 
+//     {
+//           echo 'suspend';
+// //        $data['seat_no'] = $this->sale_lib->get_seat_no();
+//         $data['item_number'] = $this->sale_lib->get_item_number();
+// //        var_dump($data['item_number']); boolean false 
+//         $data['item_vol'] = $this->sale_lib->get_item_vol();
+// //        var_dump($data['item_vol']);
+//         $data['dates_departure']=$this->sale_lib->get_date_departures();
+// //        var_dump($data['dates_departure']);
+// //        $data['times_departure']=$this->sale_lib->get_times_departure();
+//         $data['deposit_price'] = $this->sale_lib->get_deposit_price();
+// //        var_dump($data['deposit_price'] ); work
+//         $data['cart'] = $this->sale_lib->get_cart();
+//         $data['subtotal'] = $this->sale_lib->get_subtotal();
+//         $data['total'] = $this->sale_lib->get_total();
+//         $data['receipt_title'] = lang('sales_receipt');
+//         $data['transaction_time'] = date(get_date_format());
+// //        var_dump($data['transaction_time']); work
+//         $customer_id = $this->sale_lib->get_customer();
+// //        var_dump($customer_id); work = -1
+//         $employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
+// //        var_dump($employee_id); work = 1
+//         $commissioner_id=$this->sale_lib->get_commissioner();
+// //        var_dump($commissioner_id);  work = -1
+//         $commissioner_price = $this->sale_lib->get_commissioner_price();
+// //        var_dump($commissioner_price); work = 0
+//         $comment = $this->sale_lib->get_comment();
+// //        var_dump($comment); work 
+//         $show_comment_on_receipt = $this->sale_lib->get_comment_on_receipt();
+// //        var_dump($show_comment_on_receipt); work
+//         $emp_info = $this->Employee->get_info($employee_id);
+// //        var_dump($emp_info); work
+//         //Alain Multiple payments
+//         $data['payments'] = $this->sale_lib->get_payments();
+// //        var_dump($data['payments']); work
+//         $data['amount_change'] = $this->sale_lib->get_amount_due() * -1;
+// //        var_dump($data['amount_change']); work
+//         $data['employee'] = $emp_info->first_name.' '.$emp_info->last_name;
+// //        var_dump($data['employee']); work
+//         if($customer_id!=-1)
+//         {
+//             echo 'if'; 
+//             $cust_info = $this->Customer->get_info($customer_id);
+//             $data['customer'] = $cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
+//             // var_dump(  $data['customer']);
+//         }
+
+//         $total_payments = 0;
+// //        echo $total_payments;
+//         foreach($data['payments'] as $payment)
+//         {
+//             $total_payments += $payment['payment_amount'];
+          
+//         }
+        
+//         $sale_id = $this->sale_lib->get_suspended_sale_id();
+//         //SAVE sale to database
+
+//         // $category,$items, $seat_no,$item_number,$item_vol,$times_departure,$dates_departure, $deposit_price, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false
+       
+//         /*==================arrive here for suspend===============*/
+//         // echo 'sale id';
+//         $data['sale_id']='CGATE '.$this->Sale_bike->save(strtolower(get_class()),$data['cart'],$data['item_number'],$data['item_vol'],
+//             $data['dates_departure'],$data['deposit_price'], $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$data['payments'], $sale_id, 1);
+        
+//         // var_dump( $data['sale_id']);die('sale id die');
+//         if ($data['sale_id'] == 'CGATE -1')
+//         {
+//             $data['error_message'] = lang('sales_transaction_failed');
+//         }
+//         $this->sale_lib->clear_all();
+//         $this->_reload(array('success' => lang('sales_successfully_suspended_sale')));
+//         // $this->_reload($data);
+//     }
+
+    
+     function _payments_cover_total() {
+        $total_payments = 0;
+
+
+        foreach($this->sale_lib->get_payments() as $payment)
+        {
+            $total_payments += $payment['payment_amount'];
+        }
+
+        /* Changed the conditional to account for floating point rounding */
+
+        if ( ( $this->sale_lib->get_mode() == 'sale' ) && ( ( to_currency_no_money( $this->sale_lib->get_total() ) - $total_payments ) > 1e-6 ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    //Alain Multiple Payments
+    function delete_payment($payment_id)
+    {
+        $this->sale_lib->delete_payment($payment_id);
+        $this->_reload();
+    }
+
+    function complete()
+    {
+        $person_info = $this->Employee->get_logged_in_employee_info();
+        $data['allowed_modules'] = $this->check_module_accessable();
+        
+        $office_name = $this->session->userdata("office_number");
+        $data['is_sale'] = TRUE;
+        $data['cart']=$this->sale_lib->get_cart();
+        $data['rent_dates']=$this->sale_lib->get_rent_dates();
+        $data['return_dates']=$this->sale_lib->get_return_dates();
+        $data['subtotal']=$this->sale_lib->get_subtotal();
+        $data['total']=$this->sale_lib->get_total();
+        // $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->config->item('default_currency'));
+        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->Office->get_office_default_currency($office_name));
+        $data['receipt_title'] = lang('sales_receipt');
+        $data['deposit_price'] = $this->sale_lib->get_deposit_price();
+        $customer_id=$this->sale_lib->get_customer();
+        $commissioner_id=$this->sale_lib->get_commissioner();
+        $commissioner_price = $this->sale_lib->get_commissioner_price();
+        $employee_id = $person_info->person_id;
+        $data['controller_name'] = strtolower(get_class());
+        $data['comment'] = $this->sale_lib->get_comment();
+        $data['payments']=$this->sale_lib->get_payments();
+        $data['show_comment_on_receipt'] = $this->sale_lib->get_comment_on_receipt();
+        $emp_info = $this->Employee->get_info($employee_id);
+        $data['amount_change']=$this->sale_lib->get_amount_due_round() * -1;
+        $data['employee']=$emp_info->first_name.' '.$emp_info->last_name;
+        $data['ref_no'] = $this->session->flashdata('ref_no') ? $this->session->flashdata('ref_no') : '';
+
+        $data['change_sale_date'] =$this->sale_lib->get_change_sale_date_enable() ?  $this->sale_lib->get_change_sale_date() : false;
+        $old_date = $this->sale_lib->get_change_sale_id()  ? $this->Sale->get_info($this->sale_lib->get_change_sale_id())->row_array() : false;
+  
+        $old_date =  $old_date ? date(get_date_format().' '.get_time_format(), strtotime($old_date['sale_time'])) : date(get_date_format().' '.get_time_format());
+      
+        $data['transaction_time']= $this->sale_lib->get_change_sale_date_enable() ?  date(get_date_format().' '.get_time_format(), strtotime($this->sale_lib->get_change_sale_date())) : $old_date;
+
+        if($customer_id!=-1)
+        {
+            $cust_info=$this->Customer->get_info($customer_id);
+            $data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
+        }
+        if($commissioner_id!=-1)
+        {
+            $comm_info=$this->commissioner->get_info($commissioner_id);
+            $data['commissioner']=$comm_info->first_name.' '.$comm_info->last_name.($comm_info->tel==''  ? '' :' ('.$comm_info->tel.')');
+        }
+        
+         // set variable time in for get time in from session of rent bikes
+        $data['time_in'] = $this->sale_lib_sms->get_time_in();
+        // set variable time out for get time out from session of return bikes
+        $data['time_out'] = $this->sale_lib_sms->get_time_out();
+        $suspended_change_sale_id = $this->sale_lib->get_suspended_sale_id() ? $this->sale_lib->get_suspended_sale_id() : $this->sale_lib->get_change_sale_id() ;
+        // var_dump($suspended_change_sale_id );
+
+        //SAVE sale to database
+
+        $data['sale_id']= strtoupper($office_name).' '.$this->Sale_bike->save($office_name,strtolower(get_class()),$data['cart'], $data['rent_dates'],$data['return_dates'],$data['time_in'], $data['time_out'], $data['deposit_price'], $customer_id,$employee_id, $commissioner_id,$commissioner_price,$data['comment'],$data['show_comment_on_receipt'],$data['payments'], $suspended_change_sale_id, 0,$data['ref_no'],$data['change_sale_date']);
+        if ($data['sale_id'] == strtoupper($office_name).' -1')
+        {
+            $data['error_message'] = '';
+            // Sale_helper, location helpers/sale_helper.php
+            if (is_sale_integrated_cc_processing())
+            {
+                $data['error_message'].=lang('sales_credit_card_transaction_completed_successfully').'. ';
+            }
+            $data['error_message'] .= lang('sales_transaction_failed');
+        }
+        /*else
+        {
+            if ($this->sale_lib->get_email_receipt() && !empty($cust_info->email))
+            {
+
+                $this->load->library('email');
+                $config['mailtype'] = 'html';
+                $this->email->initialize($config);
+                $this->email->from($this->config->item('email'), $this->config->item('company'));
+                $this->email->to($cust_info->email);
+
+                $this->email->subject(lang('sales_receipt'));
+                $this->email->message($this->load->view("sales/receipt_email", $data, true));
+                $this->email->send();
+            }
+        }*/
+        $this->load->view("sales/receipt",$data);
+        $this->sale_lib->clear_all();
+    }
+
+    function set_comment_on_receipt() 
+    {
+      $this->sale_lib->set_comment_on_receipt($this->input->post('show_comment_on_receipt'));
+    }
+
+     function set_comment() 
+    {
+      $this->sale_lib->set_comment($this->input->post('comment'));
+    }
+
+    // Change sale on receipt
+    function change_sale($office, $sale_id)
+    {
+        $this->check_action_permission('edit_sale');
+        $this->sale_lib->clear_all();
+        $test = $this->sale_bike_lib->copy_entire_sale($sale_id, strtolower(get_class()));
+        $this->sale_lib->set_change_sale_id($sale_id);
+        $this->_reload(array(), false);
+    }
+
+    //set time in of sale massge
+    function set_time_in() {
+        $this->sale_lib_sms->set_time_in($this->input->post("times"));
+
+        $this->_reload();
+    }
+
+    // set time out of sale massage
+
+    function set_time_out() {
+        $this->sale_lib_sms->set_time_out($this->input->post("times"));
+
+        $this->_reload();
+    }
+ 
+    function receipt($office, $sale_id)
+    {
+        $data['allowed_modules'] = $this->check_module_accessable();
+        $data['is_sale'] = FALSE;
+        $sale_info = $this->Sale->get_info($sale_id)->row_array();
+        $this->sale_lib->clear_all();
+        $this->sale_bike_lib->copy_entire_sale($sale_id);
+        $data['cart']=$this->sale_lib->get_cart(); 
+        $data['payments']=$this->sale_lib->get_payments();
+        $data['show_payment_times'] = TRUE;
+        $data['controller_name'] = strtolower(get_class());
+        $data['subtotal']=$this->sale_lib->get_subtotal();
+        $data['total']=$this->sale_lib->get_total($sale_id);
+        $data['receipt_title']=lang('sales_receipt');
+        $data['comment'] = $this->Sale->get_comment($sale_id);
+        $data['show_comment_on_receipt'] = $this->Sale->get_comment_on_receipt($sale_id);
+        $data['transaction_time']= date(get_date_format().' '.get_time_format(), strtotime($sale_info['sale_time']));
+        $customer_id=$this->sale_lib->get_customer();
+        $emp_info=$this->Employee->get_info($sale_info['employee_id']);
+        $data['payment_type']=$sale_info['payment_type'];
+        $data['amount_change']=$this->sale_lib->get_amount_due($sale_id) * -1;
+        $data['employee']=$emp_info->first_name.' '.$emp_info->last_name;
+        $data['ref_no'] = $sale_info['cc_ref_no'];
+        // $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->config->item('default_currency'));
+        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->Office->get_office_default_currency($office));
+        if($customer_id!=-1)
+        {
+            $cust_info=$this->Customer->get_info($customer_id);
+            $data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
+        }
+        $data['sale_id']= strtoupper($this->session->userdata("office_number")).' '.$sale_id;
+        $this->load->view("sales/receipt",$data);
+        $this->sale_lib->clear_all();
+
+    }
+      // edit report
+     function edit($office, $sale_id)
+    {
+        $data = array();
+        $data['office'] = $office;
+
+        $data['customers'] = array('' => 'No Customer');
+        foreach ($this->Customer->get_all()->result() as $customer)
+        {
+            $data['customers'][$customer->customer_id] = $customer->first_name . ' '. $customer->last_name;
+        }
+
+        $data['commissioners'] = array('' => 'No Commissioner');
+        foreach ($this->commissioner->get_all()->result() as $commissioner)
+        {
+            $data['commissioners'][$commissioner->commisioner_id] = $commissioner->first_name . ' '. $commissioner->last_name;
+        }
+
+        $data['employees'] = array();
+        foreach ($this->Employee->get_all()->result() as $employee)
+        {
+            $data['employees'][$employee->employee_id] = $employee->first_name . ' '. $employee->last_name;
+        }
+
+        $data['sale_info'] = $this->Sale->get_info($sale_id)->row_array();
+
+        $data['allowed_modules'] = $this->check_module_accessable();
+        $data['controller_name'] = strtolower(get_class());
+     
+        $this->load->view('sales/edit', $data);
+    }
+    // Save sale ticket after report detail
+    function save_sales($office, $sale_id)
+    {
+        $sale_data = array(
+            'sale_time' => date('Y-m-d', strtotime($this->input->post('date'))),
+            'customer_id' => $this->input->post('customer_id') ? $this->input->post('customer_id') : null,
+            'employee_id' => $this->input->post('employee_id'),
+//            'commisioner_id' => $this->input->post('commissioner_id'),
+            'commision_price' => $this->input->post('commissioner_price'),
+            'deposit' => $this->input->post('deposit_price'),
+            'comment' => $this->input->post('comment'),
+            'show_comment_on_receipt' => $this->input->post('show_comment_on_receipt') ? 1 : 0
+        );
+        
+        if ($this->Sale->update($sale_data, $sale_id))
+        {
+            echo json_encode(array('success'=>true,'message'=>lang('sales_successfully_updated')));
+        }
+        else
+        {
+            echo json_encode(array('success'=>false,'message'=>lang('sales_unsuccessfully_updated')));
+        }
+    }
+     function delete_entire_sale($office, $sale_id)
+    {
+        $data = array();
+        $data['allowed_modules'] = $this->check_module_accessable();
+
+        if ($this->Sale_bike->delete($sale_id, false, $office))
+        {
+            $data['success'] = true;
+        }
+        else
+        {
+            $data['success'] = false;
+        }
+        
+        $this->load->view('sales/delete', $data);
+        
+    }
+
+    function undelete($office, $sale_id)
+    {
+        $data = array();
+        $data['allowed_modules'] = $this->check_module_accessable();
+        
+        if ($this->Sale_bike->undelete($office, $sale_id))
+        {
+            $data['success'] = true;
+        }
+        else
+        {
+            $data['success'] = false;
+        }
+        
+        $this->load->view('sales/undelete', $data);
+        
+    }
+    
+//    function set_rent_dates(){
+//        $this->sale_lib->set_rent_date($this->input->post("rent_date"));
+//
+//        $this->_reload();
+//    }
+//    
+//    function set_return_dates(){
+//        $this->sale_lib->set_return_date($this->input->post("return_date"));
+//        
+//        $this->_reload();
+//    }
+    
+    
 }
 
 ?>

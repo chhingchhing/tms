@@ -75,7 +75,7 @@ if($export_excel == 1)
 							<table class="tablesorter report table table-bordered" id="sortable_table">
 								<thead>
 									<tr>
-										<th><a href="#" class="expand_all" style="font-weight: bold; color:#FFFFFF">+</a></th>
+										<th><a href="#" class="expand_all" style="font-weight: bold; color:#000000">+</a></th>
 										<?php foreach ($headers['summary'] as $header) { ?>
 										<th align="<?php echo $header['align']; ?>"><?php echo $header['data']; ?></th>
 										<?php } ?>
@@ -90,7 +90,7 @@ if($export_excel == 1)
 										<?php } ?>
 									</tr>
 									<tr>
-										<td colspan="13" class="innertable">
+										<td colspan="14" class="innertable">
 											<table class="innertable table table-register">
 												<thead>
 													<tr>
@@ -123,11 +123,16 @@ if($export_excel == 1)
 			</table>
 		</div>
 		<br />
+<?php 
+if ($this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id)) { ?>
         <div id="report_summary" class="panel panel-default tablesorter report" style="margin-right: 10px;">
         <?php foreach($overall_summary_data as $name=>$value) { ?>
 			<div class="summary_row"><?php echo "<strong>".lang('reports_'.$name). '</strong>: '.to_currency($value); ?></div>
 		<?php }?>
         </div>
+<?php }
+?> 
+        
     </div>
 </div>
 

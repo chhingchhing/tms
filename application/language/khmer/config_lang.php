@@ -70,4 +70,5 @@ $lang['config_round_cash_on_sales'] = 'ការ​​​ទទួល​នូ�
 $lang['sales_hide_suspended_sales_in_reports'] = 'លាក់​​ការ ផ្អាក​នៃ​​​​ការ​​លក់​​​នៅ​​ក្នុង​​របាយ​​ការណ៍?'; //Hide suspended sales in reports?';
 $lang['config_hotel']='សណ្ឋាគារ';
 $lang['config_room_number']='លេខបន្ទប់';
+$lang['config_default_currency_type'] = 'Currency Type';
 ?>

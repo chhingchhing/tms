@@ -73,11 +73,16 @@ if($export_excel == 1)
             </table>
         </div>
         <br />
+
+<?php 
+if ($this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id)) { ?>
         <div id="report_summary" class="panel panel-default tablesorter report" style="margin-right: 10px;">
         <?php foreach($summary_data as $name=>$value) { ?>
             <div class="summary_row"><?php echo "<strong>".lang('reports_'.$name). '</strong>: '.to_currency($value); ?></div>
         <?php }?>
         </div>
+<?php }
+?>  
     </div>
 </div>
 

@@ -18,11 +18,13 @@ class Massage extends CI_Model
 
      function select_supplier_id(){
          $data = $this->db->select("*")
+         		->join("people", "people.person_id = suppliers.supplier_id")
+         		->where("deleted", 0)
                  ->get("suppliers");
          $option[] = "Please select one";
          if($data->num_rows() > 0){
              foreach($data->result() as $item){
-                 $option[$item->supplier_id] = $item->company_name;
+                 $option[$item->supplier_id] = $item->company_name.' ('.strtoupper($item->last_name).' '.$item->first_name.')';
              }
          }
          return $option;
@@ -155,8 +157,8 @@ class Massage extends CI_Model
 	function get_info($massage_id)
 	{
 		$this->db->from('items_massages');	
-		$this->db->join('suppliers', 'items_massages.supplierID = suppliers.supplier_id');
-                $this->db->join('massages_types', 'items_massages.massage_typesID = massages_types.massage_type_id');
+		$this->db->join('suppliers', 'items_massages.supplierID = suppliers.supplier_id', 'left');
+        $this->db->join('massages_types', 'items_massages.massage_typesID = massages_types.massage_type_id', 'left');
 		$this->db->where('item_massage_id',$massage_id);
 		$query = $this->db->get();
 		
@@ -167,7 +169,7 @@ class Massage extends CI_Model
 		else
 		{
 			//Get empty base parent object, as $massage_id is NOT an customer
-			$massage_obj=parent::get_info(-1);
+			$massage_obj=new stdClass();
 			
 			//Get all the fields from items_massages table
 			$fields = $this->db->list_fields('items_massages');
@@ -223,10 +225,8 @@ class Massage extends CI_Model
         }
     }
 
-    function check_duplicate_data($tCode, $tDestination, $tType) {
-        $query = $this->db->where('massage_name', $this->db->escape($tCode))
-                ->where("massage_desc", $this->db->escape($tDestination))
-                ->where("massage_typesID", $this->db->escape($tType))
+    function check_duplicate_data($massageName) {
+        $query = $this->db->where('massage_name', $massageName)
                 ->where("deleted", 0)
                 ->get('items_massages');
         
@@ -242,24 +242,15 @@ class Massage extends CI_Model
 		$suggestions = array();
 		
 		$this->db->from('items_massages');
-                
-               // $this->db->join('suppliers', 'items_massages.supplierID = suppliers.supplier_id', 'left');
-//                $this->db->join('massages_types', 'items_massages.massage_typesID = massages_types.massage_type_id');
-//		$this->db->where('item_massage_id',$massage_id);
-                
-                
-		
 		if ($this->config->item('speed_up_search_queries'))
 		{
 			$this->db->where("(massage_name LIKE '".$this->db->escape_like_str($search)."%' or 
 			massage_desc LIKE '".$this->db->escape_like_str($search)."%') and items_massages.deleted=0 and massages_types.deleted=0");
-//CONCAT(`massage_name`,' ',`massage_desc`) LIKE '".$this->db->escape_like_str($search)."%') and deleted=0");
 		}
 		else
 		{
 			$this->db->where("(massage_name LIKE '%".$this->db->escape_like_str($search)."%' or 
 			massage_desc LIKE '%".$this->db->escape_like_str($search)."%')");
-//CONCAT(`massage_name`,' ',`massage_desc`) LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");
 		}
 		
 		$this->db->order_by("massage_name", "desc");		
@@ -269,15 +260,15 @@ class Massage extends CI_Model
 			$suggestions[]=array('label'=> $row->massage_name);		
 		}
 		
-		$this->db->from('items_massages');
+		/*$this->db->from('items_massages');
 		$this->db->where('items_massages.deleted',0);	
-		$this->db->like("massage_name",$search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+		$this->db->like("price_one",$search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
 		$this->db->order_by("massage_name", "desc");		
 		$by_massage_type = $this->db->get();
 		foreach($by_massage_type->result() as $row)
 		{
 			$suggestions[]=array('label'=> $row->massage_name);		
-		}
+		}*/
 	
 		//only return $limit suggestions
 		if(count($suggestions > $limit))
@@ -363,6 +354,43 @@ class Massage extends CI_Model
 		}
 
 	}
+
+	/*
+	Inserts or updates an employee
+	*/
+	function save_massager(&$person_data, &$employee_data, $employee_id = false)
+	{
+		$success=false;
+		
+		//Run these queries as a transaction, we want to make sure we do all or nothing
+		$this->db->trans_start();
+			
+		if($this->Person->saved($person_data,$employee_id))
+		{
+			if (!$employee_id or !$this->Employee->exists($employee_id))
+			{
+				$employee_data['employee_id'] = $employee_id = $person_data['person_id'];
+				$success = $this->db->insert('employees',$employee_data);
+                                
+			}
+			else
+			{
+				$this->db->where('employee_id', $employee_id);
+				$success = $this->db->update('employees',$employee_data);		
+			}
+			
+		}
+		
+		$this->db->trans_complete();		
+		return $success;
+	}
+
+	/* Search massager */
+    function massager_search()
+    {
+        $suggestions = $this->commissioner->search_suggestions($this->input->post('term'),100);
+        echo json_encode($suggestions);
+    }
 	
 	
 //	function cleanup()

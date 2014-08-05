@@ -5,7 +5,11 @@
     </div>
   
         <div class="col-12 col-sm-12 col-lg-12 module_item panel-body" id="moudle_icon_home">
-            <p> <?php echo lang('common_welcome').$this->config->item('company'); ?> </p>
+        	<?php 
+        	$office_id = $this->Office->get_office_id($this->session->userdata("office_number"));
+                $office_info = $this->Office->get_info($office_id);
+        	?>
+            <p> <?php echo lang('common_welcome').$office_info->ofc_company; ?> </p>
         </div>
 
     

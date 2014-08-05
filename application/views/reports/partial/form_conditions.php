@@ -78,13 +78,14 @@
 							<!--<option value="2" rel="itemsSN"<?php // if($field[$k] == 2) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_2") ?></option>-->
 							<option value="3" rel="employees"<?php if($field[$k] == 3) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_3") ?></option>
 							<!--<option value="4" rel="itemsCategory"<?php // if($field[$k] == 4) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_4") ?></option>-->
-							<!--<option value="5" rel="suppliers"<?php // if($field[$k] == 5) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_5") ?></option>-->
-							<option value="6" rel="saleType"<?php if($field[$k] == 6) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_6") ?></option>
+							<option value="5" rel="suppliers"<?php if($field[$k] == 5) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_5") ?></option>
+							<!-- <option value="6" rel="saleType"<?php if($field[$k] == 6) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_6") ?></option> -->
 							<option value="7" rel="saleAmount"<?php if($field[$k] == 7) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_7") ?></option>
 							<!--<option value="8" rel="itemsKitName"<?php // if($field[$k] == 8) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_8") ?></option>-->
 							<option value="9" rel="itemsName"<?php if($field[$k] == 9) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_9") ?></option>
 							<option value="10" rel="saleID"<?php if($field[$k] == 10) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_10") ?></option>
 							<option value="11" rel="paymentType"<?php if($field[$k] == 11) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_11") ?></option>
+							<option value="12" rel="massager"<?php if($field[$k] == 12) echo " selected='selected'";?>><?php echo lang("reports_sales_generator_selectField_12") ?></option>
 						</select>
 					</td>
 					<td class="condition">
@@ -99,7 +100,7 @@
 						</select>
 					</td>
 					<td class="value">
-						<input type="text" name="value[]" w="" value="<?php echo $value[$k]; ?>"/>
+						<input type="text" class="w" name="value[]" w="" value="<?php echo $value[$k]; ?>"/>
 					</td>
 					<td class="actions">
 						<span class="actionCondition">
@@ -127,13 +128,14 @@
 							<!--<option value="2" rel="itemsSN"><?php // echo lang("reports_sales_generator_selectField_2") ?></option>-->
 							<option value="3" rel="employees"><?php echo lang("reports_sales_generator_selectField_3") ?></option>
 							<!--<option value="4" rel="itemsCategory"><?php // echo lang("reports_sales_generator_selectField_4") ?></option>-->
-							<!--<option value="5" rel="suppliers"><?php // echo lang("reports_sales_generator_selectField_5") ?></option>-->
-							<option value="6" rel="saleType"><?php echo lang("reports_sales_generator_selectField_6") ?></option>
+							<option value="5" rel="suppliers"><?php echo lang("reports_sales_generator_selectField_5") ?></option>
+							<!-- <option value="6" rel="saleType"><?php echo lang("reports_sales_generator_selectField_6") ?></option> -->
 							<option value="7" rel="saleAmount"><?php echo lang("reports_sales_generator_selectField_7") ?></option>
 							<!--<option value="8" rel="itemsKitName"><?php // echo lang("reports_sales_generator_selectField_8") ?></option>-->
 							<option value="9" rel="itemsName"><?php echo lang("reports_sales_generator_selectField_9") ?></option>
 							<option value="10" rel="saleID"><?php echo lang("reports_sales_generator_selectField_10") ?></option>
 							<option value="11" rel="paymentType"><?php echo lang("reports_sales_generator_selectField_11") ?></option>
+							<option value="12" rel="massager"><?php echo lang("reports_sales_generator_selectField_12") ?></option>
 						</select>
 					</td>
 					<td class="condition">
@@ -148,7 +150,7 @@
 						</select>
 					</td>
 					<td class="value">
-						<input type="text" name="value[]" w="" value=""/>
+						<input type="text" class="w" name="value[]" w="" value=""/>
 					</td>
 					<td class="actions">
 						<span class="actionCondition">

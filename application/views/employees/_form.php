@@ -7,7 +7,7 @@
         <div class="modal-body">
             <?php
             $current_employee_editing_self = $this->Employee->get_logged_in_employee_info()->employee_id == $person_info->employee_id;
-            echo form_open('employees/save/' . $person_info->employee_id, array('id' => 'employee_form'));
+            echo form_open('employees/save/' . $person_info->employee_id, array('id' => 'employee_form', 'class'=>'form-horizontal'));
             ?>
             <div id="required_fields_message"><b>*</b><?php echo lang('common_fields_required_message'); ?></div>
             <ul id="error_message_box"></ul>
@@ -18,17 +18,18 @@
             <br>
             <fieldset id="employee_login_info">
                 <legend><?php echo lang("employees_login_info"); ?></legend>
-                <div class="field_row clearfix"> 
+                <div class="form-group"> 
                     <label for="comments" class="col-sm-4 control-label"> 
                         <?php echo form_label(lang('employees_username') . ':', 'username', array('class' => 'required')); ?>
                     </label>   
-                    <div class='form_field'>
+                    <div class='col-sm-8'>
                         <?php
                         echo form_hidden("person_id", $person_info->employee_id);
                         echo form_input(array(
                             'name' => 'username',
                             'id' => 'username',
-                            'value' => $person_info->username));
+                            'value' => $person_info->username,
+                            'class'=>'form-control'));
                         ?>
                     </div>
                 </div>
@@ -37,40 +38,40 @@
                 $password_label_attributes = $person_info->employee_id == "" ? array('class' => 'required') : array();
                 ?>
 
-                <div class="field_row clearfix">
+                <div class="form-group">
                     <label for="comments" class="col-sm-4 control-label"> 
                         <?php echo form_label(lang('employees_password') . ':', 'password', $password_label_attributes); ?>
                     </label>
-                    <div class='form_field'>
+                    <div class='col-sm-8'>
                         <?php
                         echo form_password(array(
                             'name' => 'password',
-                            'id' => 'password'
+                            'id' => 'password',
+                            'class'=>'form-control'
                         ));
                         ?>
                     </div>
                 </div>
 
-                <div class="field_row clearfix"> 
+                <div class="form-group"> 
                     <label for="comments" class="col-sm-4 control-label"> 
                         <?php echo form_label(lang('employees_repeat_password') . ':', 'repeat_password', $password_label_attributes); ?>
                     </label>
-                    <div class='form_field'>
+                    <div class='col-sm-8'>
                         <?php
                         echo form_password(array(
                             'name' => 'repeat_password',
-                            'id' => 'repeat_password'
+                            'id' => 'repeat_password',
+                            'class'=>'form-control'
                         ));
                         ?>
                     </div>
                 </div>
-                <div class="field_row clearfix"> 
-                    <label for="comments" class="col-sm-4 control-label"> 
-                         <?php echo form_label(lang('employees_permission') . ':', 'permission', array('class' => 'required')); ?>
-                    </label>
-                    <div class="form_field">
+                <div class="form-group"> 
+                    <?php echo form_label(lang('employees_permission') . ':', 'permission', array('class' => 'col-sm-4 control-label required')); ?>
+                    <div class="col-sm-8">
                         <?php
-                        echo form_dropdown('position', $positions, $person_info->position_id);
+                        echo form_dropdown('position', $positions, $person_info->position_id, 'class= "form-control"');
                         ?>
                     </div>
                 </div>
@@ -78,7 +79,7 @@
             <br>
             <fieldset id="office_info">
                 <legend><?php echo lang("employees_permission_info"); ?></legend>
-                <p><?php echo lang("employees_permission_desc"); ?></p>
+                <p><?php echo lang("employees_permission_desc_office"); ?></p>
 
                 <ul id="permission_list">
                     <?php
@@ -97,17 +98,16 @@
                         ?>
                         <li>    
                             <?php echo form_checkbox($checkbox_options); ?>
-                            <span class="medium"><?php echo $this->lang->line('office_' . $office->alias_name); ?>:</span>
-                            <span class="small"><?php echo $this->lang->line('office_' . $office->alias_name . '_desc'); ?></span>
+                            <span class="medium"><?php echo ucfirst($office->office_name); ?>:</span>
+                            <span class="small"><?php echo ucfirst($office->office_name); ?></span>
                         </li>
                         <?php
                     }
                     ?>
                 </ul>
-            </fieldset>
-            <br>
-            <fieldset id="employee_permission_info">
-                <legend><?php echo lang("employees_permission_info"); ?></legend>
+            <!-- </fieldset> -->
+            <!-- <br> -->
+            <!-- <fieldset id="employee_permission_info"> -->
                 <p><?php echo lang("employees_permission_desc"); ?></p>
 
                 <ul id="permission_list">

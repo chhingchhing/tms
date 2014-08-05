@@ -12,7 +12,7 @@ class Sale_lib
 	{
 		if($this->CI->session->userdata('cart') === false)
 			$this->set_cart(array());
-
+                    
 		return $this->CI->session->userdata('cart');
 	}
 
@@ -157,7 +157,6 @@ class Sale_lib
 	{
 		$this->CI->session->unset_userdata('partial_transactions');
 	}
-	
 
 	function add_payment($payment_type,$payment_amount,$payment_date = false)
 	{
@@ -342,7 +341,41 @@ class Sale_lib
 
 	function empty_date_departures() {
 		$this->CI->session->unset_userdata('array_date_departure');
+	}    
+
+	function get_return_dates()
+	{
+		if(!$this->CI->session->userdata('array_return_date'))
+                    $this->set_return_dates('');
+		return $this->CI->session->userdata('array_return_date');
 	}
+
+	function set_return_dates($array_return_date)
+	
+	{
+		$this->CI->session->set_userdata('array_return_date',$array_return_date);
+	}
+
+	function empty_return_dates() {
+		$this->CI->session->unset_userdata('array_return_date');
+	}
+        
+        function get_rent_dates()
+	{
+		if(!$this->CI->session->userdata('array_rent_date'))
+			$this->set_rent_dates(''); 
+		return $this->CI->session->userdata('array_rent_date');
+	}
+
+	function set_rent_dates($array_rent_date)
+	{
+		$this->CI->session->set_userdata('array_rent_date',$array_rent_date);
+	}
+
+	function empty_rent_dates() {
+		$this->CI->session->unset_userdata('array_rent_date');
+	}
+        
 
 	function get_times_departure()
 	{
@@ -359,6 +392,40 @@ class Sale_lib
 
 	function empty_times_departure() {
 		$this->CI->session->unset_userdata('array_times_departure');
+	}
+
+	function get_hotels()
+	{
+		if(!$this->CI->session->userdata('array_hotels'))
+			$this->set_hotels('');
+
+		return $this->CI->session->userdata('array_hotels');
+	}
+
+	function set_hotels($array_hotels)
+	{
+		$this->CI->session->set_userdata('array_hotels',$array_hotels);
+	}
+
+	function empty_hotels() {
+		$this->CI->session->unset_userdata('array_hotels');
+	}
+
+	function get_room_numbers()
+	{
+		if(!$this->CI->session->userdata('array_room_numbers'))
+			$this->set_room_numbers('');
+
+		return $this->CI->session->userdata('array_room_numbers');
+	}
+
+	function set_room_numbers($array_room_numbers)
+	{
+		$this->CI->session->set_userdata('array_room_numbers',$array_room_numbers);
+	}
+
+	function empty_room_numbers() {
+		$this->CI->session->unset_userdata('array_room_numbers');
 	}
 
 	function get_commissioner()
@@ -410,6 +477,25 @@ class Sale_lib
 		$this->CI->session->unset_userdata('deposit_price');
 	}
 
+	/*Start*/
+	function get_tip_price()
+	{
+		if(!$this->CI->session->userdata('tip_price'))
+			$this->set_tip_price(1);
+
+		return $this->CI->session->userdata('tip_price');
+	}
+
+	function set_tip_price($tip_price)
+	{
+		$this->CI->session->set_userdata('tip_price',$tip_price);
+	}
+
+	function empty_tip_price() {
+		$this->CI->session->unset_userdata('tip_price');
+	}
+	/*End*/
+
 	function get_time_departure()
 	{
 		if(!$this->CI->session->userdata('time_departure'))
@@ -455,7 +541,20 @@ class Sale_lib
 		$this->CI->session->set_userdata('sale_mode',$mode);
 	}
 
-	function add_item($item_id,$quantity=1,$discount=0,$price=null,$description=null,$serialnumber=null)
+	function get_massager()
+	{
+		if(!$this->CI->session->userdata('massager'))
+			$this->set_massager(-1);
+
+		return $this->CI->session->userdata('massager');
+	}
+
+	function set_massager($person_id)
+	{
+		$this->CI->session->set_userdata('massager',$person_id);
+	}
+
+	function add_item($item_id,$quantity=1, $discount=0,$price=null,$description=null,$serialnumber=null)
 	{
 		//make sure item exists
 		if(!$this->CI->Item->exists(is_numeric($item_id) ? (int)$item_id : -1))	
@@ -482,8 +581,8 @@ class Sale_lib
 
         $maxkey=0;                       //Highest key so far
         $itemalreadyinsale=FALSE;        //We did not find the item yet.
-		$insertkey=0;                    //Key to use for new entry.
-		$updatekey=0;                    //Key to use to update(quantity)
+	$insertkey=0;                    //Key to use for new entry.
+	$updatekey=0;                    //Key to use to update(quantity)
 
 		foreach ($items as $item)
 		{
@@ -507,8 +606,7 @@ class Sale_lib
 			}
 		}
 
-		$insertkey=$maxkey+1;
-
+	$insertkey=$maxkey+1;
         $today =  strtotime(date('Y-m-d'));
         $price_to_use=( isset($this->CI->Item->get_info($item_id)->start_date) && isset($this->CI->Item->get_info($item_id)->end_date) && isset($this->CI->Item->get_info($item_id)->promo_price)  && ( strtotime($this->CI->Item->get_info($item_id)->start_date) <= $today) && (strtotime($this->CI->Item->get_info($item_id)->end_date) >= $today) ?  $this->CI->Item->get_info($item_id)->promo_price :  $this->CI->Item->get_info($item_id)->unit_price);
 
@@ -524,8 +622,7 @@ class Sale_lib
 			'allow_alt_description'=>$this->CI->Item->get_info($item_id)->allow_alt_description,
 			'is_serialized'=>$this->CI->Item->get_info($item_id)->is_serialized,
 			'quantity'=>$quantity,
-			'discount'=>$discount,
-			//'price'=>$price!=null ? $price: $this->CI->Item->get_info($item_id)->unit_price
+                        'discount'=>$discount,
 			'price'=>$price!=null ? $price:$price_to_use
 			)
 		);
@@ -540,10 +637,11 @@ class Sale_lib
 			//add to existing array
 			$items+=$item;
 		}
-
+                
+                var_dump('sale_lib ->edit_item = '.($this->set_cart($items)));
+                var_dump('sale_lib -> edit_item ->$items= '.$items);
 		$this->set_cart($items);
 		return true;
-
 	}
 	
 	function add_item_kit($external_item_kit_id_or_item_number,$quantity=1,$discount=0,$price=null,$description=null)
@@ -619,7 +717,7 @@ class Sale_lib
 				'name'=>$this->CI->Item_kit->get_info($item_kit_id)->name,
 				'description'=>$description!=null ? $description: $this->CI->Item_kit->get_info($item_kit_id)->description,
 				'quantity'=>$quantity,
-	            'discount'=>$discount,
+                                'discount'=>$discount,
 				'price'=>$price!=null ? $price: $this->CI->Item_kit->get_info($item_kit_id)->unit_price
 				)
 			);
@@ -695,20 +793,20 @@ class Sale_lib
 	    return -1;
 	}
         
-	function edit_item($line,$description,$serialnumber,$quantity,$discount,$price)
+//	function edit_item($line,$description,$serialnumber,$quantity,$discount,$num_day,$price)
+        function edit_item($line,$description,$serialnumber,$quantity,$discount,$price)
 	{
-            
 		$items = $this->get_cart();
 		if(isset($items[$line]))
 		{
-                    
 			$items[$line]['description'] = $description;
 			$items[$line]['serialnumber'] = $serialnumber;
 			$items[$line]['quantity'] = $quantity;
 			$items[$line]['discount'] = $discount;
+                        //$items[$line]['number_of_day'] = $num_day;
 			$items[$line]['price'] = $price;
-			$this->set_cart($items);
-                      
+                        
+			$this->set_cart($items);          
 		}
 
 		return false;
@@ -790,6 +888,11 @@ class Sale_lib
 		$this->CI->session->unset_userdata('commissioner');
 	}
 
+	function delete_massger()
+	{
+		$this->CI->session->unset_userdata('massager');
+	}
+
 	function empty_time_departure()
 	{
 		$this->CI->session->unset_userdata('time_departure');
@@ -823,9 +926,13 @@ class Sale_lib
 		$this->delete_customer();
 		$this->delete_commissioner();
 		$this->delete_guide();
+		$this->empty_rent_dates();
+		$this->empty_return_dates();
 		$this->empty_time_departure();
 		$this->empty_date_departures();
 		$this->empty_times_departure();
+		$this->empty_hotels();
+		$this->empty_room_numbers();
 		$this->empty_price_deposit();
 		$this->empty_time_in();
 		$this->empty_time_out();
@@ -838,6 +945,8 @@ class Sale_lib
 		$this->delete_partial_transactions();
 		$this->clear_save_credit_card_info();
 		$this->clear_use_saved_cc_info();
+		$this->delete_massger();
+		$this->empty_tip_price();
 	}
 
 	function get_taxes($sale_id = false)
@@ -919,34 +1028,96 @@ class Sale_lib
 		
 		return $items_in_cart;
 	}
+        
+        //calculate bike
+        function get_items_in_cart_bike(){
+            $items_in_cart = 0;
+		foreach($this->get_cart() as $item)
+		{
+		    $items_in_cart += $item['number_of_day'];
+		}
+		
+		return $items_in_cart;
+        }
 	
 	function get_subtotal()
 	{
 		$subtotal = 0;
+                
 		foreach($this->get_cart() as $item)
 		{
-		    $subtotal+=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
+		    $subtotal += ($item['price']*$item['quantity'] - $item['discount']);
 		}
 		return to_currency_no_money($subtotal);
 	}
-
+        
 	// For getting total of sale for only ticket
 	function get_total($sale_id = false)
-	{
+	{           
 		$total = 0;
 		foreach($this->get_cart() as $item)
 		{
-            $total+=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
+                    $total+=($item['price']*$item['quantity'] - $item['discount']);
 		}
 		return to_currency_no_money($total);
 	}
 
-	function get_total_in_riels($total)
+	
+// calculate bike
+          // calculate for bike
+//        function get_subtotal_bike(){
+//            $subtotal = 0;
+//                
+////                 var_dump('get_subtotal -> total out of foreach bike= '.$total);
+//                
+//		foreach($this->get_cart() as $item)
+//		{
+////                     var_dump('get_subtotal -> total in of foreach top= '.$total);
+//                           
+//		    $subtotal += ($item['price']*$item['number_of_day'] - $item['discount']);
+//                    
+////                     var_dump('get_subtotal -> total in of foreach bottom= '. $subtotal);die('get_subtotal');
+//		}
+//		return to_currency_no_money($subtotal);
+//        }
+//
+//	// For getting total of sale for only ticket
+//	function get_total_bike($sale_id = false)
+//	{           
+//		$total = 0;
+//		foreach($this->get_cart() as $item)
+//		{
+//            
+//                    $total+=($item['price']*$item['number_of_day'] - $item['discount']);
+//            
+//		}
+//		return to_currency_no_money($total);
+//	}
+
+	function get_total_in_riels($total, $default_currency)
 	{
-		$currency_rate = $this->CI->currency_model->get_currency_rate_by_type_name(strtolower("dollar to riel"));
-		$total_in_riels = $total * $currency_rate;
+		$currency_rate = $this->CI->currency_model->get_currency_rate_by_type_name($default_currency)->currency_value;
+        $total_in_riels = $total * $currency_rate;
 		return to_currency_no_money($total_in_riels);
 	}
-
+        
+//     function edit_item_bike($line,$description,$serialnumber,$quantity,$discount,$num_day,$price)
+//	{
+//		$items = $this->get_cart();
+//		if(isset($items[$line]))
+//		{
+//			$items[$line]['description'] = $description;
+//			$items[$line]['serialnumber'] = $serialnumber;
+//			$items[$line]['quantity'] = $quantity;
+//			$items[$line]['discount'] = $discount;
+//                        $items[$line]['number_of_day'] = $num_day;
+//			$items[$line]['price'] = $price;
+//                        
+//			$this->set_cart($items);          
+//		}
+//
+//		return false;
+//	}
+        
 }
 ?>

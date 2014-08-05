@@ -44,9 +44,10 @@ $lang['tickets_due_amount'] = 'តុល្យភាពក្នុងការ�
 $lang['tickets_amount_pay'] = 'ចំនួន';
 $lang['tickets_delete_cc_info'] = 'លុបពណ៍មានឥនទាន(Credit card)';
 $lang['tickets_code_ticket'] = 'លេខកូដសំបុត្រ';
-$lang['tickets_destinationID'] = 'លេខរៀងទិសដៅ';
+$lang['tickets_destinationID'] = 'ទិសដៅ';
 $lang['tickets_ticket_typeID'] = 'ប្រភេទសំបុត្រ';
 $lang['tickets_actual_price'] = 'តម្លៃដើម';
 $lang['tickets_sale_price'] = 'តម្លៃលក់';
 $lang['tickets_sale'] = ' លក់សំបុត្រ';
+$lang['tickets_code_name'] = 'ឈ្មោះសំបុត្រ';
 ?>

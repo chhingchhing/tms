@@ -42,7 +42,9 @@
                         <?php echo $manage_table; ?>
                     </form> 
                 </div>
-                <div id="paggination"><?php echo $pagination; ?></div>
+                <div id="pagination" class="row">
+                    <?php echo $pagination; ?>
+                </div>
             </div>
 
         </div>

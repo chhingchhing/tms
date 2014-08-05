@@ -16,10 +16,7 @@ class Config extends Secure_area
         $this->session->set_userdata("cur_page", $this->uri->segment(3));
         $this->session->set_userdata("pagination", $this->uri->segment(4));
 
-		$logged_in_employee_info=$this->Employee->get_logged_in_employee_info();
-		$office = substr($this->uri->segment(3), -1);
-		$data['allowed_modules']=$this->Module->get_allowed_modules($office, $logged_in_employee_info->person_id);//get officle allowed
-
+		$data['allowed_modules'] = $this->check_module_accessable();
 
 		$data['controller_name']=strtolower(get_class());
 		$data['payment_options']=array(
@@ -27,14 +24,23 @@ class Config extends Secure_area
 				lang('sales_check') => lang('sales_check'),
 				lang('sales_giftcard') => lang('sales_giftcard'),
 				lang('sales_debit') => lang('sales_debit'),
-				lang('sales_credit') => lang('sales_credit')
-
+				lang('sales_credit') => lang('sales_credit'),
+                lang('sales_visa_card') => lang('sales_visa_card'),
+				lang('sales_master_card') => lang('sales_master_card'),
+                lang('sales_western_union') => lang('sales_western_union') 
 		);
 		
 		foreach($this->Appconfig->get_additional_payment_types() as $additional_payment_type)
 		{
 			$data['payment_options'][$additional_payment_type] = $additional_payment_type;
 		}
+
+		$this->load->model("currency_model");
+		$additional_currency = array('' => lang('items_none'));
+        foreach ($this->currency_model->get_all()->result_array() as $row) {
+            $additional_currency[$row['currency_type_name']] = $row['currency_type_name'] . ' (' . $row['currency_value'] . ')';
+        }
+        $data['currency_options'] = $additional_currency;
 		
 		$this->load->view("config", $data);
 	}
@@ -102,6 +108,7 @@ class Config extends Secure_area
 		'merchant_id'=>$this->input->post('merchant_id'),
 		'merchant_password'=>$this->input->post('merchant_password'),
 		'default_payment_type'=> $this->input->post('default_payment_type'),
+		'default_currency'=> $this->input->post('default_currency'),
 		);
 
 		if (isset($company_logo))
@@ -113,18 +120,18 @@ class Config extends Secure_area
 			$batch_save_data['company_logo'] = 0;
 		}
 		
-		// if(($_SERVER['HTTP_HOST'] !='demo.phppointofsale.com' && $_SERVER['HTTP_HOST'] !='demo.phppointofsalestaging.com') && $this->Appconfig->batch_save($batch_save_data))
-		if($this->Appconfig->batch_save($batch_save_data))
+		if(($_SERVER['HTTP_HOST'] !='demo.phppointofsale.com' && $_SERVER['HTTP_HOST'] !='demo.phppointofsalestaging.com') && $this->Appconfig->batch_save($batch_save_data))
+		// if($this->Appconfig->batch_save($batch_save_data))
 		{
 			// echo json_encode(array('success'=>true,'message'=>lang('config_saved_successfully')));
-			$this->session->set_userdata('success', show_message("Change config was successfully!", "success"));
-            $this->redirection("config", "config");
+			$this->session->set_userdata('success', show_message(lang('config_saved_successfully'), "success"));
+            $this->redirection("config/config");
 		}
 		else
 		{
 			// echo json_encode(array('success'=>false,'message'=>lang('config_saved_unsuccessfully')));
-			$this->session->set_userdata('error', show_message("Cannot import excel to update!", "error"));
-			$this->redirection("config", "config");
+			$this->session->set_userdata('error', show_message(lang('config_saved_unsuccessfully'), "error"));
+			$this->redirection("config/config");
 		}
 	}
 	
@@ -149,9 +156,6 @@ class Config extends Secure_area
 		echo json_encode(array('success'=>true,'message'=>lang('config_database_optimize_successfully')));
 	}
 
-	function redirection($controller, $function){
-		redirect($controller . '/' . $function . '/' . $this->session->userdata('cur_page') . '/' . $this->session->userdata('pagination'));
-	}
 
 }
 ?>

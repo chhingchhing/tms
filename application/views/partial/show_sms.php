@@ -8,3 +8,4 @@ if ($this->session->userdata('success')) {
     $this->session->unset_userdata('error');
 }
 ?>
+<div id="feedback_bar"></div>

@@ -14,17 +14,17 @@ class Tickets extends Secure_area implements iData_controller {
 
     }
 
-    //change text to check line endings
-    //new line endings
+    /**
+    *change text to check line endings
+    *new line endings
+    */
 
     function index() {
         $this->tickets();
     }
 
     function tickets() {
-        $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $logged_in_employee_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
 
         $this->check_action_permission('search');
         $config['base_url'] = site_url('tickets/tickets/' . $this->uri->segment(3));
@@ -78,8 +78,9 @@ class Tickets extends Secure_area implements iData_controller {
         return $data['manage_table'];
     }
 
-//    get_supplier_manage_table_pagination
-
+    /**
+    get_supplier_manage_table_pagination
+    */
     function find_item_info() {
         $item_number = $this->input->post('scan_item_number');
         echo json_encode($this->ticket->find_item_info($item_number));
@@ -92,16 +93,16 @@ class Tickets extends Secure_area implements iData_controller {
             echo 'true';
     }
 
-    function check_duplicate_data() {
-        
+    function check_duplicate_data() {     
         $ticket_name = $this->input->post("ticket_name");
-        $tDestination = $this->input->post("destinationID");
+        $tDestination = $this->input->post("destination_id");
         $tType = $this->input->post("ticket_typeID");
         echo json_encode(array('duplicate' => $this->ticket->check_duplicate_data($ticket_name, $tDestination, $tType)));
     }
-    
-//search function
-    
+        
+    /**
+    *search function  
+    */
     function search() {
         $this->check_action_permission('search');
         $search = $this->input->post('search');
@@ -110,14 +111,19 @@ class Tickets extends Secure_area implements iData_controller {
         $config['base_url'] = site_url('tickets/tickets/' . $this->uri->segment(3));
         $config['total_rows'] = $this->ticket->search_count_all($search);
         $config['per_page'] = $per_page;
+        
+        $config['uri_segment'] = 4;
+        $choice = $config["total_rows"] / $config["per_page"];
+        $config["num_links"] = round($choice);
+
         $this->pagination->initialize($config);
         $data['pagination'] = $this->pagination->create_links();
         $data['manage_table'] = get_ticket_manage_table_data_rows($search_data, $this);
         echo json_encode(array('manage_table' => $data['manage_table'], 'pagination' => $data['pagination']));
     }
 
-    /*
-      Gives search suggestions based on what is being searched for
+    /**
+    *  Gives search suggestions based on what is being searched for
      */
 
     function suggest() {
@@ -131,7 +137,7 @@ class Tickets extends Secure_area implements iData_controller {
         echo json_encode($suggestions);
     }
 
-    /*
+    /**
       Gives search suggestions based on what is being searched for
      */
 
@@ -187,17 +193,28 @@ class Tickets extends Secure_area implements iData_controller {
         $this->load->view("ticket/form", $data);
     }
 
-    /*
-      Loads the ticket json data
+    /**
+     * Loads the ticket json data
      */
 
     function viewJSON($item_id = -1) {
         $this->check_action_permission('add_update');
-        $data['person_info'] = $this->ticket->get_info($item_id);
-        echo json_encode($data['person_info']);
+        $suppliers = array('' => lang('items_none'));
+        foreach($this->Supplier->get_all()->result_array() as $row)
+        {
+            $suppliers[$row['person_id']] = $row['company_name'] .' ('.$row['first_name'] .' '. $row['last_name'].')';
+        }
+        $data['suppliers']=$suppliers;
+        $data['ticket_type_id'] = $this->ticket->get_ticket_type();
+        $data['destination_id'] = $this->ticket->get_destinationID();
+        $data['controller_name'] = strtolower(get_class());
+        $data['ticket_info'] = $this->ticket->get_info($item_id);
+        $this->load->view("tickets/_form", $data);
     }
 
-    //Ramel Inventory Tracking
+    /**
+   *Ramel Inventory Tracking
+    */
     function inventory($item_id = -1) {
         $this->check_action_permission('add_update');
         $data['item_info'] = $this->ticket->get_info($item_id);
@@ -469,7 +486,7 @@ class Tickets extends Secure_area implements iData_controller {
 
     function delete() {
         $this->check_action_permission('delete');
-        $items_to_delete = $this->input->post('ids');
+        $items_to_delete = $this->input->post('checkedID');
 
         if ($this->ticket->delete_list($items_to_delete)) {                                                                                          
             echo json_encode(array('success' => true, 'message' => lang('tickets_successful_deleted')));
@@ -761,9 +778,8 @@ class Tickets extends Secure_area implements iData_controller {
     }
 
     function _reload($data = array(), $is_ajax = true) {
-        $person_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
+        
+        $data['allowed_modules'] = $this->check_module_accessable();
 
         $data['destination_id'] = $this->ticket->get_destinationID();
         $suppliers = array('' => lang('items_none'));
@@ -781,6 +797,8 @@ class Tickets extends Secure_area implements iData_controller {
         $data['item_vol']=$this->sale_lib->get_item_vol();
         $data['dates_departure']=$this->sale_lib->get_date_departures();
         $data['times_departure']=$this->sale_lib->get_times_departure();
+        $data['hotel_names']=$this->sale_lib->get_hotels();
+        $data['room_numbers']=$this->sale_lib->get_room_numbers();
         $data['modes']= "Sale";
         $data['mode']=$this->sale_lib->get_mode();
         $data['items_in_cart'] = $this->sale_lib->get_items_in_cart();
@@ -817,7 +835,10 @@ class Tickets extends Secure_area implements iData_controller {
                 lang('sales_check') => lang('sales_check'),
                 lang('sales_giftcard') => lang('sales_giftcard'),
                 lang('sales_debit') => lang('sales_debit'),
-                lang('sales_credit') => lang('sales_credit')
+                lang('sales_credit') => lang('sales_credit'),
+                lang('sales_visa_card') => lang('sales_visa_card'),
+                lang('sales_master_card') => lang('sales_master_card'),
+                lang('sales_western_union') => lang('sales_western_union') 
                 );            
         }
         
@@ -950,9 +971,9 @@ class Tickets extends Secure_area implements iData_controller {
     function complete()
     {
         $person_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
 
+        $office_name = $this->session->userdata("office_number");
         $data['is_sale'] = TRUE;
         $data['cart']=$this->sale_lib->get_cart();
         $data['seat_no'] = $this->sale_lib->get_seat_no();
@@ -960,9 +981,12 @@ class Tickets extends Secure_area implements iData_controller {
         $data['item_vol'] = $this->sale_lib->get_item_vol();
         $data['dates_departure']=$this->sale_lib->get_date_departures();
         $data['times_departure']=$this->sale_lib->get_times_departure();
+        $data['hotel_names']=$this->sale_lib->get_hotels();
+        $data['room_numbers']=$this->sale_lib->get_room_numbers();
         $data['subtotal']=$this->sale_lib->get_subtotal();
         $data['total']=$this->sale_lib->get_total();
-        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total']);
+        // $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->config->item('default_currency'));
+        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->Office->get_office_default_currency($office_name));
         $data['receipt_title'] = lang('sales_receipt');
         $data['deposit_price'] = $this->sale_lib->get_deposit_price();
         $customer_id=$this->sale_lib->get_customer();
@@ -1000,8 +1024,8 @@ class Tickets extends Secure_area implements iData_controller {
 
         //SAVE sale to database
 
-        $data['sale_id']='CGATE '.$this->Sale_ticket->save(strtolower(get_class()),$data['cart'], $data['seat_no'],$data['item_number'],$data['item_vol'],$data['times_departure'],$data['dates_departure'], $data['deposit_price'], $customer_id,$employee_id, $commissioner_id,$commissioner_price,$data['comment'],$data['show_comment_on_receipt'],$data['payments'], $suspended_change_sale_id, 0,$data['ref_no'],$data['change_sale_date']);
-        if ($data['sale_id'] == 'CGATE -1')
+        $data['sale_id']= strtoupper($office_name).' '.$this->Sale_ticket->save($office_name,strtolower(get_class()),$data['cart'], $data['seat_no'],$data['item_number'],$data['item_vol'],$data['times_departure'],$data['dates_departure'],$data['hotel_names'],$data['room_numbers'], $data['deposit_price'], $customer_id,$employee_id, $commissioner_id,$commissioner_price,$data['comment'],$data['show_comment_on_receipt'],$data['payments'], $suspended_change_sale_id, 0,$data['ref_no'],$data['change_sale_date']);
+        if ($data['sale_id'] == strtoupper($office_name).' -1')
         {
             $data['error_message'] = '';
             // Sale_helper, location helpers/sale_helper.php
@@ -1211,6 +1235,7 @@ class Tickets extends Secure_area implements iData_controller {
 
     function suspend()
     {
+        $office_name = $this->session->userdata("office_number");
         $data['seat_no'] = $this->sale_lib->get_seat_no();
         $data['item_number'] = $this->sale_lib->get_item_number();
         $data['item_vol'] = $this->sale_lib->get_item_vol();
@@ -1218,6 +1243,8 @@ class Tickets extends Secure_area implements iData_controller {
         $data['times_departure']=$this->sale_lib->get_times_departure();
         $data['deposit_price'] = $this->sale_lib->get_deposit_price();
         $data['cart'] = $this->sale_lib->get_cart();
+        $data['hotel_names']=$this->sale_lib->get_hotels();
+        $data['room_numbers']=$this->sale_lib->get_room_numbers();
         $data['subtotal'] = $this->sale_lib->get_subtotal();
         $data['total'] = $this->sale_lib->get_total();
         $data['receipt_title'] = lang('sales_receipt');
@@ -1249,12 +1276,9 @@ class Tickets extends Secure_area implements iData_controller {
         
         $sale_id = $this->sale_lib->get_suspended_sale_id();
         //SAVE sale to database
-
-        // $category,$items, $seat_no,$item_number,$item_vol,$times_departure,$dates_departure, $deposit_price, $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$payments,$sale_id=false, $suspended = 0, $cc_ref_no = '', $change_sale_date=false
-
-        $data['sale_id']='CGATE '.$this->Sale_ticket->save(strtolower(get_class()),$data['cart'],$data['seat_no'],$data['item_number'],$data['item_vol'],
-            $data['times_departure'],$data['dates_departure'],$data['deposit_price'], $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$data['payments'], $sale_id, 1);
-        if ($data['sale_id'] == 'CGATE -1')
+        $data['sale_id']= strtoupper($office_name).' '.$this->Sale_ticket->save($office_name,strtolower(get_class()),$data['cart'],$data['seat_no'],$data['item_number'],$data['item_vol'],
+            $data['times_departure'],$data['dates_departure'],$data['hotel_names'],$data['room_numbers'],$data['deposit_price'], $customer_id,$employee_id,$commissioner_id,$commissioner_price,$comment,$show_comment_on_receipt,$data['payments'], $sale_id, 1);
+        if ($data['sale_id'] == strtoupper($office_name).' -1')
         {
             $data['error_message'] = lang('sales_transaction_failed');
         }
@@ -1346,15 +1370,21 @@ class Tickets extends Secure_area implements iData_controller {
     // Receipt of sale
     function receipt($office, $sale_id)
     {
-        $person_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
-
+        $data['allowed_modules'] = $this->check_module_accessable();
+ 
+        $office_name = $this->session->userdata("office_number");
         $data['is_sale'] = FALSE;
         $sale_info = $this->Sale->get_info($sale_id)->row_array();
         $this->sale_lib->clear_all();
         $this->sale_ticket_lib->copy_entire_sale($sale_id);
         $data['cart']=$this->sale_lib->get_cart();
+        $data['seat_no'] = $this->sale_lib->get_seat_no();
+        $data['item_number'] = $this->sale_lib->get_item_number();
+        $data['item_vol'] = $this->sale_lib->get_item_vol();
+        $data['dates_departure']=$this->sale_lib->get_date_departures();
+        $data['times_departure']=$this->sale_lib->get_times_departure();
+        $data['hotel_names']=$this->sale_lib->get_hotels();
+        $data['room_numbers']=$this->sale_lib->get_room_numbers();
         $data['payments']=$this->sale_lib->get_payments();
         $data['show_payment_times'] = TRUE;
         $data['controller_name'] = strtolower(get_class());
@@ -1371,14 +1401,15 @@ class Tickets extends Secure_area implements iData_controller {
         $data['amount_change']=$this->sale_lib->get_amount_due($sale_id) * -1;
         $data['employee']=$emp_info->first_name.' '.$emp_info->last_name;
         $data['ref_no'] = $sale_info['cc_ref_no'];
-        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total']);
+        // $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->config->item('default_currency'));
+        $data['total_in_riels'] = $this->sale_lib->get_total_in_riels($data['total'], $this->Office->get_office_default_currency($office));
 
         if($customer_id!=-1)
         {
             $cust_info=$this->Customer->get_info($customer_id);
             $data['customer']=$cust_info->first_name.' '.$cust_info->last_name.($cust_info->company_name==''  ? '' :' ('.$cust_info->company_name.')');
         }
-        $data['sale_id']='CGATE '.$sale_id;
+        $data['sale_id']= strtoupper($office_name).' '.$sale_id;
         $this->load->view("sales/receipt",$data);
         $this->sale_lib->clear_all();
 
@@ -1437,10 +1468,13 @@ class Tickets extends Secure_area implements iData_controller {
         $item_vol = $this->input->post("vol");
         $date_departure = $this->input->post("dates");
         $time_departure = $this->input->post("times");
+        $hotel_name = $this->input->post("company_name");
+        $room_number = $this->input->post("room_number");
         
         if ($this->form_validation->run() != FALSE)
         {
             $this->sale_lib->edit_item($line,$description,$serialnumber,$quantity,$discount,$price);
+            
         }
         else
         {
@@ -1509,7 +1543,6 @@ class Tickets extends Secure_area implements iData_controller {
             }
         } 
 
-
         // Set vol/time bus for leave (Bus Number) as in session array
         $array_item_vol = $this->sale_lib->get_item_vol();
         $array_item_vol[$index] = $item_vol;
@@ -1525,6 +1558,16 @@ class Tickets extends Secure_area implements iData_controller {
         $new_array_time_departure = $this->insertArrayIndex($array_time_departure, $time_departure, $index);
         $this->sale_lib->set_times_departure($new_array_time_departure);
 
+        // Set room
+        $array_hotels = $this->sale_lib->get_hotels();
+        $new_arr_hotels = $this->insertArrayIndex($array_hotels, $hotel_name, $index);
+        $this->sale_lib->set_hotels($new_arr_hotels);
+
+        // Set hotel
+        $array_room_numbers = $this->sale_lib->get_room_numbers();
+        $new_arr_room_numbers = $this->insertArrayIndex($array_room_numbers, $room_number, $index);
+        $this->sale_lib->set_room_numbers($new_arr_room_numbers);
+        
         $this->_reload($data);
     }
 
@@ -1578,10 +1621,8 @@ class Tickets extends Secure_area implements iData_controller {
         }
 
         $data['sale_info'] = $this->Sale->get_info($sale_id)->row_array();
-
-        $person_info = $this->Employee->get_logged_in_employee_info();
-        $office = substr($this->uri->segment(3), -1);
-        $data['allowed_modules'] = $this->Module->get_allowed_modules($office, $person_info->employee_id); //get officle allowed
+        $data['allowed_modules'] = $this->check_module_accessable();
+        
         $data['controller_name'] = strtolower(get_class());
      
         $this->load->view('sales/edit', $data);
@@ -1647,7 +1688,11 @@ class Tickets extends Secure_area implements iData_controller {
         $this->load->view('sales/undelete', $data);
         
     }
+
+    // Check for duplicate destination of ticket
+    function check_duplicate_destination() { 
+        echo json_encode(array('duplicate' => $this->ticket->check_duplicate_destination($this->input->post("term"))));
+    }
     
 }
-
 ?>

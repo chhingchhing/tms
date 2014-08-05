@@ -1,10 +1,4 @@
-<!-- <div id='TB_load'><img src='<?php //echo base_url()?>images/loading_animation.gif'/></div> -->
-<?php if($this->sale_lib->get_change_sale_id()) { ?>
-	<div id="editing_sale" > <?php echo lang('sales_editing_sale'); ?> <b> CGATE <?php echo $this->sale_lib->get_change_sale_id(); ?> </b> </div>
-<?php } ?>
-
 <div class="panel panel-info">
-
 	<div class="panel-heading">
 		<?php $this->load->view("sales/components/header_sale"); ?>
 	</div>
@@ -23,7 +17,7 @@
 
         <div class="row" id="contents">
         	<div class="col-xs-12 col-sm-9" id="register_items_container">
-        		<div id="register_holder" class="table-responsive">
+        		<div id="register_holder">
 					<?php $this->load->view("sales/components/register_sale"); ?>
 				</div> <!--Register holder-->
 
@@ -35,7 +29,7 @@
 				</div>
 				<?php } ?>
 
-				<?php if ($this->Employee->has_module_permission('giftcards', $this->Employee->get_logged_in_employee_info()->person_id)) {?>						
+				<?php if ($this->Employee->has_module_permission('giftcards', $this->Employee->get_logged_in_employee_info()->employee_id)) {?>						
 					<div id="new_giftcard_button_register" >			
 								<?php echo 
 							anchor("sales/new_giftcard/width~550",
@@ -48,9 +42,6 @@
 
 				<div id="sales_search" >
 					<?php 
-// <<<<<<< HEAD
-// 						echo anchor("reports/sales_generator_".$this->uri->segment(1)."/".$this->session->userdata("office_number")."/".$controller_name,
-// =======
 						echo anchor("reports/sales_generator_".$this->uri->segment(1)."/".$this->session->userdata("office_number").'/'.$this->uri->segment(1),
 						lang('sales_search_reports'),
 						array('class'=>'none btn btn-primary btn-sm', 
@@ -65,7 +56,7 @@
         </div> <!-- row contents-->
 	</div> <!-- End panel-body-->
 </div>
-
+<div id="feedback_bar"></div>
 </div>
 
 

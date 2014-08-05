@@ -237,10 +237,10 @@ class Sale_massage_lib {
 	function copy_entire_sale($sale_id, $category)
 	{
 		$this->CI->sale_lib->empty_cart();
-                $this->CI->sale_lib->delete_customer();
+        $this->CI->sale_lib->delete_customer();
 		foreach($this->CI->Sale_massage->get_sale_items($sale_id)->result() as $row)
 		{      
-                        $this->add_item($row->item_massage_id,$row->quantity_purchased, $row->discount_percent,$row->sale_price);
+            $this->add_item($row->item_massage_id,$row->quantity_purchased, $row->discount_percent,$row->sale_price);
 		}
 		foreach($this->CI->Sale->get_sale_payments($sale_id)->result() as $row)
 		{
@@ -249,11 +249,11 @@ class Sale_massage_lib {
                
 		$this->CI->sale_lib->set_customer($this->CI->Sale->get_customer($sale_id)->customer_id);
 		$this->CI->sale_lib_sms->set_time_in($this->CI->massage->get_time_in($sale_id));
-//              var_dump($this->CI->sale_lib_sms->set_time_in($this->CI->Massage->get_time_in($sale_id)));
 		$this->CI->sale_lib_sms->set_time_out($this->CI->massage->get_time_out($sale_id));
 
+		$this->CI->sale_lib->set_massager($this->CI->Sale->get_massager($sale_id)->employee_id);
 		$this->CI->sale_lib->set_commissioner($this->CI->Sale->get_commissioner($sale_id)->commisioner_id);
-                $this->CI->sale_lib->set_commissioner_price($this->CI->Sale->get_commission_price($sale_id));
+        $this->CI->sale_lib->set_commissioner_price($this->CI->Sale->get_commission_price($sale_id));
 		$this->CI->sale_lib->set_comment($this->CI->Sale->get_comment($sale_id));
 		$this->CI->sale_lib->set_comment_on_receipt($this->CI->Sale->get_comment_on_receipt($sale_id));
                
@@ -320,7 +320,9 @@ class Sale_massage_lib {
 			'description' => $description != null ? $description : $this->CI->massage_item->get_info($item_id)->massage_desc,
 			'quantity' => $quantity,
 			'discount' => $discount,
-			'price' => $price != null ? $price : $price_to_use
+			'price' => $price != null ? $price : $price_to_use,
+			'commission_massager' => $this->CI->massage_item->get_info($item_id)->commission_price_massager,
+			'commission_receptionist' => $this->CI->massage_item->get_info($item_id)->commission_price_receptionist,
 		    )
 		);
 
@@ -787,7 +789,7 @@ class Sale_massage_lib {
 	function get_subtotal() {
 		$subtotal = 0;
 		foreach ($this->get_cart() as $item) {
-			$subtotal+=($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100);
+			$subtotal+=($item['price'] * $item['quantity'] - $item['discount']);
 		}
 		return to_currency_no_money($subtotal);
 	}
@@ -795,12 +797,12 @@ class Sale_massage_lib {
 	function get_total($sale_id = false) {
 		$total = 0;
 		foreach ($this->get_cart() as $item) {
-			$total+=($item['price'] * $item['quantity'] - $item['price'] * $item['quantity'] * $item['discount'] / 100);
+			$total+=($item['price'] * $item['quantity'] - $item['discount']);
 		}
 
-		foreach ($this->get_taxes($sale_id) as $tax) {
-			$total+=$tax;
-		}
+		// foreach ($this->get_taxes($sale_id) as $tax) {
+		// 	$total+=$tax;
+		// }
 
 		return to_currency_no_money($total);
 	}

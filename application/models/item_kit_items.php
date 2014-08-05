@@ -6,7 +6,7 @@ class Item_kit_items extends CI_Model
 	*/
 	function get_info($item_kit_id)
 	{
-		$this->db->from('item_kit_items');
+		$this->db->from('item_kits_tours');
 		$this->db->where('item_kit_id',$item_kit_id);
 		//return an array of item kit items for an item
 		return $this->db->get()->result();

@@ -40,4 +40,18 @@ $lang['massages_time_in'] = 'ម៉ោងចូល';
 $lang['massages_add_time_in'] = 'បញ្ចូល ម៉ោងចូល';
 $lang['massages_add_time_out'] = 'បញ្ចូល ម៉ោងចេញ';
 $lang['massages_time_out'] = 'ម៉ោងចេញ';
+
+$lang['common_massage_name']='Massages Name';
+$lang['common_massage_desc']='Description';
+$lang['common_price_one_haft']='Price one half';
+$lang['common_supplier_id']='Supplier';
+$lang['common_price_haft']='Price half';
+$lang['common_price_one']='Sale Price($/h)';
+$lang['common_actual_price']='Actual Price($/h)';
+$lang['common_massage_typesID']='Massage Type';
+$lang['common_item_massage_id']='Item Massage';
+$lang['common_deleted']=' Delete';
+// New 04/08/2014
+$lang['massages_commission_price_massager']=' តម្លៃ Commission សំរាប់អ្នកម៉ាស្សា';
+$lang['massages_commission_price_receptionist']=' តម្លៃ Commission សំរាប់អ្នកលក់';
 ?>

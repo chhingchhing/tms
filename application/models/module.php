@@ -56,7 +56,7 @@ class Module extends CI_Model
 	}
 
 	// Get allowed modules
-	function get_allowed_modules($office_id, $person_id)
+	function get_allowed_modules($office_id, $person_id, $col="sort", $order="asc")
 	{
 		$query = $this->db
 			->from('permissions')
@@ -65,6 +65,7 @@ class Module extends CI_Model
 			->join('employees', 'employees.employee_id = permissions.person_id')
 			->where("permissions.office_id",$office_id)
 			->where("permissions.person_id", $person_id)
+			->order_by($col, $order)
 			->get();	
 		return $query;
 	}

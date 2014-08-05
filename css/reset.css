@@ -1,3 +1,82 @@
+/*sale register*/
+.txt_hotel, .room_num, .seat_no{
+    padding: 6px 0 7px 10px;
+    border-radius: 3px;
+    border: 1px solid #cccccc;
+}
+/*sale register*/
+
+/*style office*/
+.wrap-office{
+ padding: 20px 0;
+}
+
+#dash_img{
+    float: left;
+    margin: 0px auto;
+}
+/*end style office*/
+
+/*style header*/
+#moudle_icon{float: left;width: 90px;margin: 0px auto;}
+/*style heaer*/
+
+/*sale*/
+#reg_item_date_departure{
+    margin-top: 5px;
+}
+
+#rent_date{
+    margin-left: 5px;
+}
+#rent_date span{
+    font-weight:bold;
+}
+#rent_date input{
+    padding: 5px;
+    margin-left:0px;
+}
+#rent_date + .dp-choose-date {
+    margin-left: 135px;
+    margin-top:-22px;
+    position: absolute;
+   
+}
+
+#return_date{
+    padding: 5px;
+}
+#return_date span{
+    font-weight: bold;
+}
+#return_date + .dp-choose-date{
+    margin-left: 135px;
+    margin-top:-22px;
+    position: absolute;
+}
+
+#register_items_container {
+    margin-bottom: 15px;
+    overflow: scroll;
+    padding-bottom: 10px;
+}
+
+#reg_item_number input, #reg_item_price input, #reg_item_qty input, #reg_item_discount input{
+    padding: 4px 5px 6px 7px;
+}
+
+#reg_item_hotel_name input{
+   padding: 6px 0px 7px 10px;
+}
+
+#reg_item_room_number input{
+    padding: 6px 0px 7px 10px;
+}
+#reg_seat_no input{
+   padding: 6px 0px 7px 10px; 
+}
+/*end sale*/
+
 /*style summary report ticket*/
 .re_ticket{
     overflow: scroll;   
@@ -321,6 +400,7 @@ span.error_sms{
 .menu_item_home a img{
     margin-left: -5px;
 }
+
 .menu_item_home a{
     padding-right: 15px;
 }
@@ -328,6 +408,7 @@ span.error_sms{
 #content_area_wrapper{
     margin-top: -22px;
 }
+
 .wrap_module_home h3{
     text-align: center;
 }
@@ -404,6 +485,7 @@ div.success_message {
     color: #008000;
     padding: 15px 10px;
     position: absolute;
+    z-index: 1;
 }
 
 /*Error message*/
@@ -439,7 +521,7 @@ div#feedback_bar_error {
 }
 
 .span2.nav-left {
-    border: 1px solid #DBDBDB;;
+    border: 1px solid #DBDBDB;
 }
 
 /* ============================================================================== */
@@ -449,8 +531,18 @@ div#feedback_bar_error {
     margin: 0 0 0 -25px;
     padding: 0;
 }
-#system-message dt { font-weight: bold;  display: none; }
-#system-message dd { margin: 0; font-weight: bold; text-indent: 30px; }
+
+#system-message dt {
+    font-weight: bold;  
+    display: none;
+}
+
+#system-message dd {
+    margin: 0;
+    font-weight: bold;
+    text-indent: 30px;
+}
+
 #system-message dd ul { 
     color: #0055BB; 
     background-position: 4px top; 
@@ -465,7 +557,10 @@ div#feedback_bar_error {
     -moz-border-radius: 4px;
     -o-border-radius: 4px;
 }
-#system-message dd ul li{ line-height:1.5em }
+
+#system-message dd ul li{
+    line-height:1.5em;
+}
 
 /* System Standard Messages */
 #system-message dd.message ul {
@@ -521,7 +616,6 @@ div#feedback_bar_error {
 
 /*style for tickets*/
 
-
 /* Cancel sale */
 #cancel_sale_button > a:hover {
     text-decoration: none;
@@ -563,7 +657,8 @@ a.dp-choose-date {
     overflow: hidden;
     padding: 0;
     text-indent: -2000px;
-    width: 105px;
+    /*width: 105px;*/
+    width: 64px;
 }
 
 /* Style of Chart */
@@ -618,8 +713,8 @@ form#sales_undelete_form {
 }
 
 #reg_mode{
-   padding-left: 25px;
-   margin-top: 15px;
+    padding-left: 25px;
+    margin-top: 15px;
 }
 
 table.innertable {
@@ -627,6 +722,14 @@ table.innertable {
     font-size: 12px;
 }
 
+/*style footer*/
+#footer_cred a img{ 
+    padding-bottom: 17px;
+    width: 122px;
+}
+#footer_cred{
+    font-size: 12px;
+}
 #receipt_general_info {
     padding: 10px;
     text-align: left;
@@ -646,4 +749,43 @@ button#print,
 
 div#dp-popup {
     z-index: 10000;
+}
+
+/*No access stylesheet*/
+#no_access {
+    text-align: center; 
+    margin: auto;
+}
+
+/*style table sale*/
+.table{
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.table > thead > tr > th, 
+.table > tbody > tr > th, 
+.table > tfoot > tr > th{
+    border-top: none;
+    border-bottom: 1px solid #cccccc;
+    line-height: 1.42857;
+    padding: 8px;
+    vertical-align: top;
+}
+/*end tbl sale*/
+#footer_heading {
+    height: 50px;
+}
+
+//class on edit , remove 
+#customer_edit , #commissioner_edit{
+    margin-left: 20px;
+}
+/*.ui-autocomplete {
+  z-index:2147483647 !important;
+}*/
+
+.ui-autocomplete {
+  position: absolute;
+  z-index: 1515434530 !important;
 }

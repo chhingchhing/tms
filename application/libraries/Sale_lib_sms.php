@@ -348,6 +348,7 @@ class Sale_lib_sms
          // function set time in for sale massage
 	function set_time_in($time_in)
 	{
+//            var_dump($time_in);die();
 		$this->CI->session->set_userdata('time_in',$time_in);
 	}
         // function get time in for sale massage
@@ -690,7 +691,7 @@ class Sale_lib_sms
 		$subtotal = 0;
 		foreach($this->get_cart() as $item)
 		{
-		    $subtotal+=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
+		    $subtotal+=($item['price']*$item['quantity'] - $item['discount']);
 		}
 		return to_currency_no_money($subtotal);
 	}
@@ -700,7 +701,7 @@ class Sale_lib_sms
 		$total = 0;
 		foreach($this->get_cart() as $item)
 		{
-            $total+=($item['price']*$item['quantity']-$item['price']*$item['quantity']*$item['discount']/100);
+            $total+=($item['price']*$item['quantity'] - $item['discount']);
 		}
 
 		foreach($this->CI->sale_massage_lib->get_taxes($sale_id) as $tax)

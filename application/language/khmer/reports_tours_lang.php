@@ -1,27 +1,26 @@
 <?php
-$lang['reports_reports_tours'] = 'Reports Tours';
-
-$lang['reports_tours'] = 'Tours';
-$lang['summary_reports_issue_date'] = 'Issue date';
-$lang['summary_reports_departure'] = 'Departure';
-$lang['summary_reports_transport_by'] = 'Transport';
-$lang['summary_reports_destination'] = 'Destination';
-$lang['summary_reports_time'] = 'Time';
+$lang['reports_reports_tours'] = 'របាយការណ៍​ ទេសចរណ៍';
+$lang['reports_tours'] = 'ទេសចរណ៍';
+$lang['summary_reports_issue_date'] = 'កាលបរិច្ឆេទ លក់';
+$lang['summary_reports_departure'] = 'ការចេញដំណើរ';
+$lang['summary_reports_transport_by'] = 'មធ្យោបាយ';
+$lang['summary_reports_destination'] = 'ទិសដៅ';
+$lang['summary_reports_time'] = 'ពេលវេលា';
 $lang['reports_items_summary_report'] = 'Items Summary Report';
-$lang['summary_reports_hotel_name'] = 'Hotel name';
+$lang['summary_reports_hotel_name'] = 'ឈ្មោះ សណ្ឋាគារ';
 $lang['reports_taxes_summary_report'] = 'Taxes Summary Report';
-$lang['summary_reports_room'] = 'Room';
-$lang['summary_reports_company'] = 'Company';
-$lang['summary_reports_num_pass'] = 'Passenger number';
-$lang['summary_reports_guide'] = 'Guide';
-$lang['summary_reports_code_invoice'] = 'Code invoice';
-$lang['summary_reports_pass_name'] = 'Passenger name';
-$lang['summary_reports_actual_price'] = 'Actual price';
-$lang['summary_reports_total'] = 'Total';
-$lang['summary_reports_deposit'] = 'Deposit';
-$lang['summary_reports_balance'] = 'Balance';
-$lang['summary_reports_commissioner'] = 'Commissioner';
-$lang['summary_reports_time_sale'] = 'Time sale';
-$lang['summary_reports_seller'] = 'Seller';
+$lang['summary_reports_room'] = 'បន្ទប់';
+$lang['summary_reports_company'] = 'ក្រុមហ៊ុន';
+$lang['summary_reports_num_pass'] = 'ចំនួនអ្នកដំណើរ';
+$lang['summary_reports_guide'] = 'មគ្គុទេស';
+$lang['summary_reports_code_invoice'] = 'លេខកូដវិកយ័បត្រ';
+$lang['summary_reports_pass_name'] = 'ឈ្មោះអ្នកដំណើរ';
+$lang['summary_reports_actual_price'] = 'តំលៃដើម';
+$lang['summary_reports_total'] = 'សរុប';
+$lang['summary_reports_deposit'] = 'លុយកក់';
+$lang['summary_reports_balance'] = 'លុយអាប់';
+$lang['summary_reports_commissioner'] = 'អ្នកនាំភ្ញៀវ';
+$lang['summary_reports_time_sale'] = 'ម៉ោងលក់';
+$lang['summary_reports_seller'] = 'អ្នកលក់';
 
 ?>

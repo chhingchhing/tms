@@ -50,28 +50,29 @@ jQuery("body").on("click", "input[name='btn_time_departure']", function(event){
         url: url,
         dataType: "html",
         data: jQuery("form#set_time_departure_form").serialize(),
-        success: function(respons) {
-            $("div#register_container").html(respons);
+        success: function(response) {
+            $("div#register_container").html(response);
         }
     });
 });
 
-//    Add new ticket
+//    Add new ticket on ticket management
 jQuery("div#success").hide();
 jQuery("div#error").hide();
 jQuery("div#feedback_bar").hide();
 jQuery("div#feedback_bar_error").hide();
 
-
 jQuery("body").on("click", "input[name='submit_ticket']", function(event) {
     event.preventDefault();
+    var check_duplicate =  baseURL + "tickets/check_duplicate_data";
     var saveAction = jQuery("form#ticket_form").attr("action");
     var ticket_name = jQuery("input[name='ticket_name']").val();
-    var destination_id = jQuery("select[name='destinationID']").val();
+    var destination_id = jQuery("select[name='destination_id']").val();
     var ticket_type = jQuery("select[name='ticket_typeID']").val();
     var ticket_type_new = jQuery("input[name='input_ticket_type']").val();
-    var actual_price = jQuery("input[name='actual_price']").val();
+    var actual_price = jQuery("input#actual_price").val();
     var sale_price = jQuery("input[name='sale_price']").val();
+    var ticket_id = jQuery("input[name='ticket_id']").val();
    
 //    validation codition from insert ticket 
     if (ticket_name == "") {
@@ -79,55 +80,84 @@ jQuery("body").on("click", "input[name='submit_ticket']", function(event) {
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
     }
-    else if (destination_id == 0) {
-        jQuery('div#getSmsError').text('Please select Destination!');
-        jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
-        return false;
-    }
+    // else if (destination_id == 0) {
+    //     jQuery('div#getSmsError').text('Please select Destination!');
+    //     jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+    //     return false;
+    // }
     else if (ticket_type == 0 && ticket_type_new == '') {
         jQuery('div#getSmsError').text('Please select Ticket Type!');
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
     }
-    else if (actual_price == "") {
+    /*else if (actual_price == "") {
         jQuery('div#getSmsError').text('Please Fill Actual Price!');
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
-    }
+    }*/
     else if (sale_price == "") {
         jQuery('div#getSmsError').text('Please Fill Sale Price!');
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
     }
-    jQuery.ajax({
+
+    var data = jQuery('form#ticket_form').serialize();
+
+    if (ticket_id == "") {
+        check_duplicate_destination(function(result) {
+            if (result.duplicate) {
+                    jQuery('div#getSmsError').text('This destination has duplicate!');
+                    jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                    return false;
+            } else {
+                jQuery.ajax({
+                    type: "POST",
+                    url: check_duplicate,
+                    dataType: "json",
+                    data: jQuery('form#ticket_form').serialize(),
+                    success: function(msg) {
+                        if (msg.duplicate) {
+                            jQuery('div#getSmsError').text('This record has duplicate, please check your enter input!');
+                            jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                            return false;
+                        } else {
+                            addTicketManage(data, saveAction, 'tickets')
+                            // saveTicket(saveAction, addAction);
+                        }
+                    }
+                });
+            }
+        });
+    } else {
+        addTicketManage(data, saveAction, 'tickets')
+        // saveTicket(saveAction, addAction);
+    }
+    
+});
+
+
+/*function save(data, url, modal_id) {
+    var search = url.replace("save", "search");
+    $.ajax({
         type: "POST",
+        url: url,
         dataType: "json",
-        url: saveAction,
-        data: jQuery('form#ticket_form').serialize(),
-        success: function(msg) {
-            if (msg.success) {
-                set_feedback(msg.message,'success_message',false);
-                jQuery("#tickets").modal('hide');
-                // Reset form
+        data: data,
+        success: function(response) {
+            if (response.success) {
+                $("#"+modal_id).modal('hide');
                 $('.modal').on('hidden.bs.modal', function(){
                     $(this).find('form')[0].reset();
                 });
-                var search = saveAction.replace("save", "search");
+                set_feedback(response.message,'success_message',false);
                 getDataSearch("", search);
-                return true;
             } else {
-                jQuery('div#getSmsError').text(msg.message);
-                jQuery("div#error").hide();
+                set_feedback(response.message,'error_message',false);
                 return false;
             }
         }
-        // ,
-        // error: function(){
-        //     alert("erro");
-        //     return false;
-        // }
     });
-});
+}*/
 
  jQuery("body").on("click", "a.list-group-item", function(){
     jQuery("input[name='ticket_id']").val("");
@@ -141,7 +171,7 @@ jQuery("body").on("click", "input[name='submit_ticket']", function(event) {
  });
 
 /* Click edit link and retrieve data into form for edit */
-  $('body').on('click','a#edit_ticket',function(){
+  /*$('body').on('click','a#edit_ticket',function(){
     var url = jQuery(this).attr("href").replace("#", "");
     $.ajax({
         url: url,
@@ -157,7 +187,7 @@ jQuery("body").on("click", "input[name='submit_ticket']", function(event) {
             jQuery("input[name='sale_price']").val(data.sale_price);
         }
     }); 
-  });
+  });*/
 
 // When keypress, start to search data for autocomplete
     $('body').on('keypress','input.search_item',function(event){
@@ -196,7 +226,7 @@ function addItemToCart(term, url){
 }
 
 // Add payment
-$('body').on('click','div#add_payment_button',function(event){
+/*$('body').on('click','div#add_payment_button',function(event){
     event.preventDefault();
     var url = jQuery("form#add_payment_form").attr("action");
     $.ajax({
@@ -207,11 +237,10 @@ $('body').on('click','div#add_payment_button',function(event){
 
             var respons = $("div#register_container").html(data);
 
-$('input#change_sale_date').datePicker();
-            // createPickers(respons);
+            $('input#change_sale_date').datePicker();
         }
     });
-});
+});*/
 // Delete payment
 $("body").on('click',"a.delete_payment",function(event){
     event.preventDefault();
@@ -263,7 +292,7 @@ function getData(term, url) {
 }
 
  // Add customer with dialog modal
- // Add new customer
+ // Add new customer on sale
  jQuery("body").on("click", "input#btnSubmitCustomer", function(event){
         event.preventDefault();
         var check_duplicate =  baseURL + "customers/check_duplicate";
@@ -276,23 +305,28 @@ function getData(term, url) {
             jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
             return false;
         };
-        jQuery.ajax({
-            type: "POST",
-            url: check_duplicate,
-            dataType: "json",
-            data: jQuery('form#customer_frm').serialize(),
-            success: function(msg) {
-                if (msg.duplicate) {
-                    var duplicating = "A similar customer name already exists. Do you want to continue?";
-                    if (!confirm(duplicating)) {
-                        return false;
-                    };
-                    saveCustomer(saveAction, selectAction);
-                } else {
-                    saveCustomer(saveAction, selectAction);
+        var customer_id = jQuery("input[name='customer_id']").val();
+        if (customer_id == "") {
+            jQuery.ajax({
+                type: "POST",
+                url: check_duplicate,
+                dataType: "json",
+                data: jQuery('form#customer_frm').serialize(),
+                success: function(msg) {
+                    if (msg.duplicate) {
+                        var duplicating = "A similar customer name already exists. Do you want to continue?";
+                        if (!confirm(duplicating)) {
+                            return false;
+                        };
+                        saveCustomer(saveAction, selectAction);
+                    } else {
+                        saveCustomer(saveAction, selectAction);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            saveCustomer(saveAction, selectAction);
+        }
     });
 
 // Save customer
@@ -302,10 +336,16 @@ function saveCustomer(saveAction, selectAction) {
         url: saveAction,
         dataType: "json",
         data: $("form#customer_frm").serialize(),
-        success: function(respons) {
-            jQuery('div#getSmsSuccess').text(respons.message);
-            jQuery("div#success").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
-            selectCustomer(respons.person_id, selectAction);
+        success: function(response) {
+            if(response.success)
+            {
+                set_feedback(response.message,'success_message',false);
+                selectCustomer(response.person_id, selectAction);
+            }
+            else
+            {
+                set_feedback(response.message,'error_message',false);      
+            }
         }
     });
 }
@@ -317,23 +357,23 @@ function selectCustomer(customer_id, selectAction) {
         url: selectAction,
         dataType: "html",
         data: { term: customer_id},
-        success: function(respons) {
-            $("div#register_container").html(respons);
+        success: function(response) {
+            $("div#register_container").html(response);
             jQuery("#customers").modal('hide');
         }
     });
 }
 
 // Delete customer after add on sale
-$("body").on("click", "a#delete_customer", function(event){
+$("body").on("click", "a#delete_customer, a#delete_guide", function(event){
     event.preventDefault();
     var urlDeleteCustomer = $(this).attr("href");
     $.ajax({
         type: "POST",
         url: urlDeleteCustomer,
         dataType: "html",
-        success: function(respons){
-            $("div#register_container").html(respons);
+        success: function(response){
+            $("div#register_container").html(response);
             return false;
         }
     });
@@ -350,8 +390,8 @@ jQuery("body").on("click", "div#suspend_sale_button", function(){
         type: "POST",
         url: baseURL + controller + "/suspend",
         dataType: "html",
-        success: function(respons) {
-            $("div#register_container").html(respons);
+        success: function(response) {
+            $("div#register_container").html(response);
         }
     });
 });
@@ -368,8 +408,8 @@ jQuery("body").on("click", "div#cancel_sale_button", function(event){
         type: "POST",
         url: url,
         dataType: "html",
-        success: function(respons){
-            $("div#register_container").html(respons);
+        success: function(response){
+            $("div#register_container").html(response);
         }
     });
 });
@@ -429,7 +469,6 @@ function suspended(callback) {
 jQuery("body").on('click', "input[name='delete_suspended']", function(event){
     event.preventDefault();
     var action = jQuery(this).parents("form#form_delete_suspended_sale").attr("action");
-    alert(action);
     var data = jQuery(this).parents("form#form_delete_suspended_sale").serialize();
 //    var sale_id = jQuery("input[name='suspended_sale_id']").val();
     var sale_id = jQuery(this).closest("input[name='suspended_sale_id']").val();
@@ -482,7 +521,7 @@ jQuery("body").on("click", "#change_sale_date_enable", function(){
         dataType: "html",
         url: baseURL + controller +"/set_change_sale_date_enable",
         data: {"change_sale_date_enable" : new_change},
-        success: function(respons){
+        success: function(response){
         }
     });
 
@@ -526,7 +565,7 @@ jQuery("body").on("click", "input#show_comment_on_receipt", function(){
         dataType: "html",
         url: baseURL + controller +"/set_comment_on_receipt",
         data: {"show_comment_on_receipt" : new_change},
-        success: function(respons){
+        success: function(response){
         }
     }); 
 });
@@ -563,15 +602,17 @@ jQuery("body").on("click", "input[name='finish_sale_button']", function(){
 // Edit item
 jQuery("body").on("change", "form.line_item_form", function(){
     var url = jQuery(this).attr("action");
-    jQuery.ajax({
+    var data = jQuery(this).serialize();
+    submitFormEditItem(data, url);
+    /*jQuery.ajax({
         type: "POST",
         url: url,
         dataType: "html",
         data: jQuery(this).serialize(),
-        success: function(respons){
-            jQuery("div#register_container").html(respons);            
+        success: function(response){
+            jQuery("div#register_container").html(response);            
         }
-    });
+    });*/
 });
 
 // Delete Item
@@ -581,14 +622,14 @@ jQuery("body").on("click", "a.delete_item", function(){
         type: "POST",
         url: url,
         dataType: "html",
-        success: function(respons){
-            jQuery("div#register_container").html(respons);
+        success: function(response){
+            jQuery("div#register_container").html(response);
         }
     });
         return false;
 });
 
-// Add new ticket on Sale
+// Add new ticket on Sale 
 jQuery("body").on("click", "input[name='btn_submit_tickets']", function(event){
     event.preventDefault();
     var check_duplicate =  baseURL + "tickets/check_duplicate_data";
@@ -598,28 +639,93 @@ jQuery("body").on("click", "input[name='btn_submit_tickets']", function(event){
     var destinationID = jQuery("select[name='destinationID']").val();
     var ticket_typeID = jQuery("select[name='ticket_typeID']").val();
     var input_ticket_type = jQuery("select[name='input_ticket_type']").val();
+    var ticket_id = $("input[name='ticket_id']").val();
+
     if (ticket_name == "" || destinationID == "" || (ticket_typeID == 0 && input_ticket_type == "") ) {
         jQuery('div#getSmsError').text('Please fill all the fields!');
         jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
         return false;
     };
-    jQuery.ajax({
-        type: "POST",
-        url: check_duplicate,
-        dataType: "json",
-        data: jQuery('form#ticket_form').serialize(),
-        success: function(msg) {
-            if (msg.duplicate) {
-                var duplicating = "A similar ticket code already exists. Do you want to continue?";
-                if (!confirm(duplicating)) {
+
+
+/*if (customer_id == "") {
+            jQuery.ajax({
+                type: "POST",
+                url: check_duplicate,
+                dataType: "json",
+                data: jQuery('form#customer_frm').serialize(),
+                success: function(msg) {
+                    if (msg.duplicate) {
+                        var duplicating = "A similar customer name already exists. Do you want to continue?";
+                        if (!confirm(duplicating)) {
+                            return false;
+                        };
+                        saveCustomer(saveAction, selectAction);
+                    } else {
+                        saveCustomer(saveAction, selectAction);
+                    }
+                }
+            });
+        } else {
+            saveCustomer(saveAction, selectAction);
+        }*/
+
+    if (ticket_id == "") {
+        check_duplicate_destination(function(result) {
+            if (result.duplicate) {
+                    jQuery('div#getSmsError').text('This destination has duplicate!');
+                    jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
                     return false;
-                };
-                saveTicket(saveAction, addAction);
             } else {
-                saveTicket(saveAction, addAction);
+                jQuery.ajax({
+                    type: "POST",
+                    url: check_duplicate,
+                    dataType: "json",
+                    data: jQuery('form#ticket_form').serialize(),
+                    success: function(msg) {
+                        if (msg.duplicate) {
+                            var duplicating = "A similar ticket code already exists. Do you want to continue?";
+                            if (!confirm(duplicating)) {
+                                return false;
+                            };
+                            saveTicket(saveAction, addAction);
+                        } else {
+                            saveTicket(saveAction, addAction);
+                        }
+                    }
+                });
             }
+        });
+    } else {
+        saveTicket(saveAction, addAction);
+    }
+
+
+    /*check_duplicate_destination(function(result) {
+        if (result.duplicate) {
+                jQuery('div#getSmsError').text('This destination has duplicate!');
+                jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                return false;
+        } else {
+            jQuery.ajax({
+                type: "POST",
+                url: check_duplicate,
+                dataType: "json",
+                data: jQuery('form#ticket_form').serialize(),
+                success: function(msg) {
+                    if (msg.duplicate) {
+                        var duplicating = "A similar ticket code already exists. Do you want to continue?";
+                        if (!confirm(duplicating)) {
+                            return false;
+                        };
+                        saveTicket(saveAction, addAction);
+                    } else {
+                        saveTicket(saveAction, addAction);
+                    }
+                }
+            });
         }
-    });
+    });*/ 
 });
 
 
@@ -630,8 +736,8 @@ function saveTicket(saveAction, addAction) {
         url: saveAction,
         dataType: "json",
         data: $("form#ticket_form").serialize(),
-        success: function(respons) {
-            addToCart(respons.ticket_id, addAction);
+        success: function(response) {
+            addToCart(response.ticket_id, addAction);
         }
     });
 }
@@ -643,8 +749,8 @@ function addToCart(ticket_id, addAction) {
         url: addAction,
         dataType: "html",
         data: { "item": ticket_id},
-        success: function(respons) {
-            $("div#register_container").html(respons);
+        success: function(response) {
+            $("div#register_container").html(response);
             jQuery("#tickets").modal('hide');
         }
     });
@@ -658,10 +764,12 @@ jQuery('body').on('click', 'input#submit_commissioners', function(event){
     var url = jQuery("form#commissioners_form").attr('action');
     var checkExistURL = baseURL + "commissioners/check_duplicate";
     var datas = jQuery("form#commissioners_form").serialize();
-    var commis_id = url.substr(url.lastIndexOf('/') + 1);   // Get last url segment
+//    var commis_id = url.substr(url.lastIndexOf('/') + 1);   // Get last url segment
+     var commis_id = jQuery("input[name='commis_id']").val();
+     var url_select = baseURL+controller+"/select_commissioner";
 
     // if (isNaN(commis_id)) {
-    if (typeof commis_id != "number") {
+    if (!commis_id) {
         jQuery.ajax({
             type: "POST",
             url: checkExistURL,
@@ -673,23 +781,23 @@ jQuery('body').on('click', 'input#submit_commissioners', function(event){
                     jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
                     return false;
                 }
-                addCommmissioner(url, datas);
+                addPeople(url, url_select, datas, 'commissioners');
             }
         });    
     } else {
-        addCommmissioner(url, datas);
+        addPeople(url, url_select, datas, 'commissioners');
     }
     
 });
 
-function addCommmissioner(url, datas) {
+/*function addCommmissioner(url, datas) {
     $.ajax({
         type: "POST",
         url: url,
         dataType: 'json',
         data: datas,
-        success: function(respons) {
-            selectCommissioner(respons.commissioner_id);
+        success: function(response) {
+            selectCommissioner(response.commissioner_id);
         }
     });
 }
@@ -701,12 +809,12 @@ function selectCommissioner(commissioner_id) {
         url: url,
         dataType: "html",
         data: { "term" : commissioner_id },
-        success: function(respons) {
-            $("div#register_container").html(respons);
+        success: function(response) {
+            $("div#register_container").html(response);
             jQuery("#commissioners").modal('hide');
         }
     });
-}
+}*/
 
 jQuery("body").on("click", "a#delete_commissioner", function(event){
     event.preventDefault();
@@ -714,15 +822,43 @@ jQuery("body").on("click", "a#delete_commissioner", function(event){
     jQuery.ajax({
         url: url,
         dataType: "html",
-        success: function(respons) {
-            $("div#register_container").html(respons);
+        success: function(response) {
+            $("div#register_container").html(response);
         }
     });
     return false;
 });
 
 // Search autocompleted on sale
-$('body').on('keypress','input#commissioner',function(event){
+$('body').on('keypress','input#commissioner, input#massager',function(event){
+    var current_obj = $(this);
+    if (event.keyCode === $.ui.keyCode.ENTER) {
+        return false;
+    }
+    var term = current_obj.val();
+    var url = current_obj.parents("form").attr("action");
+    if (current_obj.attr('id')=='massager') {
+        var suggest = baseURL + "massages/massager_search";
+    } else {
+        var suggest = baseURL + "commissioners/commissioner_search";
+    }
+    
+    $.ajax({
+        type: "POST",
+        url: suggest,
+        dataType: "json",
+        data: {"term" : term},
+        success: function(data){
+            current_obj.autocomplete({
+                source: data,
+                select: function(e, ui) {
+                    getData(ui.item.value, url);
+                }
+            });
+        }
+    });
+ });
+/*$('body').on('keypress','input#commissioner',function(event){
     if (event.keyCode === $.ui.keyCode.ENTER) {
         return false;
     }
@@ -743,7 +879,7 @@ $('body').on('keypress','input#commissioner',function(event){
             });
         }
     });
- });
+ });*/
 
 $('body').on('change', 'input#commissioner_price', function(event) {  
     var term = jQuery(this).val();
@@ -760,7 +896,6 @@ $('body').on('change', 'input#commissioner_price', function(event) {
 });
 
 $('body').on('click','a#sale_edit_commissioners',function(event){
-//    alert('edit commissioner');
     event.preventDefault();
     var url = jQuery(this).attr("href").replace("#", "");
     var uid = url.substr(url.lastIndexOf('/') + 1);
@@ -813,13 +948,13 @@ function editItem(url, data) {
         url: url,
         dataType: "html",
         data: data,
-        success: function(respons){
-            jQuery("div#register_container").html(respons); 
+        success: function(response){
+            jQuery("div#register_container").html(response); 
         }
     });
 }
 
-function getDataSearch(term, url){
+/*function getDataSearch(term, url){
     jQuery.ajax({
         type: "POST",
         url: url,
@@ -835,4 +970,94 @@ function getDataSearch(term, url){
             };
         }
     });
+}*/
+
+// Autocomplete for supplier hotel name and submit when select event
+$('body').on('keypress','input.txt_hotel',function(event){
+        if (event.keyCode === $.ui.keyCode.ENTER) {
+            return false;
+        }
+        var term = jQuery(this).val(); 
+        var data = jQuery(this).parents("form.line_item_form").serialize();
+        var urlEdit = jQuery(this).parents("form.line_item_form").attr("action");
+        var url = baseURL + "suppliers/filter_hotels";
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: "json",
+            data: {"term" : term},
+            success: function(response){
+                $("input.txt_hotel").autocomplete({
+                  source: response,
+                  select: function(e, ui) {
+                    $("input.txt_hotel").val(ui.item.value);
+                    addHotelName(jQuery(this).parents("form.line_item_form").serialize(), urlEdit);
+                  }
+                });
+            }
+        });
+    });
+
+$('body').on('change','input.txt_hotel',function(event){
+    event.preventDefault();
+    if (event.keyCode === $.ui.keyCode.ENTER) {
+        return false;
+    }
+    var term = jQuery(this).val(); 
+    var urlEdit = jQuery(this).parents("form.line_item_form").attr("action");
+    var url = baseURL + "suppliers/save/-1/";
+    var check_hotel = url.replace("save", "check_hotel");
+    $.ajax({
+        type: "POST",
+        url: check_hotel,
+        dataType: "json",
+        data: {"company_name" : term},
+        success: function(response) {
+            if (response.duplicate) {
+                var duplicating = "A similar customer name already exists.";
+                set_feedback(duplicating,'error_message',false); 
+            } else {
+                addHotelName(jQuery(this).parents("form.line_item_form").serialize(), urlEdit);
+            }
+        }
+    });
+
+    
+});
+
+function addHotelName(data, url) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: "json",
+        data: data,
+        success: function(response){
+
+        }
+    });
 }
+
+function submitFormEditItem(data, url) {
+    jQuery.ajax({
+        type: "POST",
+        url: url,
+        dataType: "html",
+        data: data,
+        success: function(response){
+            jQuery("div#register_container").html(response);            
+        }
+    });
+}
+
+$("body").on("change", "input#destinationID, input#newDes", function(event) {
+    var url = baseURL + "tickets/check_duplicate_destination";
+    var term = $(this).val();
+    check_duplicate_destination(function(result) {
+        if (result.duplicate) {
+                jQuery('div#getSmsError').text('This destination has duplicate!');
+                jQuery("div#error").fadeOut(800).fadeIn(800).fadeOut(400).fadeIn(400).fadeOut(400).fadeIn(400);
+                return false;
+            };
+    });
+    event.preventDefault();
+});

@@ -191,7 +191,7 @@ class Employee extends Person
 		$success=false;
 		
 		//Don't let employee delete their self
-		if($employee_id==$this->get_logged_ine_employee_info()->employee_id)
+		if($employee_id==$this->get_logged_in_employee_info()->employee_id)
 			return false;
 		
 		//Run these queries as a transaction, we want to make sure we do all or nothing
@@ -615,6 +615,76 @@ class Employee extends Person
 		}
 		$query = $this->db->get_where('permissions_office', array('person_id' => $person_id,'office_id'=>$office_id), 1);
 		return $query->num_rows() == 1;
+	}
+
+	// For provide the permission to see the result of summary report
+	// Profit, total
+	function has_owner_action_permission($position, $person_id) //sale, edit_sale, 1
+	{
+		$position_id = $this->employee_position_id($person_id);
+		
+		$query = $this->db->get_where('positions', array('position_id' => $position_id), 1);
+		if($query->num_rows()==1)
+		{
+			if ($query->row()->position_name == $position) {
+				return true;
+			}
+			return false;
+		}
+	}
+
+	// Get position name of each user
+	function employee_position_id($person_id)
+	{
+		$this->db->from('employees');	
+		$this->db->join('people', 'people.person_id = employees.employee_id');
+		$this->db->where('employees.employee_id',$person_id);
+		$query = $this->db->get();
+		
+		
+		if($query->num_rows()==1)
+		{
+			return $query->row()->position_id;
+		}
+	}	
+
+	/*
+	Get search suggestions to find employees
+	*/
+	function search_suggestions($search,$limit=5)
+	{
+		$suggestions = array();
+		
+		$this->db->from('employees');
+		$this->db->join('people','employees.employee_id=people.person_id');
+		
+		if ($this->config->item('speed_up_search_queries'))
+		{
+			$this->db->where("(first_name LIKE '".$this->db->escape_like_str($search)."%' or 
+			last_name LIKE '".$this->db->escape_like_str($search)."%' or 
+			CONCAT(`first_name`,' ',`last_name`) LIKE '".$this->db->escape_like_str($search)."%') and deleted=0");
+		}
+		else
+		{
+			$this->db->where("(first_name LIKE '%".$this->db->escape_like_str($search)."%' or 
+			last_name LIKE '%".$this->db->escape_like_str($search)."%' or 
+			CONCAT(`first_name`,' ',`last_name`) LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");
+		}
+		
+		$this->db->order_by("last_name", "asc");		
+		$by_name = $this->db->get();
+		foreach($by_name->result() as $row)
+		{
+			$suggestions[]=array('value' => $row->employee_id, 'label'=> $row->first_name.' '.$row->last_name);		
+		}
+		
+		//only return $limit suggestions
+		if(count($suggestions > $limit))
+		{
+			$suggestions = array_slice($suggestions, 0,$limit);
+		}
+		return $suggestions;
+	
 	}
 	
 }

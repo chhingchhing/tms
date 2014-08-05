@@ -95,7 +95,7 @@ $autoload['config'] = array();
 |
 */
 
-$autoload['language'] = array('common', 'config', 'customers', 'employees', 'error', 'items', 'login', 'module', 'reports','reports_tickets','reports_bikes','reports_massages','reports_tours','sales','suppliers','receivings','giftcards', 'item_kits','massages','tickets','bikes','tours','dashboard','guides','transportations','commissioners', 'offices');
+$autoload['language'] = array('common', 'config', 'customers', 'employees', 'error', 'items', 'login', 'module', 'reports','reports_tickets','reports_bikes','reports_massages','reports_tours','sales','suppliers','receivings','giftcards', 'item_kits','massages','tickets','bikes','tours','dashboard','guides','transportations','commissioners', 'offices', 'currency');
 
 
 
@@ -109,7 +109,7 @@ $autoload['language'] = array('common', 'config', 'customers', 'employees', 'err
 |
 */
 
-$autoload['model'] = array('Appconfig','Person','Customer','Employee','Module','Item', 'Item_taxes', 'Sale', 'Supplier','Inventory','Receiving','Giftcard', 'Item_kit', 'Item_kit_taxes', 'Item_kit_items', 'Appfile', 'Module_action','Ticket');
+$autoload['model'] = array('Appconfig','Person','Customer','Employee','Module','Item', 'Item_taxes', 'Sale', 'Supplier','Inventory','Receiving','Giftcard', 'Item_kit', 'Item_kit_taxes', 'Item_kit_items', 'Appfile', 'Module_action','Ticket', 'Office');
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

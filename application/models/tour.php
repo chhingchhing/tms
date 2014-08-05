@@ -8,8 +8,8 @@ class Tour extends CI_Model {
     function get_tours($limit = 10000, $offset = 0, $col = 'tour_id', $order = 'desc') {
         $this->db->select('*');
         $this->db->from('tours');
-        $this->db->join('suppliers', 'suppliers.supplier_id = tours.supplier_id');
-        $this->db->join('destinations', 'tours.destinationID = destinations.destinate_id');
+        $this->db->join('suppliers', 'suppliers.supplier_id = tours.supplier_id', 'left');
+        $this->db->join('destinations', 'tours.destinationID = destinations.destinate_id', 'left');
         $this->db->where("tours.deleted", 0);
         $this->db->order_by($col, $order);
         $this->db->limit($limit);
@@ -18,13 +18,13 @@ class Tour extends CI_Model {
     }
     
     // Add destination and return id insert
-    function add_destination(&$item_destination) {
+   /* function add_destination(&$item_destination) {
             if ($this->db->insert('destinations', $item_destination)) {
                 $item_destination['destination_id'] = $this->db->insert_id();
                 return true;
             }
             return false;
-    }
+    }*/
 
     function count_all() {
         $this->db->from('tours');
@@ -182,8 +182,8 @@ class Tour extends CI_Model {
 		           	(select " . $this->db->dbprefix('tours') . ".tour_name
 					, " . $this->db->dbprefix('tours') . ".description, " . $this->db->dbprefix('tours') . ".deleted
 		           	from " . $this->db->dbprefix('tours') . "
-                    join ".$this->db->dbprefix('suppliers')." ON ".$this->db->dbprefix('suppliers').".supplier_id = ".$this->db->dbprefix('tours').".supplier_id 
-                    join ".$this->db->dbprefix('destinations')." ON ".$this->db->dbprefix('destinations').".destinate_id = ".$this->db->dbprefix('tours').".destinationID 
+                    left join ".$this->db->dbprefix('suppliers')." ON ".$this->db->dbprefix('suppliers').".supplier_id = ".$this->db->dbprefix('tours').".supplier_id 
+                    left join ".$this->db->dbprefix('destinations')." ON ".$this->db->dbprefix('destinations').".destinate_id = ".$this->db->dbprefix('tours').".destinationID 
 		           	where tour_name like '" . $this->db->escape_like_str($search) . "%' and ".$this->db->dbprefix('tours').".deleted = 0
 		           	order by `" . $column . "` " . $orderby . ") as search_results
 				order by `" . $column . "` " . $orderby . " limit " . (int) $offset . "," . $this->db->escape((int) $limit);
@@ -191,8 +191,8 @@ class Tour extends CI_Model {
             return $this->db->query($query);
         } else {
             $this->db->from('tours');
-            $this->db->join('suppliers', 'suppliers.supplier_id = tours.supplier_id');
-            $this->db->join('destinations', 'tours.destinationID = destinations.destinate_id');
+            $this->db->join('suppliers', 'suppliers.supplier_id = tours.supplier_id', 'left');
+            $this->db->join('destinations', 'tours.destinationID = destinations.destinate_id', 'left');
             $this->db->where("(tour_name LIKE '%" . $this->db->escape_like_str($search) . "%' or 
 			description LIKE '%" . $this->db->escape_like_str($search) . "%' ) and ".$this->db->dbprefix('tours').".deleted = 0");
             $this->db->order_by($column, $orderby);
@@ -256,7 +256,7 @@ class Tour extends CI_Model {
 //        $this->db->from('items');
 //        $this->db->where('deleted', 0);
 //        $this->db->distinct();
-//        $this->db->order_by("category", "asc");
+//        $this->db->order_by("category", "desc");
 //
 //        return $this->db->get();
 //    }
@@ -306,6 +306,299 @@ class Tour extends CI_Model {
          }
          return $option;
        }
+        /*
+      Gets information about multiple items
+     */
+
+    function get_multiple_info($item_ids) {
+        $this->db->from('tours');
+        $this->db->where_in('tour_id', $item_ids);
+        $this->db->order_by("tour_id", "desc");
+        return $this->db->get();
+    }
+
+    /**
+    * Starting For Package/Kit
+    */
+    function get_item_search_suggestions($search,$limit=25)
+    {
+     $suggestions = array();
+
+     $this->db->from('tours');
+     $this->db->where('deleted',0);
+     $this->db->like('tour_name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+     $this->db->order_by("tour_name", "asc");
+     $by_name = $this->db->get();
+     foreach($by_name->result() as $row)
+     {
+         $suggestions[]=array('value' => $row->tour_id, 'label' => $row->tour_name);
+     }
+
+     /*$this->db->from('items');
+     $this->db->where('deleted',0);
+     $this->db->like('item_number', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+     $this->db->order_by("item_number", "asc");
+     $by_item_number = $this->db->get();
+     foreach($by_item_number->result() as $row)
+     {
+         $suggestions[]=array('value' => $row->tour_id, 'label' => $row->item_number);
+     }*/
+
+     //only return $limit suggestions
+     if(count($suggestions > $limit))
+     {
+         $suggestions = array_slice($suggestions, 0,$limit);
+     }
+     return $suggestions;
+
+    }
+
+    function check_duplicate_package($term)
+    {
+        $this->db->from('item_kits');
+        $this->db->where('deleted',0);      
+        $query = $this->db->where("name = ".$this->db->escape($term));
+        $query=$this->db->get();
+        
+        if($query->num_rows()>0)
+        {
+            return true;
+        }
+        
+    }
+
+    /*
+    Inserts or updates an item kit
+    */
+    function save_package(&$item_kit_data,$item_kit_id=false)
+    {
+        if (!$item_kit_id or !$this->exists_package($item_kit_id))
+        {
+            if($this->db->insert('item_kits',$item_kit_data))
+            {
+                $item_kit_data['item_kit_id']=$this->db->insert_id();
+                return true;
+            }
+            return false;
+        }
+
+        $this->db->where('item_kit_id', $item_kit_id);
+        return $this->db->update('item_kits',$item_kit_data);
+    }
+
+    /*
+    Determines if a given item_id is an item kit
+    */
+    function exists_package($item_kit_id, $category)
+    {
+        $this->db->from('item_kits');
+        $this->db->where('item_kit_id',$item_kit_id);
+        // $this->db->where('category',$category);
+        $query = $this->db->get();
+
+        return ($query->num_rows()==1);
+    }
+
+    /*
+    Inserts or updates an item kit's items
+    */
+    function save_package_item(&$item_kit_items_data, $item_kit_id)
+    {
+        //Run these queries as a transaction, we want to make sure we do all or nothing
+        $this->db->trans_start();
+
+        $this->delete_package_item($item_kit_id);
+        
+        foreach ($item_kit_items_data as $row)
+        {
+            $row['item_kit_id'] = $item_kit_id;
+            $this->db->insert('item_kits_tours',$row);       
+        }
+        
+        $this->db->trans_complete();
+        return true;
+    }
+
+    /*
+    Deletes item kit items given an item kit
+    */
+    function delete_package_item($item_kit_id)
+    {
+        return $this->db->delete('item_kits_tours', array('item_kit_id' => $item_kit_id)); 
+    }
+
+    /*
+    Count all for package item
+    */
+    function count_all_package() {
+        $this->db->from('item_kits');
+        $this->db->where('deleted',0);
+        return $this->db->count_all_results();
+    }
+
+    /*
+    Search count all package item
+    */
+    function search_count_all_package($search)
+    {
+        $this->db->from('item_kits');
+        
+        if ($this->config->item('speed_up_search_queries'))
+        {
+            $this->db->where("name LIKE '".$this->db->escape_like_str($search)."%' or 
+            description LIKE '".$this->db->escape_like_str($search)."%'");
+        }
+        else
+        {
+            $this->db->where("(name LIKE '%".$this->db->escape_like_str($search).
+            "%' or item_kit_number LIKE '%".$this->db->escape_like_str($search)."%' or
+            description LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");  
+        }
+        $this->db->order_by("name", "asc");
+        $result=$this->db->get();               
+        return $result->num_rows(); 
+    }
+
+    /*
+    Preform a search on items kits
+    */
+    function search_package($search, $limit=16,$offset=0,$column='name',$orderby='asc')
+    {
+        $this->db->from('item_kits');
+        
+        if ($this->config->item('speed_up_search_queries'))
+        {
+            $this->db->where("name LIKE '".$this->db->escape_like_str($search)."%' or 
+            description LIKE '".$this->db->escape_like_str($search)."%'");
+        }
+        else
+        {
+            $this->db->where("(name LIKE '%".$this->db->escape_like_str($search).
+            "%' or item_kit_number LIKE '%".$this->db->escape_like_str($search)."%' or
+            description LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");  
+        }
+        $this->db->order_by($column, $orderby);
+        $this->db->limit($limit);
+        $this->db->offset($offset);
+        return $this->db->get();    
+    }
+
+    /*
+    Returns all the item kits
+    */
+    function get_all_package($limit=10000, $offset=0,$col='name',$ord='asc')
+    {
+        $this->db->from('item_kits');
+        $this->db->where('deleted',0);
+        $this->db->order_by($col, $ord);
+        $this->db->limit($limit);
+        $this->db->offset($offset);
+        return $this->db->get();
+    }
+
+    /*
+    Gets information about a particular item kit
+    */
+    function get_info_package($item_kit_id, $category)
+    { 
+        $this->db->from('item_kits');
+        $this->db->where('item_kit_id',$item_kit_id);
+        $this->db->where('category',$category);
+        
+        $query = $this->db->get();
+
+        if($query->num_rows()==1)
+        {
+            return $query->row();
+        }
+        else
+        {
+            //Get empty base parent object, as $item_kit_id is NOT an item kit
+            $item_obj=new stdClass();
+
+            //Get all the fields from items table
+            $fields = $this->db->list_fields('item_kits');
+
+            foreach ($fields as $field)
+            {
+                $item_obj->$field='';
+            }
+
+            return $item_obj;
+        }
+    }
+
+    /*
+    Get search suggestions to find kits
+    */
+    function get_search_package_suggestions($search,$limit=25)
+    {
+        $suggestions = array();
+
+        $this->db->from('item_kits');
+        $this->db->like('name', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+        $this->db->where('deleted',0);
+        $this->db->order_by("name", "asc");
+        $by_name = $this->db->get();
+        foreach($by_name->result() as $row)
+        {
+            $suggestions[]=array('label' => $row->name);
+        }
+        
+        $this->db->from('item_kits');
+        $this->db->like('item_kit_number', $search, $this->config->item('speed_up_search_queries') ? 'after' : 'both');
+        $this->db->where('deleted',0);
+        $this->db->order_by("item_kit_number", "asc");
+        $by_item_kit_number = $this->db->get();
+        foreach($by_item_kit_number->result() as $row)
+        {
+            $suggestions[]=array('label' => $row->item_kit_number);
+        }
+
+        //only return $limit suggestions
+        if(count($suggestions > $limit))
+        {
+            $suggestions = array_slice($suggestions, 0,$limit);
+        }
+        return $suggestions;
+
+    }
+
+    /*
+    Deletes a list of item kits
+    */
+    function delete_list_package($item_kit_ids)
+    {
+        $this->db->where_in('item_kit_id',$item_kit_ids);
+        return $this->db->update('item_kits', array('deleted' => 1));
+    }
+
+    /*
+      Determines if a given item_id is an item
+     */
+    function get_times_departure($order_id)
+    {
+        $this->db->select("departure_time");
+        $this->db->from('detail_orders_tours');
+        $this->db->where('orderID',$order_id);
+        $query = $this->db->get();
+        foreach ($query->result_array() as $rows) {
+            $data[] = $rows['departure_time'];
+        }
+        return $data;
+    }
+
+    function get_date_departures($order_id)
+    {
+        $this->db->select("departure_date");
+        $this->db->from('detail_orders_tours');
+        $this->db->where('orderID',$order_id);
+        $query = $this->db->get();
+        foreach ($query->result_array() as $rows) {
+            $data[] = $rows['departure_date'];
+        }
+        return $data;
+    }
 
 }
 
