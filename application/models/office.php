@@ -288,5 +288,22 @@ class Office extends CI_Model {
         return $suggestions;
     }
 
+    // Get office as dropdown list
+    function select_offices_options($person_id){
+     $data = $this->db->select("*")
+        ->join("offices", "offices.office_id = offices_info.officeID")
+        ->join('permissions_office','permissions_office.office_id=offices.office_id')
+        ->where("permissions_office.person_id",$person_id)
+        ->where("deleted", 0)
+        ->get("offices_info");
+     $option['all'] = lang('reports_all');
+     if($data->num_rows() > 0){
+         foreach($data->result() as $item){
+             $option[$item->office_id] = $item->office_name;
+         }
+     }
+     return $option;
+   }
+
 
 }

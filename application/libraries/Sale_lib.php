@@ -794,17 +794,37 @@ class Sale_lib
 	}
         
 //	function edit_item($line,$description,$serialnumber,$quantity,$discount,$num_day,$price)
-        function edit_item($line,$description,$serialnumber,$quantity,$discount,$price)
+    function edit_item($line,$description,$serialnumber,$quantity,$discount,$price,$massager=false)
 	{
 		$items = $this->get_cart();
 		if(isset($items[$line]))
 		{
-			$items[$line]['description'] = $description;
+			if ($massager == false) {
+				$items[$line]['description'] = $description;
+				$items[$line]['serialnumber'] = $serialnumber;
+				$items[$line]['quantity'] = $quantity;
+				$items[$line]['discount'] = $discount;
+	            //$items[$line]['number_of_day'] = $num_day;
+				$items[$line]['price'] = $price;
+			} else {
+				if ($massager == "") {
+		            $massager == null;
+		        }
+				$items[$line]['description'] = $description;
+				$items[$line]['serialnumber'] = $serialnumber;
+				$items[$line]['quantity'] = $quantity;
+				$items[$line]['discount'] = $discount;
+	            //$items[$line]['number_of_day'] = $num_day;
+				$items[$line]['price'] = $price;
+				$items[$line]['massager'] = $massager;
+			}
+
+			/*$items[$line]['description'] = $description;
 			$items[$line]['serialnumber'] = $serialnumber;
 			$items[$line]['quantity'] = $quantity;
 			$items[$line]['discount'] = $discount;
-                        //$items[$line]['number_of_day'] = $num_day;
-			$items[$line]['price'] = $price;
+            //$items[$line]['number_of_day'] = $num_day;
+			$items[$line]['price'] = $price;*/
                         
 			$this->set_cart($items);          
 		}

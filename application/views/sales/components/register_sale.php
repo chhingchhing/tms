@@ -26,10 +26,13 @@
                 <th style="border: 0;"> <?php echo '<span>' . lang('sales_total') . '</span>'; ?></th> 
             <?php } elseif ($controller_name == "massages") { ?>
                 <th style="border: 0;" width="30%"><?php echo lang('sales_item_name'); ?></th> 
-                <th style="border: 0; text-align: center; width: 15%"><?php echo lang('sales_price'); ?></th>                 
+                <th style="border: 0; text-align: center; width: 15%"><?php echo lang('sales_price'); ?></th>             
                 <th style="border: 0; text-align: center; width: 15%"> <?php echo lang('sales_duration'); ?></th>
                 <th style="border: 0; text-align: left;"><?php echo lang('sales_discount'); ?></th>
-                <th style="border: 0;"><?php echo lang('sales_total'); ?></th> 
+                <th style="border: 0;"><?php echo lang('sales_total'); ?></th>      
+
+                <th style="border: 0; text-align: center; width: 15%"><?php echo 'Massager'; ?></th>    
+
             <?php } else { ?>
                 <th style="border: 0;"><?php echo lang('sales_item_name'); ?></th> 
                 <th style="border: 0; text-align: center;"><?php echo lang('sales_price'); ?></th> 
@@ -62,11 +65,14 @@
                     <th style="border: 0;"> <?php echo lang('sales_quantity'); ?></th>
                     <th style="border: 0;"><?php echo lang('sales_total'); ?></th>
                 <?php } elseif ($controller_name == "massages") { ?>
-                    <th style="border: 0;" width="30%"><?php echo lang('sales_item_name'); ?></th> 
-                    <th style="border: 0; text-align: center; width: 15%" width="15%"><?php echo lang('sales_price'); ?></th>                 
+                    <th style="border: 0;" width="27%"><?php echo lang('sales_item_name'); ?></th> 
+                    <th style="border: 0; text-align: center; width: 15%" width="15%"><?php echo lang('sales_price'); ?></th>                                  
                     <th style="border: 0; text-align: center; width: 15%"> <?php echo lang('sales_duration'); ?></th>
-                    <th style="border: 0; text-align: left;"><?php echo lang('sales_discount'); ?></th>
-                    <th style="border: 0;"><?php echo lang('sales_total'); ?></th> 
+                    <th style="border: 0; text-align: left; width: 13% "><?php echo lang('sales_discount'); ?></th>
+                    <th style="border: 0;"><?php echo lang('sales_total'); ?></th>
+
+                    <th style="border: 0; text-align: center; width: 15%" width="15%"><?php echo 'Massager'; ?></th>
+
                 <?php } else { ?>
                     <th style="border: 0;"><?php echo lang('sales_item_name'); ?></th>
                     <th style="border: 0;"><?php echo lang('sales_price'); ?></th>
@@ -136,7 +142,7 @@
                         ?>
                     </td>
                 <?php } else if ($controller_name == 'massages') { ?>
-                    <td> <?php echo form_input(array('name' => 'quantity', 'value' => to_quantity($item['quantity']), 'size' => '9', 'id' => 'quantity_' . $line)); ?></td>
+                    <td> <?php echo form_input(array('name' => 'quantity', 'value' => to_quantity($item['quantity']), 'size' => '5', 'id' => 'quantity_' . $line)); ?></td>
                 <?php } else if ($controller_name == 'tickets') { ?>
                     <td> <?php echo form_input(array('name' => 'quantity', 'value' => to_quantity($item['quantity']), 'size' => '7', 'id' => 'quantity_' . $line)); ?></td>
                 <?php } else { ?>
@@ -146,7 +152,7 @@
 
                 <?php if ($this->Employee->has_module_action_permission($controller_name, 'give_discount', $this->Employee->get_logged_in_employee_info()->employee_id)) { ?>
                     <?php if ($controller_name == "massages") { ?>
-                        <td> <?php echo form_input(array('name' => 'discount', 'value' => $item['discount'], 'size' => '9', 'id' => 'discount_' . $line)); ?></td>
+                        <td> <?php echo form_input(array('name' => 'discount', 'value' => $item['discount'], 'size' => '5', 'id' => 'discount_' . $line)); ?></td>
                     <?php } else { ?>
                           <td><?php echo form_input(array('name' => 'discount', 'value' => $item['discount'], 'size' => '10', 'id' => 'discount_' . $line)); ?></td>
                     <?php } ?>
@@ -157,7 +163,14 @@
                     </td> 
                 <?php } ?>  
                 <?php if($controller_name == "massages"){?>
-                    <td style="text-align: right;"> <?php echo '<input type="text" value="' . to_currency($item['price'] * $item['quantity'] - $item['discount']) . '" readonly="readonly" size="7" style="text-align: center;"/>'; ?></td>
+                    <td style="text-align: center;"> <?php echo '<input type="text" value="' . to_currency($item['price'] * $item['quantity'] - $item['discount']) . '" readonly="readonly" size="4" style="text-align: center;"/>'; ?></td>
+                    <td><?php 
+                    $info_massager = $this->Employee->get_info($item['massager']);
+                    $massager_name = $info_massager->first_name . ' ' . $info_massager->last_name;
+
+                    echo '<input type="text" value="' . $massager_name . '" size="9" id="each_massager" name="each_massager_id"/>'; 
+                    echo form_hidden("each_massager", $item['massager']);
+                    ?></td>
                 <?php } else{?>
                     <td> <?php echo '<input type="text" value="' . to_currency($item['price'] * $item['quantity'] - $item['discount']) . '" readonly="readonly" size="7" />'; ?></td>   
                  <?php } ?>

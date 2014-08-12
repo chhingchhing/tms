@@ -22,5 +22,6 @@ $lang['summary_reports_massage_commission_price'] = 'Commissioner Price';
 $lang['summary_reports_massage_total_commissioner_price']= 'Total Commissioner Price';
 $lang['reports_reports_massage_summary_report'] = 'Massages Summary Report';
 $lang['summary_reports_massage_massager'] = 'Massager';
+$lang['summary_reports_massage_office'] = 'Office';
 
 ?>

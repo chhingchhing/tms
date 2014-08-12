@@ -240,7 +240,7 @@ class Sale_massage_lib {
         $this->CI->sale_lib->delete_customer();
 		foreach($this->CI->Sale_massage->get_sale_items($sale_id)->result() as $row)
 		{      
-            $this->add_item($row->item_massage_id,$row->quantity_purchased, $row->discount_percent,$row->sale_price);
+            $this->add_item($row->item_massage_id,$row->quantity_purchased, $row->discount_percent,$row->sale_price, $row->massager_id);
 		}
 		foreach($this->CI->Sale->get_sale_payments($sale_id)->result() as $row)
 		{
@@ -260,7 +260,11 @@ class Sale_massage_lib {
 	}
 	
         
-	function add_item($item_id, $quantity = 1, $discount = 0, $price = null, $description = null, $serialnumber = null) {
+	function add_item($item_id, $quantity = 1, $discount = 0, $price = null, $massager_id=null, $description = null, $serialnumber = null) {
+
+		/*if ($sale_id) {
+			// $this->CI->Sale_massage->get_sale_items($sale_id)->result() as $row
+		}*/
                
 		//make sure item exists
 		if (!$this->CI->massage_item->exists(is_numeric($item_id) ? (int) $item_id : -1)) {
@@ -323,6 +327,7 @@ class Sale_massage_lib {
 			'price' => $price != null ? $price : $price_to_use,
 			'commission_massager' => $this->CI->massage_item->get_info($item_id)->commission_price_massager,
 			'commission_receptionist' => $this->CI->massage_item->get_info($item_id)->commission_price_receptionist,
+			'massager' => $massager_id,
 		    )
 		);
 

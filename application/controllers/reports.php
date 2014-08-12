@@ -9,7 +9,7 @@ class Reports extends Secure_area {
         $this->load->helper('report');
         $this->load->model(array("Sale_ticket","Sale_massage","Sale_bike","Sale_tour","Massage","Bike",
           "Ticket","Tour","Item_kit_items","reports/Summary_tickets","reports/Summary_massages",
-          "reports/Summary_bikes","reports/Sales_generator","reports/Summary_tours"
+          "reports/Summary_bikes","reports/Sales_generator","reports/Summary_tours", "Sale_massage_master"
           ));
     }
 
@@ -20,10 +20,12 @@ class Reports extends Secure_area {
     //Initial report listing screen
     function reports_tickets() {
         $data['allowed_modules'] = $this->check_module_accessable();
+        $logged_in_employee_info = $this->Employee->get_logged_in_employee_info();
+        $data['position_info'] = $this->Module->get_position_info($logged_in_employee_info->position_id)->result();
         $this->load->view("reports/listing_tickets", $data);
     }
 
-    function reports_bikes() {
+    /*function reports_bikes() {
         $data['allowed_modules'] = $this->check_module_accessable();
         $this->load->view("reports/listing_bikes", $data);
     }
@@ -36,7 +38,7 @@ class Reports extends Secure_area {
     function reports_tours() {
         $data['allowed_modules'] = $this->check_module_accessable();
         $this->load->view("reports/listing_tours", $data);
-    }
+    }*/
 
 //    function summary_report_ticket() {
 //          
@@ -363,6 +365,28 @@ class Reports extends Secure_area {
         $this->load->view("reports/date_input_excel_export", $data);
     }
 
+    //Input for reports that require only a date range and an export to excel. (see routes.php to see that all summary reports route here)
+    function date_input_excel_export_base_filter() {
+        $data['allowed_modules'] = $this->check_module_accessable();
+
+        $logged_in_employee_info=$this->Employee->get_logged_in_employee_info();
+        $data['allowed_offices'] = $this->Office->select_offices_options($logged_in_employee_info->employee_id);
+        $data['massagers'] = $this->Employee->select_emp_massager_option();
+        $data['get_report'] = $this->_get_common_report_data(TRUE);
+        $this->load->view("reports/date_input_excel_export_base_filter", $data);
+    }
+
+    //Input for reports that require only a date range and an export to excel. (see routes.php to see that all summary reports route here)
+    function date_input_excel_export_master() {
+        $data['allowed_modules'] = $this->check_module_accessable();
+
+        $logged_in_employee_info=$this->Employee->get_logged_in_employee_info();
+        $data['allowed_offices'] = $this->Office->select_offices_options($logged_in_employee_info->employee_id);
+        $data['massagers'] = $this->Employee->select_emp_massager_option();
+        $data['get_report'] = $this->_get_common_report_data(TRUE);
+        $this->load->view("reports/date_input_excel_export_master", $data);
+    }
+
     /** added for register log */
 //    function date_input_excel_export_register_log() {
 //        $data = $this->_get_common_report_data();
@@ -558,6 +582,7 @@ class Reports extends Secure_area {
 
 
     function summary_tickets($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
 
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
@@ -624,6 +649,8 @@ class Reports extends Secure_area {
     }
 
     function graphical_tickets_summary($office, $start_date, $end_date, $sale_type) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
 
@@ -646,6 +673,8 @@ class Reports extends Secure_area {
 
     //The actual graph data
     function graphical_summary_tickets_graph($office, $start_date, $end_date, $sale_type) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
 
@@ -683,6 +712,8 @@ class Reports extends Secure_area {
 
 // Report detail for ticket
     function detailed_sales_ticket($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
@@ -749,6 +780,8 @@ class Reports extends Secure_area {
     }
 
     function specific_customer_for_ticket($office, $start_date, $end_date, $customer_id, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
@@ -823,14 +856,16 @@ class Reports extends Secure_area {
 
 //-------------------------- Start Summary Massage Report-----------------------------
     //Summary tickets report
-    function summary_massages($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+    function summarize_massages($office, $start_date, $end_date, $sale_type, $export_excel = 0, $officeID='all', $massagerID='all') {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
         $this->load->model(array('reports/Summary_massages', 'Massage', 'Commissioner'));
         $model = $this->Summary_massages;
-        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type,'office'=>$office));
-        $this->Sale_massage->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office));
+        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type,'office'=>$office, 'officeID' => $officeID, 'massager_id'=>$massagerID));
+        $this->Sale_massage->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office, 'officeID' => $officeID, 'massager_id'=>$massagerID));
 
         $tabular_data = array();
         $report_data = $model->getData();
@@ -879,6 +914,8 @@ class Reports extends Secure_area {
 //    -------------------End Summary Massage report------------------
 //    --------------------Graphic massages summary ------------------
     function graphical_massages_summary($office, $start_date, $end_date, $sale_type) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
 
@@ -901,6 +938,7 @@ class Reports extends Secure_area {
 
     //The actual graph data
     function graphical_summary_massages_graph($office, $start_date, $end_date, $sale_type) {
+      $office = 'office_'.$this->Office->get_office_id($office);
 
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
@@ -928,14 +966,15 @@ class Reports extends Secure_area {
 
 //    --------------------End Graphic massages summary ------------------
 //    --------------------Start Graphic massages summary detail ------------------ 
-    function detailed_sales_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+    function detaile_sales_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $officeID='all', $massagerID='all') {
+      $office = 'office_'.$this->Office->get_office_id($office);
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
         $this->load->model('reports/Detailed_sales_sms');
         $model = $this->Detailed_sales_sms;
-        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office));
+        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office, 'officeID' => $officeID, 'massager_id'=>$massagerID));
 
-        $testw = $this->Sale_massage->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office));
+        $this->Sale_massage->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office, 'officeID' => $officeID, 'massager_id'=>$massagerID));
 
         $headers = $model->getDataColumns();
         $report_data = $model->getData();
@@ -943,8 +982,6 @@ class Reports extends Secure_area {
         $summary_data = array();
         $details_data = array();
         foreach ($report_data['summary'] as $key => $row) {
-          $massager = $this->Employee->get_info($row['massager_id']);
-          $massagers = ucwords($massager->first_name . ' ' . $massager->last_name);
 
             $link = site_url('reports/specific_customer_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/' . $row['customer_id'] . '/all/0');
             $summary_data[] = array(
@@ -954,23 +991,27 @@ class Reports extends Secure_area {
                 array('data' => date('d/m/Y', strtotime($row['issue_date'])), 'align' => 'left'),
                 array('data' => to_quantity($row['items_purchased']), 'align' => 'center'),
                 array('data' => $row['employee_name'], 'align' => 'left'),
+                array('data' => to_currency($row['commission_receptionist']), 'align' => 'left'),
                 array('data' => '<a href="' . $link . '" target="_blank">' . $row['customer_name'] . '</a>', 'align' => 'left'),
                 array('data' => $row['commissioner_name'], 'align' => 'left'),
                 array('data' => '$' . $row['commision_price'], 'align' => 'center'),
-                array('data' => to_currency($row['subtotal']), 'align' => 'right'),
+                // array('data' => to_currency($row['subtotal']), 'align' => 'right'),
                 array('data' => to_currency($row['total']), 'align' => 'right'),
                 $this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id) ? array('data' => to_currency($row['profit']), 'align' => 'right') : array('data' => "<span style='color: red'>".lang('common_no_permission')."</span>"),
-                array('data' => $row['payment_type'], 'align' => 'right'),
+                // array('data' => $row['payment_type'], 'align' => 'right'),
                 array('data' => $row['comment'], 'align' => 'right'),
-                array('data' => $massagers, 'align' => 'center')
+                // array('data' => $massagers, 'align' => 'center')
                 );
 
             foreach ($report_data['details'][$key] as $drow) {
+              $massager = $this->Employee->get_info($drow['massager_id']);
+              $massagers = ucwords($massager->first_name . ' ' . $massager->last_name);
+
                 $details_data[$key][] = array(
                     array('data' => isset($drow['massage_name']) ? $drow['massage_name'] : "", 'align' => 'left'),
-                    array('data' => date('d/m/Y', strtotime($row['issue_date'])), 'align' => 'left'),
-                    array('data' => $row['time_in'], 'align' => 'left'),
-                    array('data' => $row['time_out'], 'align' => 'left'),
+                    array('data' => date('d/m/Y', strtotime($drow['issue_date'])), 'align' => 'left'),
+                    array('data' => $drow['time_in'], 'align' => 'left'),
+                    array('data' => $drow['time_out'], 'align' => 'left'),
                     array('data' => to_quantity($drow['quantity_purchased']), 'align' => 'center'),
                     array('data' => to_currency($drow['subtotal']), 'align' => 'center'),
                     array('data' => to_currency($drow['total']), 'align' => 'center'),
@@ -995,9 +1036,185 @@ class Reports extends Secure_area {
         $this->load->view("reports/tabular_details", $data);
     }
 
+    // New 05/08/2014
+    function master_filter_sales_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $condition_master=false) {
+
+      $office = 'office_'.$this->Office->get_office_id($office);
+
+        $start_date = rawurldecode($start_date);
+        $end_date = rawurldecode($end_date);
+        $this->load->model('reports/Detailed_sales_sms_master');
+        $model = $this->Detailed_sales_sms_master;
+        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office, 'condition_master' => $condition_master));
+ 
+        $this->Sale_massage_master->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office' => $office, 'condition_master' => $condition_master));
+
+        if ($condition_master == 'receptionist') {
+          $headers = $model->getDataColumnsRecept();
+        } else {
+          $headers = $model->getDataColumns();
+        }
+        $report_data = $model->getData();
+
+        $summary_data = array();
+        $details_data = array();
+        foreach ($report_data['summary'] as $key => $row) {
+
+          $link = site_url('reports/specific_massager_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/all/0/'.$row['massager_id'].'/'.$condition_master);
+          if ($condition_master == 'receptionist') {
+            $link = site_url('reports/specific_employee_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/all/0/'.$row['employee_id'].'/'.$condition_master);
+          }
+          $summary_data[] = array(
+              array('data' => '<a href="' . $link . '" target="_blank">' . ucwords($row['employee_name']) . '</a>', 'align' => 'left'),
+              array('data' => to_quantity($row['items_purchased']), 'align' => 'right'),
+              array('data' => to_currency($row['total_commission_price']), 'align' => 'right'),
+              array('data' => to_currency($row['total']), 'align' => 'center')
+              );
+
+            foreach ($report_data['details'][$key] as $drow) {
+              $customer_fullname = ucwords($customer->first_name . ' ' . $customer->last_name);
+
+                $details_data[$key][] = array(
+                    array('data' => isset($drow['massage_name']) ? $drow['massage_name'] : "", 'align' => 'left'),
+                    array('data' => date('d/m/Y', strtotime($drow['issue_date'])), 'align' => 'left'),
+                    array('data' => $drow['time_in'], 'align' => 'left'),
+                    array('data' => $drow['time_out'], 'align' => 'left'),
+                    array('data' => to_quantity($drow['quantity_purchased']), 'align' => 'center'),
+                    // array('data' => to_currency($drow['subtotal']), 'align' => 'center'),
+                    array('data' => to_currency($drow['total']), 'align' => 'center'),
+                    $this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id) ? array('data' => to_currency($drow['profit']), 'align' => 'center') : array('data' => "<span style='color: red'>".lang('common_no_permission')."</span>"),
+                    array('data' => to_currency($drow['discount_percent']), 'align' => 'center'),
+                    // array('data' => $drow['customer_id'], 'align' => 'center'),
+                    array('data' =>  $drow['office'], 'align' => 'center'),
+                );
+            }
+        }
+
+        
+
+        $data = array(
+            "title" => lang('reports_master_sales_report'),
+            // "subtitle" => date(get_date_format(), strtotime($start_date)) . '-' . date(get_date_format(), strtotime($end_date)),
+            "subtitle" => date('d/m/Y', strtotime($start_date)) . ' - ' . date('d/m/Y', strtotime($end_date)), 
+            // "headers" => $model->getDataColumns(),
+            "headers" => $headers,
+            "summary_data" => $summary_data,
+            "details_data" => $details_data,
+            "overall_summary_data" => $model->getSummaryData(),
+            "export_excel" => $export_excel
+        );
+        $data['allowed_modules'] = $this->check_module_accessable();
+        $this->load->view("reports/tabular_details_master", $data);
+    }
+
+    function specific_massager_for_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $massagerID, $condition_master=false) {
+        $start_date = rawurldecode($start_date);
+        $end_date = rawurldecode($end_date);
+
+        $office = 'office_'.$this->Office->get_office_id($office);
+ 
+        /*$this->load->model('reports/Specific_customer');
+        $model = $this->Specific_customer;*/
+        $this->load->model('reports/Detailed_sales_sms_master');
+        $model = $this->Detailed_sales_sms_master;
+        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office'=>$office, 'condition_master' => $condition_master, 'massager_id' => $massagerID));
+
+        $this->Sale_massage_master->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type,'office'=>$office, 'condition_master' => $condition_master));
+
+        $headers = $model->getDataColumnsMassages(); 
+        $report_data = $model->getDataMassagerMaster();
+
+        $summary_data = array();
+        $details_data = array();
+
+        foreach ($report_data['details'][$key] as $drow) {
+                $details_data[$key][] = array(
+                    array('data' => isset($drow['massage_name']) ? $drow['massage_name'] : "", 'align' => 'left'),
+                    array('data' => $drow['time_in'], 'align' => 'left'),
+                    array('data' => $drow['time_out'], 'align' => 'left'),
+                    array('data' => to_quantity($drow['quantity_purchased']), 'align' => 'center'),
+                    array('data' => to_currency($drow['commision_price']), 'align' => 'center'),
+                    // array('data' => to_currency($drow['subtotal']), 'align' => 'center'),
+                    array('data' => to_currency($drow['total']), 'align' => 'center'),
+                    $this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id) ? array('data' => to_currency($drow['profit']), 'align' => 'right') : array('data' => "<span style='color: red'>".lang('common_no_permission')."</span>"),
+                    array('data' => to_currency($drow['discount_percent']), 'align' => 'left'),
+                    array('data' => $drow['office'], 'align' => 'left'),
+                    // array('data' => $massagers, 'align' => 'left')
+                );
+            }
+
+        $customer_info = $this->Customer->get_info($customer_id);
+        $data = array(
+            "title" => $customer_info->first_name . ' ' . $customer_info->last_name . ' ' . lang('reports_report'),
+            "subtitle" => date('d/m/Y', strtotime($start_date)) . ' - ' . date('d/m/Y', strtotime($end_date)),
+            "headers" => $model->getDataColumnsMassages(),
+            "summary_data" => $summary_data,
+            "details_data" => $details_data,
+            "overall_summary_data" => $model->getSummaryDataSms(),
+            "export_excel" => $export_excel
+        );
+        $data['allowed_modules'] = $this->check_module_accessable();
+
+        $this->load->view("reports/tabular_details_master_specific", $data);
+    }
+
+    function specific_employee_for_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $employee_id, $condition_master=false) {
+        $start_date = rawurldecode($start_date);
+        $end_date = rawurldecode($end_date);
+
+        $office = 'office_'.$this->Office->get_office_id($office);
+ 
+        /*$this->load->model('reports/Specific_customer');
+        $model = $this->Specific_customer;*/
+        $this->load->model('reports/Detailed_sales_sms_master');
+        $model = $this->Detailed_sales_sms_master;
+        $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office'=>$office, 'condition_master' => $condition_master, 'employee_id' => $employee_id));
+
+        $this->Sale_massage_master->create_sales_massages_temp_table(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type,'office'=>$office, 'condition_master' => $condition_master));
+
+        $headers = $model->getDataColumnsMassages(); 
+        $report_data = $model->getDataMassagerMaster();
+
+        $summary_data = array();
+        $details_data = array();
+
+        foreach ($report_data['details'][$key] as $drow) {
+                $details_data[$key][] = array(
+                    array('data' => isset($drow['massage_name']) ? $drow['massage_name'] : "", 'align' => 'left'),
+                    array('data' => $drow['time_in'], 'align' => 'left'),
+                    array('data' => $drow['time_out'], 'align' => 'left'),
+                    array('data' => to_quantity($drow['quantity_purchased']), 'align' => 'center'),
+                    array('data' => to_currency($drow['commision_price']), 'align' => 'center'),
+                    // array('data' => to_currency($drow['subtotal']), 'align' => 'center'),
+                    array('data' => to_currency($drow['total']), 'align' => 'center'),
+                    $this->Employee->has_owner_action_permission('Owner', $this->Employee->get_logged_in_employee_info()->employee_id) ? array('data' => to_currency($drow['profit']), 'align' => 'right') : array('data' => "<span style='color: red'>".lang('common_no_permission')."</span>"),
+                    array('data' => to_currency($drow['discount_percent']), 'align' => 'left'),
+                    array('data' => $drow['office'], 'align' => 'left'),
+                    // array('data' => $massagers, 'align' => 'left')
+                );
+            }
+
+        $customer_info = $this->Customer->get_info($customer_id);
+        $data = array(
+            "title" => $customer_info->first_name . ' ' . $customer_info->last_name . ' ' . lang('reports_report'),
+            "subtitle" => date('d/m/Y', strtotime($start_date)) . ' - ' . date('d/m/Y', strtotime($end_date)),
+            "headers" => $model->getDataColumnsMassages(),
+            "summary_data" => $summary_data,
+            "details_data" => $details_data,
+            "overall_summary_data" => $model->getSummaryDataSms(),
+            "export_excel" => $export_excel
+        );
+        $data['allowed_modules'] = $this->check_module_accessable();
+
+        $this->load->view("reports/tabular_details_master_specific", $data);
+    }
+    // End new 05/08/2014
+
     function specific_customer_for_massage($office, $start_date, $end_date, $customer_id, $sale_type, $export_excel = 0) {
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
+
+        $office = 'office_'.$this->Office->get_office_id($office);
 
         $this->load->model('reports/Specific_customer');
         $model = $this->Specific_customer;
@@ -1376,6 +1593,8 @@ class Reports extends Secure_area {
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
+        $office = 'office_'.$this->Office->get_office_id($office);
+
         $this->load->model(array('reports/Summary_bikes', 'Bike', 'Commissioner'));
         $model = $this->Summary_bikes;
         $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type,'office'=>$office));
@@ -1427,6 +1646,8 @@ class Reports extends Secure_area {
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
 
+        $office = 'office_'.$this->Office->get_office_id($office);
+
         $this->load->model(array('reports/Summary_bikes', 'Bike', 'Commissioner'));
         $model = $this->Summary_bikes;
         $model->setParams(array('start_date' => $start_date, 'end_date' => $end_date, 'sale_type' => $sale_type, 'office'=>$office));
@@ -1448,6 +1669,8 @@ class Reports extends Secure_area {
     function graphical_summary_bikes_graph($office, $start_date, $end_date, $sale_type) {
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
+
+        $office = 'office_'.$this->Office->get_office_id($office);
 
         $this->load->model('reports/Summary_bikes');
         $model = $this->Summary_bikes;
@@ -1472,6 +1695,8 @@ class Reports extends Secure_area {
 //    --------------------End Graphic massages summary ------------------
 //    --------------------Start Graphic bikes summary detail ------------------;
     function detailed_sales_bike($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
         $this->load->model('reports/detailed_sales_bikes');
@@ -1532,6 +1757,9 @@ class Reports extends Secure_area {
     }
 
     function specific_customer_for_bike($office, $start_date, $end_date, $customer_id, $sale_type, $export_excel = 0) {
+
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
@@ -1881,6 +2109,8 @@ class Reports extends Secure_area {
 //   -------------End sale search on bike function------------------
       
     function summary_tours($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
@@ -1938,6 +2168,8 @@ class Reports extends Secure_area {
     }
 //    --------------------Graphic Tours summary ------------------
     function graphical_tours_summary($office, $start_date, $end_date, $sale_type) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
 
@@ -1959,6 +2191,7 @@ class Reports extends Secure_area {
 
     //The actual graph data
     function graphical_summary_tours_graph($office, $start_date, $end_date, $sale_type) {
+      $office = 'office_'.$this->Office->get_office_id($office);
 
         $start_date = rawurldecode($start_date);
         $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
@@ -1988,6 +2221,8 @@ class Reports extends Secure_area {
     
  // --------------------Start detail tour summary detail ------------------
     function detailed_sales_tour($office, $start_date, $end_date, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
         $this->load->model('reports/Detailed_sales_tours');
@@ -2053,6 +2288,8 @@ class Reports extends Secure_area {
     }
 
     function specific_customer_for_tour($office, $start_date, $end_date, $customer_id, $sale_type, $export_excel = 0) {
+      $office = 'office_'.$this->Office->get_office_id($office);
+
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
 
@@ -2638,6 +2875,8 @@ class Reports extends Secure_area {
 //
 //    //Graphical summary item kits report
    function graphical_summary_item_kits($office, $start_date, $end_date, $sale_type) {
+    $office = 'office_'.$this->Office->get_office_id($office);
+
        $start_date = rawurldecode($start_date);
        $end_date = date('Y-m-d 23:59:59', strtotime(rawurldecode($end_date)));
 

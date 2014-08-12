@@ -164,4 +164,14 @@ $lang['reports_sales_generator_show_only_matched_items'] = 'Show Only Matched It
 $lang['reports_tickets_summary_report'] = 'Tickets Summary Report';
 $lang['reports_deposit'] = 'Deposite';
 
+// New 05/08/2014
+$lang['reports_base_filter_reports'] = 'Master Reports';
+$lang['reports_codition_office_reports'] = 'Condition Office';
+$lang['reports_codition_massager_reports'] = 'Condition Massager';
+$lang['reports_codition_reports'] = 'Condition';
+$lang['reports_massager'] = 'Massager';
+$lang['reports_receptionist'] = 'Receptionist';
+$lang['reports_commission_receptionist'] = 'Tip Recept';
+$lang['reports_master_sales_report'] = 'Master Report';
+
 ?>

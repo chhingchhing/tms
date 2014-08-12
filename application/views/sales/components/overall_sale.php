@@ -137,7 +137,7 @@
             echo "</div>";
         } else {
             ?>
-            <div id='guide_info_empty'>
+            <!-- <div id='guide_info_empty'>
                 <?php echo form_open("$controller_name/select_massager",array('id'=>'select_massager_form')); ?>
                 <label id="massager_label" for="massager">
                     <?php echo lang('sales_select_massager'); ?>
@@ -149,16 +149,16 @@
                         <?php echo lang('common_or'); ?>
                     </div>                  
                     <?php 
-                    echo anchor("#massages/view_massager", 
-                        "<div class='small_button' style='margin:0 auto;'> <span>".lang('sales_add_massagers')."</span> </div>", 
-                        array('class'=>'thickbox edit none btn btn-primary btn-sm','title'=>lang('sales_add_massagers'), 'modals' => "add_massager"));
+                    //echo anchor("#massages/view_massager", 
+                        // "<div class='small_button' style='margin:0 auto;'> <span>".lang('sales_add_massagers')."</span> </div>", 
+                        // array('class'=>'thickbox edit none btn btn-primary btn-sm','title'=>lang('sales_add_massagers'), 'modals' => "add_massager"));
                     ?>
                 </div>
-            </div>
+            </div> -->
         <?php } ?>
     </div>
     <!-- Tip money for massager -->
-    <div id='info_empty_price_tip'>
+    <!-- <div id='info_empty_price_tip'>
         <?php $tip_price = count($cart) == 0 ? 0 : $tip_price;  ?>
         <?php echo form_open("$controller_name/set_commissioner_tip", array('id' => 'price_tip_form')); ?>
         <label id="price_commissioner_label" for="tip_price">
@@ -166,7 +166,7 @@
         </label>
         <?php echo form_input(array('name' => 'tip_price', 'id' => 'tip_price', 'size' => '30', 'value' => $tip_price, 'placeholder' => lang('sales_start_typing_tip_price'), 'accesskey' => 't', 'class' => 'form-control input-sm')); ?>
         </form>
-    </div>
+    </div> -->
 <?php } ?>
     <!-- End Massager -->
 

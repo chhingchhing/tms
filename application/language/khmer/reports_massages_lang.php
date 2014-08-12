@@ -22,5 +22,6 @@ $lang['summary_reports_massage_commission_price'] = 'តម្លៃអ្នក
 $lang['summary_reports_massage_total_commissioner_price']= 'សរុបតម្លៃអ្នកនាំភ្ញៀវមក';
 $lang['reports_reports_massage_summary_report'] = 'របាយការណ៍បូកសរុបទំនិញ​ ម៉ាស្ស៉ា';
 $lang['summary_reports_massage_massager'] = 'អ្នកម៉ាស្សា';
+$lang['summary_reports_massage_office'] = 'ការិយាលយ័';
 
 ?>

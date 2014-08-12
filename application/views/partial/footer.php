@@ -16,7 +16,7 @@ if ($this->uri->segment(1) == "dashboard" OR $this->uri->segment(2)) { ?>
 			?>
 			</td>
 	
-			<td id="menubar_date_time" class="menu_date col-md-2">
+			<td id="menubar_date_time" class="menu_date col-md-3">
 				
                                 <?php echo date('D') ?>	
 				<?php echo date('d') ?>

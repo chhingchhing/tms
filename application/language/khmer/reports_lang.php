@@ -164,4 +164,14 @@ $lang['reports_cost_price'] = 'សរុបថ្លៃដើម';
 $lang['reports_tickets_summary_report'] = 'របាយការណ៍សង្ខេប នៃ សំបុត្រ';
 $lang['reports_deposit'] = 'ប្រាក់កក់';
 
+// New 05/08/2014
+$lang['reports_base_filter_reports'] = 'របាយការណ៍ Master';
+$lang['reports_codition_office_reports'] = 'លក្ខខណ្ឌ ការិយាលយ័';
+$lang['reports_codition_massager_reports'] = 'Condition Massager';
+$lang['reports_codition_reports'] = 'លក្ខខណ្ឌ';
+$lang['reports_massager'] = 'អ្នកម៉ាស្សា';
+$lang['reports_receptionist'] = 'អ្នកទទួលភ្ញៀវ';
+$lang['reports_commission_receptionist'] = 'Tip អ្នកទទួលភ្ញៀវ';
+$lang['reports_master_sales_report'] = 'របាយការណ៍ Master';
+
 ?>

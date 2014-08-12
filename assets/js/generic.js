@@ -301,7 +301,7 @@ jQuery("body").on("click", "input[name='submitUndeleteSale']", function(){
 });
 
 // Print reciept
-jQuery("body").on("click", "button#print", function() {
+jQuery("body").on("click", "button#print, button#bnt_print", function() {
     var headElements = '<meta charset="utf-8" />,<meta http-equiv="X-UA-Compatible" content="IE=edge"/>';
     var keepAttr = ['class','id','style'];
     var options = { 

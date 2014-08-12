@@ -230,3 +230,34 @@ function addToCart(item_massage_id, addAction) {
         }
     });
 }
+
+// New 07/08/2014
+// Set massager in register sale of each item of massage
+$('body').on('keypress','input#each_massager',function(event){
+    var current_obj = $(this);
+    if (event.keyCode === $.ui.keyCode.ENTER) {
+        return false;
+    }
+    var term = current_obj.val();
+    var url = current_obj.parents("form").attr("action");
+    if (current_obj.attr('id')=='each_massager') {
+        var suggest = baseURL + "massages/massager_search";
+    } else {
+        var suggest = baseURL + "commissioners/commissioner_search";
+    }
+    
+    $.ajax({
+        type: "POST",
+        url: suggest,
+        dataType: "json",
+        data: {"term" : term},
+        success: function(data){
+            current_obj.autocomplete({
+                source: data,
+                select: function(e, ui) {
+                    current_obj.next().val(ui.item.value);
+                }
+            });
+        }
+    });
+ });

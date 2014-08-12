@@ -15,7 +15,7 @@
 |
 */
 
-$config['base_url'] = 'http://localhost:8080/tms/';
+$config['base_url'] = 'http://localhost:8080/tourmanagementsystem/';
 
 /*
 |--------------------------------------------------------------------------

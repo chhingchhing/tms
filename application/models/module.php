@@ -82,6 +82,17 @@ class Module extends CI_Model
 		return $data;
 	}
 
+	/*
+	Returns all the positions
+	*/
+	function get_position_info($position_id)
+	{
+		$data = $this->db
+			->where("position_id", $position_id)
+			->get("positions");
+		return $data;
+	}
+
 
 }
 ?>

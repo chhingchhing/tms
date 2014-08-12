@@ -45,12 +45,20 @@ if (mysql_num_rows($result) > 0) {
 }*/
       
         
-        $this->db->select('ID, issue_date, discount_percent,comment, commision_price, unit_price, time_in, time_out, massage_typesID, name_of_massage, commisioner_id, employee_id, sale_price, sum(quantity_purchased) as quantity_purchased, 
+        $this->db->select('ID, massager_id, office, issue_date, discount_percent,comment, commision_price, unit_price, time_in, time_out, massage_typesID, name_of_massage, commisioner_id, employee_id, sale_price, sum(quantity_purchased) as quantity_purchased, 
          sum(subtotal) as subtotal, sum(total) as total, sum(unit_price) as cost_price, sum(profit) as profit, sum(commision_price) as total_com_price, sum(profit_inclod_com_price) as profit_inclod_com_price, massager_id, 
          sale_date, '.$this->db->dbprefix('sales_massages_temp').'.deleted '
          );
         $this->db->from('sales_massages_temp');
         $this->db->join('items_massages', 'sales_massages_temp.item_massage_id = items_massages.item_massage_id');
+        
+        if ($this->params['massager_id'] != 'all') {
+            $this->db->where('massager_id', $this->params['massager_id']);
+        }
+        if ($this->params['officeID'] != 'all') {
+            $this->db->where('office', 'office_'.$this->params['officeID']);
+        }
+
         if ($this->params['sale_type'] == 'sales')
         {
             $this->db->where('quantity_purchased > 0');
@@ -72,6 +80,13 @@ if (mysql_num_rows($result) > 0) {
         $this->db->select('sum(subtotal) as subtotal, sum(total) as total,sum(unit_price) as cost_price, sum(profit) as profit, sum(commision_price) as total_com_price, sum(profit_inclod_com_price) as profit_inclod_com_price,');
         $this->db->from('sales_massages_temp');
         $this->db->join('items_massages', 'sales_massages_temp.item_massage_id = items_massages.item_massage_id');
+        
+        if ($this->params['massager_id'] != 'all') {
+            $this->db->where('massager_id', $this->params['massager_id']);
+        }
+        if ($this->params['officeID'] != 'all') {
+            $this->db->where('office', 'office_'.$this->params['officeID']);
+        }
         
         if ($this->params['sale_type'] == 'sales')
         {

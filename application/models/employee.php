@@ -686,6 +686,62 @@ class Employee extends Person
 		return $suggestions;
 	
 	}
+
+	// Get employee as massager
+	function select_emp_massager_option(){
+     $data = $this->db->select("*")
+        ->join("people", "people.person_id = employees.employee_id")
+        ->join("positions", "positions.position_id = employees.position_id")
+        ->where("module_id", "massages")
+        ->where("deleted", 0)
+             ->get("employees");
+     $option['all'] = "Please select one";
+     if($data->num_rows() > 0){
+         foreach($data->result() as $item){
+             $option[$item->employee_id] = strtoupper($item->last_name).' '.$item->first_name;
+         }
+     }
+     return $option;
+   }
+
+   // Get auto search of massager
+   function search_massager_suggestions($search,$limit=5)
+	{
+		$suggestions = array();
+		
+		$this->db->from('employees');
+		$this->db->join("positions", "positions.position_id = employees.position_id");
+		$this->db->join('people','employees.employee_id=people.person_id');
+		$this->db->where("module_id", "massages");
+		
+		if ($this->config->item('speed_up_search_queries'))
+		{
+			$this->db->where("(first_name LIKE '".$this->db->escape_like_str($search)."%' or 
+			last_name LIKE '".$this->db->escape_like_str($search)."%' or 
+			CONCAT(`first_name`,' ',`last_name`) LIKE '".$this->db->escape_like_str($search)."%') and deleted=0");
+		}
+		else
+		{
+			$this->db->where("(first_name LIKE '%".$this->db->escape_like_str($search)."%' or 
+			last_name LIKE '%".$this->db->escape_like_str($search)."%' or 
+			CONCAT(`first_name`,' ',`last_name`) LIKE '%".$this->db->escape_like_str($search)."%') and deleted=0");
+		}
+		
+		$this->db->order_by("last_name", "asc");		
+		$by_name = $this->db->get();
+		foreach($by_name->result() as $row)
+		{
+			$suggestions[]=array('value' => $row->employee_id, 'label'=> $row->first_name.' '.$row->last_name);		
+		}
+		
+		//only return $limit suggestions
+		if(count($suggestions > $limit))
+		{
+			$suggestions = array_slice($suggestions, 0,$limit);
+		}
+		return $suggestions;
+	
+	}
 	
 }
 ?>

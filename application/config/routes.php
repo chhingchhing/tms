@@ -68,5 +68,13 @@ $route['reports/specific_supplier'] = "reports/specific_supplier_input";
 $route['reports/(deleted_sales)/(:any)/(:any)/(:any)'] = "reports/$1/$2/$3/$4";
 $route['reports/(deleted_sales)'] = "reports/date_input_excel_export";
 
+// New 05/08/2014
+$route['reports/(master_filter_:any)/(:any)/(:any)/(:any)'] = "reports/$1/$2/$3/$4";
+$route['reports/master_filter_:any'] = "reports/date_input_excel_export_master";
+$route['reports/(summarize_:any)/(:any)/(:any)/(:any)'] = "reports/$1/$2/$3/$4";
+$route['reports/summarize_:any'] = "reports/date_input_excel_export_base_filter";
+$route['reports/(detaile_sales_:any)/(:any)/(:any)/(:any)'] = "reports/$1/$2/$3/$4";
+$route['reports/detaile_sales_:any'] = "reports/date_input_excel_export_base_filter";
+
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

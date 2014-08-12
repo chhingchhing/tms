@@ -8,6 +8,24 @@ if (isset($error_message)) {
 ?>
 <!--<div id="receipt_wrapper">-->
 
+    <div id="btn_print" class="col-12 col-sm-12 col-lg-12">
+        <a href="<?php echo site_url($controller_name . '/sales/'.$this->session->userdata("office_number")); ?>" role='button' class='btn btn-info'><?php echo lang('receipt_new_sale'); ?></a>
+        <?php
+        if ($this->Employee->has_module_action_permission($controller_name, 'edit_sale', $this->Employee->get_logged_in_employee_info()->employee_id)) {
+
+            $pieces = explode(' ', $sale_id);
+            echo form_open("$controller_name/change_sale/" . $this->session->userdata("office_number") . "/" . $pieces[1], array('id' => 'sales_change_form'));
+            ?> 
+            <button class="submit_button btn btn-info" id="edit_sale" onclick="submit()" > <?php echo lang('sales_edit'); ?> </button>
+        <?php
+        }
+        echo form_close();
+        ?>
+            <!-- <button class="submit_button btn btn-info" id="print_button" onclick="print_receipt()" > <?php echo lang('sales_print'); ?> </button> -->
+        <button class="submit_button btn btn-info" id="bnt_print" > <?php echo lang('sales_print'); ?> </button>
+    </div>
+    <br>
+
     <div  class="panel panel-info" id="print_receipt_mine">
         <div class="panel-heading" id="company_name"><p><?php echo $this->config->item('company'); ?></p></div>
         <div id="print_receipt">

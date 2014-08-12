@@ -191,13 +191,15 @@ class Massages extends Person_controller {
         $price = $this->input->post("price");
         $quantity = $this->input->post("quantity");
         $discount = $this->input->post("discount");
-        $seat_no = $this->input->post("seat_no");
-        if ($discount == "" or $discount == 0) {
+        $massager = $this->input->post("each_massager");
+
+        /*if ($discount == "" or $discount == 0) {
             $tip_price = $this->sale_lib->set_tip_price(1);
-        }
+        }*/
 
         if ($this->form_validation->run() != FALSE) {
-            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price);
+            // ($line,$description,$serialnumber,$quantity,$discount,$price,$massager=false)
+            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price, $massager);
         } else {
             $data['error'] = lang('sales_error_editing_item');
         }
@@ -649,7 +651,7 @@ class Massages extends Person_controller {
         $data['controller_name'] = strtolower(get_class());
         $data['is_sale'] = TRUE;
         $data['cart'] = $this->sale_massage_lib->get_cart();
-        $data['tip_price'] = $this->sale_lib->get_tip_price();
+        // $data['tip_price'] = $this->sale_lib->get_tip_price();
 
         $data['subtotal'] = $this->sale_massage_lib->get_subtotal();
         $data['total'] = $this->sale_massage_lib->get_total();      
@@ -686,7 +688,7 @@ class Massages extends Person_controller {
             $comm_info=$this->commissioner->get_info($commissioner_id);
             $data['commissioner']=$comm_info->first_name.' '.$comm_info->last_name.($comm_info->tel==''  ? '' :' ('.$comm_info->tel.')');
         }
-        $massager_id = $this->sale_lib->get_massager();
+        // $massager_id = $this->sale_lib->get_massager();
 
         // set variable time in for get time in from session of sale massage
         $data['time_in'] = $this->sale_lib_sms->get_time_in();
@@ -702,7 +704,7 @@ class Massages extends Person_controller {
         
         $suspended_change_sale_id = $this->sale_lib->get_suspended_sale_id() ? $this->sale_lib->get_suspended_sale_id() : $this->sale_lib->get_change_sale_id() ;
         //SAVE sale to database
-        $data['sale_id'] = strtoupper($office_name).' ' . $this->Sale_massage->save($office_name,$data['cart'], $data['tip_price'], $customer_id, $employee_id, $massager_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $suspended_change_sale_id, 0, $data['ref_no']);
+        $data['sale_id'] = strtoupper($office_name).' ' . $this->Sale_massage->save($office_name,$data['cart'], $customer_id, $employee_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $suspended_change_sale_id, 0, $data['ref_no']);
  
         if ($data['sale_id'] == strtoupper($office_name).' -1') {
             $data['error_message'] = '';
@@ -1062,10 +1064,9 @@ class Massages extends Person_controller {
     
      function suspend()
     {
-         $office_name = $this->session->userdata("office_number");
+        $office_name = $this->session->userdata("office_number");
         $data['controller_name'] = strtolower(get_class());
         $data['cart'] = $this->sale_lib_sms->get_cart();
-        $data['seat_no'] = $this->sale_lib_sms->get_seat_no();
         /*$data['time_in'] = $this->sale_lib_sms->get_time_in();
         $data['time_out'] = $this->sale_lib_sms->get_time_out();*/
         // Get Time_zone of office
@@ -1126,13 +1127,13 @@ class Massages extends Person_controller {
         {
             $total_payments += $payment['payment_amount'];
         }
-        $massager_id = $this->sale_lib->get_massager();
+        // $massager_id = $this->sale_lib->get_massager();
         
         $sale_id = $this->sale_lib->get_suspended_sale_id();
         //SAVE sale to database
-        $tip_price = 0;
+        // $tip_price = 0;
 
-        $data['sale_id'] = strtoupper($office_name).' ' . $this->Sale_massage->save($office_name,$data['cart'], $tip_price, $customer_id, $employee_id, $massager_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $sale_id, 1, $data['ref_no']);
+        $data['sale_id'] = strtoupper($office_name).' ' . $this->Sale_massage->save($office_name,$data['cart'], $customer_id, $employee_id, $commissioner_id, $commissioner_price,$data['controller_name'], $data['time_in'], $data['time_out'], $data['comment'], $data['show_comment_on_receipt'], $data['payments'], $sale_id, 1, $data['ref_no']);
         if ($data['sale_id'] == strtoupper($office_name).' -1')
         {
             $data['error_message'] = lang('sales_transaction_failed');
@@ -1287,7 +1288,7 @@ class Massages extends Person_controller {
     }
 
     function massager_search() {
-        $suggestions = $this->Employee->search_suggestions($this->input->get('term'), 100);
+        $suggestions = $this->Employee->search_massager_suggestions($this->input->get('term'), 100);
         echo json_encode($suggestions);
     }
 
