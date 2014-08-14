@@ -142,6 +142,11 @@
                         ?>
                     </td>
                 <?php } else if ($controller_name == 'massages') { ?>
+                
+                    <?php echo form_hidden("item_id", $item['item_massage_id']); ?>
+                    <?php echo form_hidden("commission_massager", $item['commission_massager']); ?>
+                    <?php echo form_hidden("commission_receptionist", $item['commission_receptionist']); ?>
+
                     <td> <?php echo form_input(array('name' => 'quantity', 'value' => to_quantity($item['quantity']), 'size' => '5', 'id' => 'quantity_' . $line)); ?></td>
                 <?php } else if ($controller_name == 'tickets') { ?>
                     <td> <?php echo form_input(array('name' => 'quantity', 'value' => to_quantity($item['quantity']), 'size' => '7', 'id' => 'quantity_' . $line)); ?></td>
@@ -165,12 +170,13 @@
                 <?php if($controller_name == "massages"){?>
                     <td style="text-align: center;"> <?php echo '<input type="text" value="' . to_currency($item['price'] * $item['quantity'] - $item['discount']) . '" readonly="readonly" size="4" style="text-align: center;"/>'; ?></td>
                     <td><?php 
+
                     $info_massager = $this->Employee->get_info($item['massager']);
                     $massager_name = $info_massager->first_name . ' ' . $info_massager->last_name;
 
                     echo '<input type="text" value="' . $massager_name . '" size="9" id="each_massager" name="each_massager_id"/>'; 
                     echo form_hidden("each_massager", $item['massager']);
-                    ?></td>
+                     ?></td>
                 <?php } else{?>
                     <td> <?php echo '<input type="text" value="' . to_currency($item['price'] * $item['quantity'] - $item['discount']) . '" readonly="readonly" size="7" />'; ?></td>   
                  <?php } ?>

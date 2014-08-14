@@ -46,13 +46,15 @@ $lang['common_massage_desc']='Description';
 $lang['common_price_one_haft']='Price one half';
 $lang['common_supplier_id']='Supplier';
 $lang['common_price_haft']='Price half';
-$lang['common_price_one']='Sale Price($/h)';
-$lang['common_actual_price']='Actual Price($/h)';
+$lang['common_price_one']='Sale Price($)';
+$lang['common_actual_price']='Actual Price($)';
 $lang['common_massage_typesID']='Massage Typed';
 $lang['common_item_massage_id']='Item Massage';
 $lang['common_deleted']=' Delete';
 // New 04/08/2014​​​​​​ 
 $lang['massages_commission_price_massager']=' Massager Commission($)';
 $lang['massages_commission_price_receptionist']=' Receptionist Commission($)';
+$lang['massages_outside_staff_fee']=' Staff Outside Fee($)';
+$lang['massages_duration']=' Duration(min)';
 
 ?>

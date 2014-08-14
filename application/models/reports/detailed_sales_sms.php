@@ -43,7 +43,7 @@ class Detailed_sales_sms extends Report
 
 	public function getData()
 	{
-		$this->db->select('ID, massager_id, commission_receptionist, office, sale_date, issue_date, sum(quantity_purchased) as items_purchased, CONCAT(employee.first_name," ",employee.last_name) as employee_name, time_in, time_out, issue_date, massager_id, 
+		$this->db->select('ID, massager_id, commission_receptionist, office, sale_date, issue_date, sum(quantity_purchased) as items_purchased, CONCAT(employee.first_name," ",employee.last_name) as employee_name, time_in, time_out, issue_date, massager_id, discount_percent, 
 			customer.person_id as customer_id, CONCAT(customer.first_name," ",customer.last_name) as customer_name, sum(subtotal) as subtotal, sum(profit_inclod_com_price),sum(unit_price) as cost_price, sum(commision_price) as total_com_price, 
 			sum(total) as total, sum(profit) as profit, payment_type, comment, CONCAT(commissioner.first_name," ",commissioner.last_name) as commissioner_name, commision_price', false);
 		$this->db->from('sales_massages_temp');          
@@ -72,11 +72,13 @@ class Detailed_sales_sms extends Report
 			$this->db->where('quantity_purchased < 0');
 		}
 		$this->db->where($this->db->dbprefix('sales_massages_temp').'.deleted', 0);
-		if ($this->params['massager_id'] != 'all') {
+		/*if ($this->params['massager_id'] != 'all') {
 			$this->db->group_by('massager_id');
 		} else {
 			$this->db->group_by('ID');
-		}	
+		}*/	
+		$this->db->group_by('ID');
+
 		$this->db->order_by('sale_date');
   // var_dump($this->db->get()->result_array()); die();
 		$data = array();
@@ -96,12 +98,14 @@ class Detailed_sales_sms extends Report
 			if ($this->params['massager_id'] != 'all') {
 				$this->db->where('massager_id', $this->params['massager_id']);
 			}
+			// var_dump($this->db->get()->result_array()); die();
 
 			if ($this->params['officeID'] != 'all') {
 				$this->db->where('office', 'office_'.$this->params['officeID']);
 			}
 
 			$this->db->where('ID = '.$value['ID']);
+			// var_dump($this->db->get()->result_array()); die();
 			$data['details'][$key] = $this->db->get()->result_array();
 		}
 		return $data;
@@ -109,7 +113,7 @@ class Detailed_sales_sms extends Report
 	
 	public function getSummaryData()
 	{
-		$this->db->select('sum(subtotal) as subtotal, sum(total) as total, sum(unit_price) as cost_price, sum(profit) as profit,sum(commision_price) as total_com_price, sum(profit_inclod_com_price) as profit_inclod_com_price');
+		$this->db->select('sum(subtotal) as subtotal, sum(total) as total, sum(unit_price) as cost_price, sum(profit) as profit,sum(commision_price) as total_com_price, sum(commission_massager) as total_com_massager, sum(commission_receptionist) as total_com_receptionist, sum(profit_inclod_com_price) as profit_inclod_com_price');
 		$this->db->from('sales_massages_temp');
 
 

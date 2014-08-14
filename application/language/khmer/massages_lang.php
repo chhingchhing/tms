@@ -41,17 +41,19 @@ $lang['massages_add_time_in'] = 'បញ្ចូល ម៉ោងចូល';
 $lang['massages_add_time_out'] = 'បញ្ចូល ម៉ោងចេញ';
 $lang['massages_time_out'] = 'ម៉ោងចេញ';
 
-$lang['common_massage_name']='Massages Name';
-$lang['common_massage_desc']='Description';
+$lang['common_massage_name']='ឈ្មោះម៉ាស្សា';
+$lang['common_massage_desc']='បរិយាយ';
 $lang['common_price_one_haft']='Price one half';
-$lang['common_supplier_id']='Supplier';
+$lang['common_supplier_id']='អ្នកផ្គត់ផ្គង់';
 $lang['common_price_haft']='Price half';
-$lang['common_price_one']='Sale Price($/h)';
-$lang['common_actual_price']='Actual Price($/h)';
-$lang['common_massage_typesID']='Massage Type';
-$lang['common_item_massage_id']='Item Massage';
-$lang['common_deleted']=' Delete';
+$lang['common_price_one']='តម្លៃលក់($)';
+$lang['common_actual_price']='តម្លៃលក់ដើម($)';
+$lang['common_massage_typesID']='ប្រភេទម៉ាស្សា';
+$lang['common_item_massage_id']='ម៉ាស្សា';
+$lang['common_deleted']=' លុប';
 // New 04/08/2014
 $lang['massages_commission_price_massager']=' តម្លៃ Commission សំរាប់អ្នកម៉ាស្សា';
 $lang['massages_commission_price_receptionist']=' តម្លៃ Commission សំរាប់អ្នកលក់';
+$lang['massages_outside_staff_fee']=' តម្លៃ​សំរាប់អ្នកម៉ាស្សាក្រៅ($)';
+$lang['massages_duration']=' រយះពេល(នាទី)';
 ?>

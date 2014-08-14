@@ -793,8 +793,7 @@ class Sale_lib
 	    return -1;
 	}
         
-//	function edit_item($line,$description,$serialnumber,$quantity,$discount,$num_day,$price)
-    function edit_item($line,$description,$serialnumber,$quantity,$discount,$price,$massager=false)
+    function edit_item($line,$description,$serialnumber,$quantity,$discount,$price,$massager=false, $item_id=false, $commission_massager=NULL, $commission_receptionist=NULL)
 	{
 		$items = $this->get_cart();
 		if(isset($items[$line]))
@@ -804,27 +803,34 @@ class Sale_lib
 				$items[$line]['serialnumber'] = $serialnumber;
 				$items[$line]['quantity'] = $quantity;
 				$items[$line]['discount'] = $discount;
-	            //$items[$line]['number_of_day'] = $num_day;
 				$items[$line]['price'] = $price;
 			} else {
+				$is_outside_staff = 0;
 				if ($massager == "") {
-		            $massager == null;
-		        }
+			        $massager == null;
+			    } else {
+			    	$item_info = $this->CI->massage_item->get_info($items[$line]['item_massage_id']);
+					$commission_massager = $item_info->commission_price_massager;
+			
+					if ($massager != NULL) {
+					    $employee_info = $this->CI->Employee->get_info($massager);
+					    $is_outside_staff = $employee_info->is_outside_staff;   
+					}
+
+					if ($is_outside_staff != 0) {
+					    $commission_massager = $item_info->outside_staff_fee;
+					}
+			    }
+
 				$items[$line]['description'] = $description;
 				$items[$line]['serialnumber'] = $serialnumber;
 				$items[$line]['quantity'] = $quantity;
 				$items[$line]['discount'] = $discount;
-	            //$items[$line]['number_of_day'] = $num_day;
 				$items[$line]['price'] = $price;
 				$items[$line]['massager'] = $massager;
+				$items[$line]['commission_massager'] = $commission_massager;
+				$items[$line]['commission_receptionist'] = $commission_receptionist;
 			}
-
-			/*$items[$line]['description'] = $description;
-			$items[$line]['serialnumber'] = $serialnumber;
-			$items[$line]['quantity'] = $quantity;
-			$items[$line]['discount'] = $discount;
-            //$items[$line]['number_of_day'] = $num_day;
-			$items[$line]['price'] = $price;*/
                         
 			$this->set_cart($items);          
 		}

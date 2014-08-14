@@ -14,8 +14,7 @@
 | path to your installation.
 |
 */
-
-$config['base_url'] = 'http://localhost/tms/';
+$config['base_url']	= 'http://tms.codingate.com/';
 
 /*
 |--------------------------------------------------------------------------
@@ -245,7 +244,7 @@ $config['encryption_key'] = 'PHPPointOf$EllP0$';
 | 'sess_time_to_update'		= how many seconds between CI refreshing Session Information
 |
 */
-$config['sess_cookie_name']		= 'cgate';
+$config['sess_cookie_name']		= 'phppos';
 $config['sess_expiration']		= 86400;
 $config['sess_expire_on_close']	= TRUE;
 $config['sess_encrypt_cookie']	= FALSE;

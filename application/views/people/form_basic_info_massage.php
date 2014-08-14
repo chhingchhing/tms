@@ -67,6 +67,30 @@
 	</div>
 </div>
 
+<div class="form-group">
+	<?php echo form_label(lang('massages_outside_staff_fee').':', 'outside_staff_fee', array('class'=>'col-sm-4 control-label')); ?>
+	<div class='col-sm-8'>
+	<?php echo form_input(array(
+		'name'=>'outside_staff_fee',
+		'id'=>'outside_staff_fee',
+		'value'=>$massage_info->outside_staff_fee,
+		'class'=>'form-control')
+	);?>
+	</div>
+</div>
+
+<div class="form-group">
+	<?php echo form_label(lang('massages_duration').':', 'duration', array('class'=>'col-sm-4 control-label')); ?>
+	<div class='col-sm-8'>
+	<?php echo form_input(array(
+		'name'=>'duration',
+		'id'=>'duration',
+		'value'=>$massage_info->duration,
+		'class'=>'form-control')
+	);?>
+	</div>
+</div>
+
 <div class="form-group" style="display: none;">
 	<?php echo form_label(lang('common_massage_typesID').':', 'massage_typesID', array('class'=>'col-sm-4 control-label')); ?>
 	<div class='col-sm-8'>

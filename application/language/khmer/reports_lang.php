@@ -173,5 +173,7 @@ $lang['reports_massager'] = 'អ្នកម៉ាស្សា';
 $lang['reports_receptionist'] = 'អ្នកទទួលភ្ញៀវ';
 $lang['reports_commission_receptionist'] = 'Tip អ្នកទទួលភ្ញៀវ';
 $lang['reports_master_sales_report'] = 'របាយការណ៍ Master';
+$lang['reports_total_com_massager'] = 'សរុប​ commission អ្នកម៉ាស្សា';
+$lang['reports_total_com_receptionist'] = 'សរុប​ commission អ្នកទទួលភ្ញៀវ';
 
 ?>

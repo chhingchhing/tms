@@ -240,7 +240,7 @@ class Sale_massage_lib {
         $this->CI->sale_lib->delete_customer();
 		foreach($this->CI->Sale_massage->get_sale_items($sale_id)->result() as $row)
 		{      
-            $this->add_item($row->item_massage_id,$row->quantity_purchased, $row->discount_percent,$row->sale_price, $row->massager_id);
+            $this->add_item($row->item_massage_id,$row->quantity_purchased, $row->discount_percent,$row->sale_price, $row->massager_id, $row->commission_massager, $row->commission_receptionist);
 		}
 		foreach($this->CI->Sale->get_sale_payments($sale_id)->result() as $row)
 		{
@@ -259,12 +259,9 @@ class Sale_massage_lib {
                
 	}
 	
-        
-	function add_item($item_id, $quantity = 1, $discount = 0, $price = null, $massager_id=null, $description = null, $serialnumber = null) {
-
-		/*if ($sale_id) {
-			// $this->CI->Sale_massage->get_sale_items($sale_id)->result() as $row
-		}*/
+       
+    
+	function add_item($item_id, $quantity = 1, $discount = 0, $price = null, $massager_id = null, $commission_massager=null, $commission_receptionist=null, $description = null, $serialnumber = null) {
                
 		//make sure item exists
 		if (!$this->CI->massage_item->exists(is_numeric($item_id) ? (int) $item_id : -1)) {
@@ -315,6 +312,22 @@ class Sale_massage_lib {
 		// $price_to_use=( isset($this->CI->Item->get_info($item_id)->start_date) && isset($this->CI->Item->get_info($item_id)->end_date) && isset($this->CI->Item->get_info($item_id)->promo_price)  && ( strtotime($this->CI->Item->get_info($item_id)->start_date) <= $today) && (strtotime($this->CI->Item->get_info($item_id)->end_date) >= $today) ?  $this->CI->Item->get_info($item_id)->promo_price :  $this->CI->Item->get_info($item_id)->unit_price);
 		$price_to_use = $this->CI->massage_item->get_info($item_id)->price_one;
 
+
+		// Check is out side employee massager
+		/*$item_info = $this->CI->massage_item->get_info($item_id);
+		$commission_massager = $item_info->commission_price_massager;
+
+		$is_outside_staff = 0;
+		if ($item['massager'] != NULL) {
+		    $employee_info = $this->Employee->get_info($item['massager']);
+		    $is_outside_staff = $employee_info->is_outside_staff;   
+		}
+
+		if ($is_outside_staff != 0) {
+		    $commission_massager = $item_info->outside_staff_fee;
+		}*/
+
+
 		//array/cart records are identified by $insertkey and item_id is just another field.
 		$item = array(($insertkey) =>
 		    array(
@@ -325,15 +338,17 @@ class Sale_massage_lib {
 			'quantity' => $quantity,
 			'discount' => $discount,
 			'price' => $price != null ? $price : $price_to_use,
-			'commission_massager' => $this->CI->massage_item->get_info($item_id)->commission_price_massager,
-			'commission_receptionist' => $this->CI->massage_item->get_info($item_id)->commission_price_receptionist,
+			// 'commission_massager' => $this->CI->massage_item->get_info($item_id)->commission_price_massager,
+			'commission_massager' => $commission_massager != null ? $commission_massager : $this->CI->massage_item->get_info($item_id)->commission_price_massager,
+			'commission_receptionist' => $commission_receptionist != null ? $commission_receptionist : $this->CI->massage_item->get_info($item_id)->commission_price_receptionist,
 			'massager' => $massager_id,
 		    )
 		);
 
 		//Item already exists and is not serialized, add to quantity
 		if ($itemalreadyinsale) {
-			$items[$updatekey]['quantity'] += $quantity;
+			//$items[$updatekey]['quantity'] += $quantity;
+			$items += $item;
 		} else {
 			//add to existing array
 			$items += $item;

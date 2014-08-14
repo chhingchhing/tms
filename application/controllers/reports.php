@@ -991,7 +991,8 @@ class Reports extends Secure_area {
                 array('data' => date('d/m/Y', strtotime($row['issue_date'])), 'align' => 'left'),
                 array('data' => to_quantity($row['items_purchased']), 'align' => 'center'),
                 array('data' => $row['employee_name'], 'align' => 'left'),
-                array('data' => to_currency($row['commission_receptionist']), 'align' => 'left'),
+                // $row['discount_percent'] == 0 ? to_currency($row['commission_receptionist']) : to_currency(0)
+                array('data' => $row['discount_percent'] == 0 ? to_currency($row['commission_receptionist']) : to_currency(0), 'align' => 'left'),
                 array('data' => '<a href="' . $link . '" target="_blank">' . $row['customer_name'] . '</a>', 'align' => 'left'),
                 array('data' => $row['commissioner_name'], 'align' => 'left'),
                 array('data' => '$' . $row['commision_price'], 'align' => 'center'),
@@ -1035,8 +1036,7 @@ class Reports extends Secure_area {
         $data['allowed_modules'] = $this->check_module_accessable();
         $this->load->view("reports/tabular_details", $data);
     }
-
-    // New 05/08/2014
+    
     function master_filter_sales_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $condition_master=false) {
 
       $office = 'office_'.$this->Office->get_office_id($office);
@@ -1107,6 +1107,7 @@ class Reports extends Secure_area {
         $this->load->view("reports/tabular_details_master", $data);
     }
 
+
     function specific_massager_for_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $massagerID, $condition_master=false) {
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);
@@ -1157,7 +1158,7 @@ class Reports extends Secure_area {
 
         $this->load->view("reports/tabular_details_master_specific", $data);
     }
-
+    
     function specific_employee_for_massage($office, $start_date, $end_date, $sale_type, $export_excel = 0, $employee_id, $condition_master=false) {
         $start_date = rawurldecode($start_date);
         $end_date = rawurldecode($end_date);

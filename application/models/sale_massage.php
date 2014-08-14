@@ -215,6 +215,21 @@ class Sale_massage extends CI_Model {
                     $commission_price_receptionist = 0;
                 }
 
+                // Get info of item if massager as outside staff
+                $item_info = $this->massage_item->get_info($item['item_massage_id']);
+                $commission_massager = $item['commission_massager'];
+
+                $is_outside_staff = 0;
+                if ($item['massager'] != NULL) {
+                    $employee_info = $this->Employee->get_info($item['massager']);
+                    $is_outside_staff = $employee_info->is_outside_staff;   
+                }
+
+                if ($is_outside_staff != 0) {   // if is the outside massager
+                    $commission_massager = $item_info->outside_staff_fee;
+                }
+
+
                 $sales_items_data = array
                     (
                     'id_order_massage' => $sale_id,
@@ -229,7 +244,7 @@ class Sale_massage extends CI_Model {
                     'deposite' => $item['deposite'],
                     'discount_percent' => $item['discount'],
                     'quantity_purchased' => $item['quantity'],
-                    'commission_massager' => $item['commission_massager'],
+                    'commission_massager' => $commission_massager,
                     'commission_receptionist' => $commission_price_receptionist,
                     'massager_id' => $item['massager']
                 );
@@ -471,7 +486,7 @@ class Sale_massage extends CI_Model {
     function _create_sales_massages_temp_table_query($where, $orderBy) {
 
         $this->db->query("CREATE TEMPORARY TABLE " . $this->db->dbprefix('sales_massages_temp') . "
-        (SELECT office, ".$this->db->dbprefix('orders').".deposit, " . $this->db->dbprefix('orders') . ".order_id as ID, " . $this->db->dbprefix('orders') . ".deleted, sale_time, date(sale_time) as sale_date, commission_receptionist, 
+        (SELECT office, ".$this->db->dbprefix('orders').".deposit, " . $this->db->dbprefix('orders') . ".order_id as ID, " . $this->db->dbprefix('orders') . ".deleted, sale_time, date(sale_time) as sale_date, commission_receptionist, commission_massager, 
         " . $this->db->dbprefix('detial_orders_massages') . ".id_order_massage, comment,payment_type, customer_id, employee_id,category, commisioner_id,
         " . $this->db->dbprefix('items_massages') . ".item_massage_id, ".$this->db->dbprefix('detial_orders_massages').".massager_id, NULL as item_kit_id, " . $this->db->dbprefix('items_massages') . ".supplierID, quantity_purchased, unit_price, sale_price, commision_price,
         discount_percent, (sale_price * quantity_purchased - discount_percent) as subtotal,
@@ -487,7 +502,7 @@ class Sale_massage extends CI_Model {
         $where
         GROUP BY ID, item_massage_id, office, line) 
         UNION ALL
-        (SELECT office, ".$this->db->dbprefix('orders').".deposit, ".$this->db->dbprefix('orders').".order_id as ID, ".$this->db->dbprefix('orders').".deleted, sale_time, date(sale_time) as sale_date, NULL as commission_receptionist, 
+        (SELECT office, ".$this->db->dbprefix('orders').".deposit, ".$this->db->dbprefix('orders').".order_id as ID, ".$this->db->dbprefix('orders').".deleted, sale_time, date(sale_time) as sale_date, NULL as commission_receptionist, NULL as commission_massager, 
         NULL as id_order_massage, comment,payment_type, customer_id, employee_id, NULL as category, commisioner_id,
         NULL as item_massage_id, NULL as massager_id, 
         ".$this->db->dbprefix('item_kits').".item_kit_id, '' as supplierID, quantity_purchased, item_kit_cost_price as unit_price, item_kit_unit_price as sale_price, commision_price,       
@@ -502,8 +517,6 @@ class Sale_massage extends CI_Model {
         INNER JOIN ".$this->db->dbprefix('item_kits')." ON  ".$this->db->dbprefix('orders_item_kits').'.item_kitID='.$this->db->dbprefix('item_kits').'.item_kit_id'."
         $where
         GROUP BY ID, item_massage_id, office, line) ORDER BY $orderBy");
-
-// var_dump($this->db->get('sales_massages_temp')->result_array()); die();
 
     }
 }

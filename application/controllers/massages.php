@@ -138,10 +138,14 @@ class Massages extends Person_controller {
             'massage_desc' => $this->input->post('massage_desc'),
             'supplierID' => $this->input->post('supplier_id'),
             'price_one' => $this->input->post('price_one'),
-            'actual_price' => $this->input->post('actual_price'),
-            'massage_typesID' => $this->input->post('massage_typesID'),
+            'actual_price' => $this->input->post('actual_price'), 
+            'commission_price_massager' => $this->input->post('commission_price_massager'), 
+            'commission_price_receptionist' => $this->input->post('commission_price_receptionist'), 
+            'outside_staff_fee' => $this->input->post('outside_staff_fee'), 
+            'duration' => $this->input->post('duration'), 
+            // 'massage_typesID' => $this->input->post('massage_typesID'),
             'deleted' => '0'
-        );       
+        );      
 
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
@@ -193,13 +197,17 @@ class Massages extends Person_controller {
         $discount = $this->input->post("discount");
         $massager = $this->input->post("each_massager");
 
+        $item_id = $this->input->post("item_id");
+        $commission_massager = $this->input->post("commission_massager");
+        $commission_receptionist = $this->input->post("commission_receptionist");
+
         /*if ($discount == "" or $discount == 0) {
             $tip_price = $this->sale_lib->set_tip_price(1);
         }*/
 
         if ($this->form_validation->run() != FALSE) {
             // ($line,$description,$serialnumber,$quantity,$discount,$price,$massager=false)
-            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price, $massager);
+            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $price, $massager, $item_id, $commission_massager, $commission_receptionist);
         } else {
             $data['error'] = lang('sales_error_editing_item');
         }
@@ -319,6 +327,8 @@ class Massages extends Person_controller {
             'actual_price' => $this->input->post('actual_price'), 
             'commission_price_massager' => $this->input->post('commission_price_massager'), 
             'commission_price_receptionist' => $this->input->post('commission_price_receptionist'), 
+            'outside_staff_fee' => $this->input->post('outside_staff_fee'), 
+            'duration' => $this->input->post('duration'), 
             // 'massage_typesID' => $this->input->post('massage_typesID'),
             'deleted' => '0'
         );       
