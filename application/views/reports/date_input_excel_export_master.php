@@ -39,7 +39,7 @@
         <?php echo form_label(lang('reports_codition_reports'), 'reports_condition_label', array('class' => 'required')); ?>
         <div id='report_sale_type'>
             <?php //echo form_dropdown('condition_filter', array('all' => lang('reports_all'), 'massager' => lang('reports_massager'), 'receptionist' => lang('reports_receptionist')), 'all', 'id="condition_master"'); ?>
-            <?php echo form_dropdown('condition_filter', array('massager' => lang('reports_massager'), 'receptionist' => lang('reports_receptionist')), 'massager', 'id="condition_master"'); ?>
+            <?php echo form_dropdown('condition_filter', array('all' => lang('reports_all'), 'massager' => lang('reports_massager'), 'receptionist' => lang('reports_receptionist'), 'commissioner' => lang('reports_commissioner')), 'massager', 'id="condition_master"'); ?>
         </div>
         
 

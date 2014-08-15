@@ -23,5 +23,6 @@ $lang['summary_reports_massage_total_commissioner_price']= 'សរុបតម�
 $lang['reports_reports_massage_summary_report'] = 'របាយការណ៍បូកសរុបទំនិញ​ ម៉ាស្ស៉ា';
 $lang['summary_reports_massage_massager'] = 'អ្នកម៉ាស្សា';
 $lang['summary_reports_massage_office'] = 'ការិយាលយ័';
+$lang['summary_reports_massage_commissioner'] = 'Commissioner';
 
 ?>

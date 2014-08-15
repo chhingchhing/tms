@@ -17,7 +17,9 @@ class Sale_massage_master extends CI_Model {
                 } else if ($params['condition_master'] == 'receptionist') {
                     $groupBy = 'employee_id';
                     $where = 'WHERE sale_time BETWEEN "'.$params['start_date'].'" and "'.$params['end_date'].'" and office ="'.$params['office'].'" and discount_percent=0';
-                }
+                } else if ($params['condition_master'] == 'commissioner') {
+                    $groupBy = 'commisioner_id';
+                } 
             }
 
             if (isset($params['massager_id'])) {

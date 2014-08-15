@@ -175,5 +175,6 @@ $lang['reports_commission_receptionist'] = 'Tip Recept';
 $lang['reports_master_sales_report'] = 'Master Report';
 $lang['reports_total_com_massager'] = 'Total commission massager';
 $lang['reports_total_com_receptionist'] = 'Total commission receptionist';
+$lang['reports_commissioner'] = 'Commissioner';
 
 ?>

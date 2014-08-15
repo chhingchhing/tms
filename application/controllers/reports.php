@@ -1051,25 +1051,41 @@ class Reports extends Secure_area {
 
         if ($condition_master == 'receptionist') {
           $headers = $model->getDataColumnsRecept();
-        } else {
+        } else {  // For $condition_master == massager or commissioner
           $headers = $model->getDataColumns();
         }
         $report_data = $model->getData();
-
         $summary_data = array();
         $details_data = array();
         foreach ($report_data['summary'] as $key => $row) {
-
-          $link = site_url('reports/specific_massager_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/all/0/'.$row['massager_id'].'/'.$condition_master);
+          $full_name = $row['employee_name'];
+          // for massager
+          if ($condition_master == 'massager') {
+            $full_name = $row['employee_name'];
+            $link = site_url('reports/specific_massager_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/all/0/'.$row['massager_id'].'/'.$condition_master);
+          }
+          // for receptionist
           if ($condition_master == 'receptionist') {
+            $full_name = $row['employee_name'];
             $link = site_url('reports/specific_employee_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/all/0/'.$row['employee_id'].'/'.$condition_master);
           }
+          // for commissioner outside that bring or introduce our customers
+          if ($condition_master == 'commissioner') {
+            $full_name = $row['commissioner_name'];
+            $link = site_url('reports/specific_commissioner_for_massage/' . $office . '/' . $start_date . '/' . $end_date . '/all/0/'.$row['commisioner_id'].'/'.$condition_master);
+          }
           $summary_data[] = array(
-              array('data' => '<a href="' . $link . '" target="_blank">' . ucwords($row['employee_name']) . '</a>', 'align' => 'left'),
+              array('data' => '<a href="' . $link . '" target="_blank">' . ucwords($full_name) . '</a>', 'align' => 'left'),
+              array('data' => to_quantity($row['items_purchased']), 'align' => 'right'),
+              array('data' => $condition_master == 'commissioner' ? to_currency($row['total_commissioner_price']) : to_currency($row['total_commission_price']), 'align' => 'right'),
+              array('data' => to_currency($row['total']), 'align' => 'center')
+              );
+          /*$summary_data[] = array(
+              array('data' => '<a href="' . $link . '" target="_blank">' . ucwords($full_name) . '</a>', 'align' => 'left'),
               array('data' => to_quantity($row['items_purchased']), 'align' => 'right'),
               array('data' => to_currency($row['total_commission_price']), 'align' => 'right'),
               array('data' => to_currency($row['total']), 'align' => 'center')
-              );
+              );*/
 
             foreach ($report_data['details'][$key] as $drow) {
               $customer_fullname = ucwords($customer->first_name . ' ' . $customer->last_name);
